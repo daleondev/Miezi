@@ -1,3 +1,0 @@
-ninja_dyndep_version = 1.0
-build CMakeFiles/Miezi.dir/src/main.cpp.o: dyndep | CMakeFiles/__cmake_cxx23.dir/std.pcm CMakeFiles/glm.dir/glm.pcm
-
