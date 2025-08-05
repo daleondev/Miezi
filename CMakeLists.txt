@@ -65,43 +65,18 @@ set(CMAKE_CXX_MODULE_STD ON)
 # executable
 add_executable(Miezi)
 
-# ----------------------------------
-# source/header files
-# ----------------------------------
-
-# get source files
-file(GLOB_RECURSE SOURCES 
+# get module files
+file(GLOB_RECURSE MODULES 
     CONFIGURE_DEPENDS 
-        src/*.cpp)
-
-# get header files
-file(GLOB_RECURSE HEADERS 
-    CONFIGURE_DEPENDS 
-        src/*.h
-        src/*.hpp)
+        src/*.cppm)
 
 # set files for target
 target_sources(Miezi 
+    PUBLIC
+        FILE_SET cxx_modules TYPE CXX_MODULES FILES
+        ${MODULES}
     PRIVATE 
-        ${SOURCES}
-        ${HEADERS})
-
-# mark header files to exclude from build
-foreach(h IN LISTS HEADERS)
-    set_source_files_properties(${h} PROPERTIES HEADER_FILE_ONLY TRUE)
-endforeach()
-
-# group source files for IDE
-source_group(
-    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
-    PREFIX "Source Files" 
-    FILES ${SOURCES})
-
-# group header files for IDE
-source_group(
-    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
-    PREFIX "Header Files" 
-    FILES ${HEADERS})
+        src/main.cpp)
 
 # ----------------------------------
 # configuration
