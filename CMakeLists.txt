@@ -154,11 +154,6 @@ target_compile_definitions(Miezi
     PRIVATE 
         ${OS_DEFINE})
 
-# precompiled headers
-target_precompile_headers(Miezi 
-    PRIVATE 
-        src/pch.h)
-
 # compile options
 target_compile_options(Miezi 
     PRIVATE 

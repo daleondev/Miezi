@@ -16,7 +16,6 @@ file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "/home/david/Dokumente/Miezi/s
 set(OLD_GLOB
   "/home/david/Dokumente/Miezi/src/Window/IWindow.h"
   "/home/david/Dokumente/Miezi/src/Window/WindowBase.h"
-  "/home/david/Dokumente/Miezi/src/pch.h"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")
