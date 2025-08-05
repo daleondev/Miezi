@@ -1,0 +1,11 @@
+CompileFlags:
+  Add: 
+    - -std=gnu++23
+    - -stdlib=libc++
+    - -fmodules
+    - -fimplicit-modules
+    - -fimplicit-module-maps
+    - -fcxx-modules
+    - -fprebuilt-module-path=build/CMakeFiles/__cmake_cxx23.dir
+    - -fprebuilt-module-path=build/CMakeFiles/glm.dir
+    - -fprebuilt-module-path=build/CMakeFiles/Miezi.dir

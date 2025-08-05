@@ -1,0 +1,19 @@
+{
+	"modules" : 
+	{
+		"glm" : 
+		{
+			"bmi" : "/home/david/Dokumente/Miezi/build/CMakeFiles/glm.dir/glm.pcm",
+			"is-private" : false
+		}
+	},
+	"references" : 
+	{
+		"glm" : 
+		{
+			"lookup-method" : "by-name",
+			"path" : "CMakeFiles/glm.dir/glm.pcm"
+		}
+	},
+	"usages" : {}
+}

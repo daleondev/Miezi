@@ -1,0 +1,38 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "Clang",
+	"compiler-simulate-id" : "",
+	"config" : "",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "/home/david/Dokumente/Miezi/build",
+	"dir-cur-src" : "/home/david/Dokumente/Miezi",
+	"dir-top-bld" : "/home/david/Dokumente/Miezi/build",
+	"dir-top-src" : "/home/david/Dokumente/Miezi",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"/home/david/Dokumente/Miezi/src",
+		"/home/david/Dokumente/Miezi/include",
+		"/home/david/Dokumente/Miezi/external/glfw/include",
+		"/home/david/Dokumente/Miezi/external/imgui",
+		"gladsources/glad_gl_core_46/include"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : 
+	[
+		"/home/david/Dokumente/Miezi/build/CMakeFiles/glm.dir",
+		"/home/david/Dokumente/Miezi/build/CMakeFiles/__cmake_cxx23.dir"
+	],
+	"module-dir" : "/home/david/Dokumente/Miezi/build/CMakeFiles/Miezi.dir",
+	"sources" : 
+	{
+		"CMakeFiles/Miezi.dir/src/main.cpp.o" : 
+		{
+			"language" : "CXX",
+			"source" : "/home/david/Dokumente/Miezi/src/main.cpp"
+		}
+	}
+}

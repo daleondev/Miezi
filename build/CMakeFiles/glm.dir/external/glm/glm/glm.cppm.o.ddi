@@ -1,0 +1,16 @@
+{
+  "revision": 0,
+  "rules": [
+    {
+      "primary-output": "CMakeFiles/glm.dir/external/glm/glm/glm.cppm.o",
+      "provides": [
+        {
+          "is-interface": true,
+          "logical-name": "glm",
+          "source-path": "/home/david/Dokumente/Miezi/external/glm/glm/glm.cppm"
+        }
+      ]
+    }
+  ],
+  "version": 1
+}

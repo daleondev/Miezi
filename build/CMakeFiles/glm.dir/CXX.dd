@@ -1,0 +1,4 @@
+ninja_dyndep_version = 1.0
+build CMakeFiles/glm.dir/external/glm/glm/glm.cppm.o | CMakeFiles/glm.dir/glm.pcm: dyndep
+  restat = 1
+
