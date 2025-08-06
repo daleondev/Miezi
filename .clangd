@@ -9,3 +9,4 @@ CompileFlags:
     - -fprebuilt-module-path=build/CMakeFiles/__cmake_cxx23.dir
     - -fprebuilt-module-path=build/CMakeFiles/glm.dir
     - -fprebuilt-module-path=build/CMakeFiles/Miezi.dir
+    - -DMZ_OS_LINUX

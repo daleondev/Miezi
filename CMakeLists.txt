@@ -118,7 +118,7 @@ target_link_libraries(Miezi
 # set OS define
 if(WIN32) 
     set(OS_DEFINE MZ_OS_WINDOWS)
-elseif(UNIX && NOT APPLE)	
+elseif(UNIX AND NOT APPLE)	
     set(OS_DEFINE MZ_OS_LINUX)
 else()
     message(FATAL_ERROR "Unsupported OS, CMake will exit.")

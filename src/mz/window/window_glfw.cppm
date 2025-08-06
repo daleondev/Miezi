@@ -9,22 +9,18 @@ import mz.window;
 
 namespace mz { 
 
-    namespace glfw { 
+    export class GlfwWindow : public WindowBase
+    {
+    public:
 
-        export class Window : public WindowBase
-        {
-        public:
+    private:
+    };
 
-        private:
-        };
-
-        export class Input : public IInput
-        {
-        public:
-            void foo() override { }
-        private:
-        };
-
-    }
+    export class GlfwInput : public IInput
+    {
+    public:
+        void foo() override { }
+    private:
+    };
 
 }
