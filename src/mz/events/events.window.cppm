@@ -1,5 +1,5 @@
 module;
-#include "event_macros.h"
+#include "events.h"
 export module mz.events.window;
 
 import std;

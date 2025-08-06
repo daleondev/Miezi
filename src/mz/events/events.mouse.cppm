@@ -1,5 +1,5 @@
 module;
-#include "event_macros.h"
+#include "events.h"
 export module mz.events.mouse;
 
 import std;
@@ -120,8 +120,8 @@ namespace mz {
     
         std::string* begin() override { return m_paths.data(); }
         std::string* end() override { return m_paths.data() + m_paths.size(); }
-        const std::string* cbegin() const override { return m_paths.data(); }
-        const std::string* cend() const override { return m_paths.data() + m_paths.size(); }
+        const std::string* begin() const override { return m_paths.data(); }
+        const std::string* end() const override { return m_paths.data() + m_paths.size(); }
 
         std::string toString() const override
         {

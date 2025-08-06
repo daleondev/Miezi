@@ -1,5 +1,5 @@
 module;
-#include "mz/core/core_defines.h"
+#include "mz/core/core.h"
 
 #include <GLFW/glfw3.h>
 export module mz.window.glfw;
@@ -13,11 +13,13 @@ import mz.events.window;
 import mz.events.key;
 import mz.events.mouse;
 
+import mz.graphics.opengl;
+
 import mz.core.logging;
 
 namespace mz { 
 
-    export class GlfwGlContext : public IGraphicsContext
+    export class GlfwGlContext : public GlGraphicsContext
     {
     public:
         GlfwGlContext(GLFWwindow* window)
@@ -103,7 +105,7 @@ namespace mz {
 
             setupCallbacks();
 
-            MZ_INFO("Created Window with size: {}, {}", m_data.size.x, m_data.size.y);
+            MZ_INFO("Created Window with title: {} and size: {}, {}", m_data.title, m_data.size.x, m_data.size.y);
         }
 
         void close() override
@@ -112,6 +114,8 @@ namespace mz {
 
             if (--m_windowCount == 0)
                 glfwTerminate();
+
+            MZ_WARN("Destroyed Window with title: {}", m_data.title);
         }
 
         void update() override

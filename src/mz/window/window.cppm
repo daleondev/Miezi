@@ -3,20 +3,13 @@ export module mz.window;
 import std;
 import glm;
 
+import mz.core.behaviours;
 import mz.events;
+import mz.graphics;
 
 namespace mz { 
 
-    export class IGraphicsContext
-    {
-    public:
-        virtual ~IGraphicsContext() = default;
-
-        virtual void makeCurrent() = 0;
-        virtual void swapBuffers() = 0;
-    };
-
-    export class IInput
+    export class IInput : public ICastable
     {
     public:
         virtual ~IInput() = default;
@@ -26,7 +19,7 @@ namespace mz {
         virtual glm::vec2 getMousePosition() const = 0;
     };
 
-    export class IWindow
+    export class IWindow : public ICastable
     {
     public:
         virtual ~IWindow() = default;

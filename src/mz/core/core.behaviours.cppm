@@ -68,8 +68,8 @@ namespace mz {
 
         virtual T* begin() = 0;
         virtual T* end() = 0;
-        virtual const T* cbegin() const = 0;
-        virtual const T* cend() const = 0;
+        virtual const T* begin() const = 0;
+        virtual const T* end() const = 0;
     };
 
 }

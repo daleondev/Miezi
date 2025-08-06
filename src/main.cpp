@@ -1,4 +1,4 @@
-#include "mz/core/core_defines.h"
+#include "mz/core/core.h"
 
 import std;
 import glm;

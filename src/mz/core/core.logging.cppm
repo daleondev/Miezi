@@ -95,7 +95,30 @@ namespace mz {
 
         void printMessage(const LogLevel level, const Timestamp& timestamp, const std::string& location, const std::string& message)
         {
+            auto color = ConsoleColor::Standard;
+            switch (level) {
+                case LogLevel::Trace:
+                    color = ConsoleColor::Standard;
+                    break;
+                case LogLevel::Info:
+                    color = ConsoleColor::Green;
+                    break;
+                case LogLevel::Warn:
+                    color = ConsoleColor::Yellow;
+                    break;
+                case LogLevel::Error: case LogLevel::Fatal:
+                    color = ConsoleColor::Red;
+                    break;
+            }
+
+            setColor(color);
             std::println("[{}] <{}>: {}", timestamp.timeStr(), location, message);
+            setColor(ConsoleColor::Standard);
+        }
+
+        static void setColor(const ConsoleColor color)
+        {
+            std::print("\033[{}m", static_cast<std::uint16_t>(color));
         }
 
         void loggingTask()

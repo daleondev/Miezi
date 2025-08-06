@@ -1,6 +1,8 @@
 module;
 
-#ifdef MZ_OS_LINUX
+#ifdef MZ_OS_WINDOWS
+    #include <Windows.h>
+#elif MZ_OS_LINUX
     #include <pthread.h>
 #endif
 
@@ -66,11 +68,7 @@ namespace mz {
         {
             sched_param sch_params;
             sch_params.sched_priority = priority;
-            auto ret = pthread_setschedparam(thread, policy, &sch_params);
-            // if (ret != 0)
-            //     LOG_WARN << "Failed to change priority of thread: " << thread << " with error: " << strerror(ret);
-
-            return ret == 0;
+            return pthread_setschedparam(thread, policy, &sch_params) == 0;
         }
     #endif
 
