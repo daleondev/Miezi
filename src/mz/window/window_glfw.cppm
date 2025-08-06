@@ -1,7 +1,7 @@
 module;
-#include <GLFW/glfw3.h>
+#include "mz/core/core_defines.h"
 
-#define MZ_UNUSED(x) (void)x
+#include <GLFW/glfw3.h>
 export module mz.window.glfw;
 
 import std;
@@ -12,6 +12,8 @@ import mz.events;
 import mz.events.window;
 import mz.events.key;
 import mz.events.mouse;
+
+import mz.core.logging;
 
 namespace mz { 
 
@@ -93,13 +95,15 @@ namespace mz {
             glfwMakeContextCurrent(m_window);
             setVSync(true);
 
-            std::println("OpenGL:");
-            std::println("\tOpenGL Vendor: {}", (char*)glGetString(GL_VENDOR));
-            std::println("\tOpenGL Renderer: {}", (char*)glGetString(GL_RENDERER));
-            std::println("\tOpenGL Version: {}", (char*)glGetString(GL_VERSION));
-            std::println("\tGLSL Version: {}", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+            MZ_INFO("{}", "OpenGL:");
+            MZ_INFO("\tOpenGL Vendor: {}", (char*)glGetString(GL_VENDOR));
+            MZ_INFO("\tOpenGL Renderer: {}", (char*)glGetString(GL_RENDERER));
+            MZ_INFO("\tOpenGL Version: {}", (char*)glGetString(GL_VERSION));
+            MZ_INFO("\tGLSL Version: {}", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
 
             setupCallbacks();
+
+            MZ_INFO("Created Window with size: {}, {}", m_data.size.x, m_data.size.y);
         }
 
         void close() override
