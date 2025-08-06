@@ -5,11 +5,12 @@ export module mz.events.mouse;
 import std;
 import glm;
 
+import mz.core.behaviours;
 import mz.events;
 
 namespace mz { 
 
-    class MouseEnterEvent : public EventBase
+    export class MouseEnterEvent : public EventBase
     {
     public:
         MouseEnterEvent() = default;
@@ -18,7 +19,7 @@ namespace mz {
         EVENT_CLASS_CATEGORY(EventCategory::Mouse)
     };
 
-    class MouseLeaveEvent : public EventBase
+    export class MouseLeaveEvent : public EventBase
     {
     public:
         MouseLeaveEvent() = default;
@@ -27,7 +28,7 @@ namespace mz {
         EVENT_CLASS_CATEGORY(EventCategory::Mouse)
     };
 
-    class MouseMovedEvent : public EventBase 
+    export class MouseMovedEvent : public EventBase 
     {
     public:
         MouseMovedEvent(const float x, const float y) : m_position(x, y) {}
@@ -49,7 +50,7 @@ namespace mz {
 
     };
 
-    class MouseScrolledEvent : public EventBase 
+    export class MouseScrolledEvent : public EventBase 
     {
     public:
         MouseScrolledEvent(const float xOffset, const float yOffset) : m_offsets(xOffset, yOffset) {}
@@ -71,7 +72,7 @@ namespace mz {
 
     };
 
-    class MouseButtonEvent : public EventBase 
+    export class MouseButtonEvent : public EventBase 
     {
     public:
         int getMouseButton() const { return m_button; }
@@ -90,7 +91,7 @@ namespace mz {
 
     };
 
-    class MouseButtonPressedEvent : public MouseButtonEvent 
+    export class MouseButtonPressedEvent : public MouseButtonEvent 
     {
     public:
         MouseButtonPressedEvent(const int button) : MouseButtonEvent(button) {}
@@ -99,7 +100,7 @@ namespace mz {
 
     };
 
-    class MouseButtonReleasedEvent : public MouseButtonEvent 
+    export class MouseButtonReleasedEvent : public MouseButtonEvent 
     {
     public:
         MouseButtonReleasedEvent(const int button) : MouseButtonEvent(button) {}
@@ -108,7 +109,7 @@ namespace mz {
 
     };
 
-    class MouseDroppedEvent : public EventBase
+    export class MouseDroppedEvent : public EventBase, public IIterable<std::string>
     {
     public:
         MouseDroppedEvent(const std::vector<std::string>& paths) : m_paths(paths) {}
@@ -116,11 +117,11 @@ namespace mz {
         std::vector<std::string> getPaths() const { return m_paths; }
         std::size_t getNumPaths() const { return m_paths.size(); }
         std::string getPath(const std::size_t idx) const { return m_paths[idx]; }
-
-        std::vector<std::string>::const_iterator cbegin() const { return m_paths.cbegin(); }
-        std::vector<std::string>::const_iterator cend() const { return m_paths.cend(); }
-        std::vector<std::string>::iterator begin() { return m_paths.begin(); }
-        std::vector<std::string>::iterator end() { return m_paths.end(); }
+    
+        std::string* begin() override { return m_paths.data(); }
+        std::string* end() override { return m_paths.data() + m_paths.size(); }
+        const std::string* cbegin() const override { return m_paths.data(); }
+        const std::string* cend() const override { return m_paths.data() + m_paths.size(); }
 
         std::string toString() const override
         {

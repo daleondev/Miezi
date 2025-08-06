@@ -1,25 +1,16 @@
 import std;
 import glm;
 
-import mz.events;
-import mz.events.window;
+import mz.window;
+import mz.window.glfw;
 
 int main()
 {
-    std::unique_ptr<mz::IEvent> input = std::make_unique<mz::WindowResizeEvent>(30.0f, 40.0f);
+    std::unique_ptr<mz::IWindow> window = std::make_unique<mz::GlfwWindow>("Test Window", glm::vec2{800, 600});
 
-    auto x = input->asPtr<mz::WindowResizeEvent>();
-    if (x) {
-        std::println("Width: {}, Height: {}, Handled: {}", x->getWidth(), x->getHeight(), x->isHandled());
-        x->setHandled(true);
+    while(true) {
+        window->update();
     }
-
-    const mz::WindowResizeEvent& y = input->asRefUnchecked<mz::WindowResizeEvent>();
-    std::println("Width: {}, Height: {}, Handled: {}", y.getWidth(), y.getHeight(), y.isHandled());
-    
-
-    glm::vec3 v(1.0f);
-    std::println("Hello World! {}", glm::gtx::to_string(v));
 
 #ifdef MZ_OS_WINDOWS
     std::println("Hello Windows");

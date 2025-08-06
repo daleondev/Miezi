@@ -9,7 +9,7 @@ import mz.events;
 
 namespace mz { 
 
-    class KeyEvent : public EventBase 
+    export class KeyEvent : public EventBase 
     {
     public:
         int getKeyCode() const { return m_keyCode; }
@@ -28,7 +28,7 @@ namespace mz {
 
     };
 
-    class KeyPressedEvent : public KeyEvent 
+    export class KeyPressedEvent : public KeyEvent 
     {
     public:
         KeyPressedEvent(const int keyCode, const std::uint16_t repeatCount) : KeyEvent(keyCode), m_RepeatCount(repeatCount) {}
@@ -47,7 +47,7 @@ namespace mz {
 
     };
 
-    class KeyReleasedEvent : public KeyEvent 
+    export class KeyReleasedEvent : public KeyEvent 
     {
     public:
         KeyReleasedEvent(const int keyCode) : KeyEvent(keyCode) {}
@@ -56,7 +56,7 @@ namespace mz {
 
     };
 
-    class KeyTypedEvent : public KeyEvent 
+    export class KeyTypedEvent : public KeyEvent 
     {
     public:
         KeyTypedEvent(const int keycode) : KeyEvent(keycode) {}

@@ -1,4 +1,4 @@
-export module mz.core.interface;
+export module mz.core.behaviours;
 
 import std;
 
@@ -7,6 +7,8 @@ namespace mz {
     export class ICastable 
     {
     public:
+        enum class CastError { BadCast };
+
         virtual ~ICastable() = default;
 
         template<class T>
@@ -19,26 +21,26 @@ namespace mz {
         const T* asPtr() const {  return dynamic_cast<const T*>(this); }
 
         template<class T>
-        std::expected<std::reference_wrapper<T>, std::string> asRef()
+        std::expected<std::reference_wrapper<T>, CastError> asRef()
         {
             auto casted = asPtr<T>();
-            if (!casted) return std::unexpected("Invalid Type");
+            if (!casted) return std::unexpected(CastError::BadCast);
             return *casted;
         }
 
         template<class T>
-        std::expected<std::reference_wrapper<const T>, std::string> asRef() const
+        std::expected<std::reference_wrapper<const T>, CastError> asRef() const
         {
             auto casted = asPtr<T>();
-            if (!casted) return std::unexpected("Invalid Type");
+            if (!casted) return std::unexpected(CastError::BadCast);
             return *casted;
         }
 
         template<class T>
-        std::expected<T, std::string> asCopy() const
+        std::expected<T, CastError> asCopy() const
         {
             auto casted = asPtr<T>();
-            if (!casted) return std::unexpected("Invalid Type");
+            if (!casted) return std::unexpected(CastError::BadCast);
             return *casted;
         }
 
@@ -55,7 +57,19 @@ namespace mz {
         const T& asRefUnchecked() const { return *asPtrUnchecked<T>(); }
 
         template<class T>
-        T asCopyUnchecked() const { return T(*asPtrUnchecked<T>()); }
+        T asCopyUnchecked() const { return *asPtrUnchecked<T>(); }
+    };
+
+    export template<typename T>
+    class IIterable 
+    {
+    public:
+        ~IIterable() = default;
+
+        virtual T* begin() = 0;
+        virtual T* end() = 0;
+        virtual const T* cbegin() const = 0;
+        virtual const T* cend() const = 0;
     };
 
 }

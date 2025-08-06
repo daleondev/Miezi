@@ -2,7 +2,7 @@ export module mz.events;
 
 import std;
 
-import mz.core.interface;
+import mz.core.behaviours;
 
 namespace mz { 
 
@@ -57,7 +57,7 @@ namespace mz {
 
     };
 
-    export typedef std::function<void(IEvent*)> EventCallbackFunction;
+    export typedef std::function<void(IEvent*)> EventCallbackFunc;
 
     export class EventDispatcher 
     {
