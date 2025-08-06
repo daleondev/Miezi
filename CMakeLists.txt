@@ -1,7 +1,11 @@
-cmake_minimum_required(VERSION 4.0.3 FATAL_ERROR)
-
 # experimental enable std module -> update uuid according to cmake version: https://github.com/Kitware/CMake/blob/master/Help/dev/experimental.rst
-set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
+if(WIN32) 
+    cmake_minimum_required(VERSION 3.31.6 FATAL_ERROR)
+    set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "0e5b6991-d74f-4b3d-a41c-cf096e0b2508")
+else()
+    cmake_minimum_required(VERSION 4.0.3 FATAL_ERROR)
+    set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
+endif()
 
 # ----------------------------------
 # external libraries
@@ -27,6 +31,9 @@ add_library(imgui
 target_include_directories(imgui
     PUBLIC
         external/imgui)
+target_link_libraries(imgui 
+    PUBLIC
+        glfw)
 target_compile_definitions(imgui 
     PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLAD
@@ -59,8 +66,10 @@ project(Miezi
     DESCRIPTION "Miezi Graphics Library"
     LANGUAGES C CXX)
 
-# enable std module
-set(CMAKE_CXX_MODULE_STD ON)
+if(NOT WIN32) 
+    # enable std module
+    set(CMAKE_CXX_MODULE_STD ON)
+endif()
 
 # executable
 add_executable(Miezi)
@@ -77,10 +86,6 @@ target_sources(Miezi
         ${MODULES}
     PRIVATE 
         src/main.cpp)
-
-# ----------------------------------
-# configuration
-# ----------------------------------
 
 # set cxx standard
 target_compile_features(Miezi
@@ -103,7 +108,6 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(Miezi 
     PUBLIC
         glm
-        glfw
         imgui
     PRIVATE
         Threads::Threads
@@ -112,14 +116,10 @@ target_link_libraries(Miezi
         glad_gl_core_46)
 
 # set OS define
-if(MSVC) 
+if(WIN32) 
     set(OS_DEFINE MZ_OS_WINDOWS)
-elseif(UNIX)	
-    if(APPLE) 
-        set(OS_DEFINE MZ_OS_MAC) 
-    else() 
-        set(OS_DEFINE MZ_OS_LINUX)
-    endif()
+elseif(UNIX && NOT APPLE)	
+    set(OS_DEFINE MZ_OS_LINUX)
 else()
     message(FATAL_ERROR "Unsupported OS, CMake will exit.")
 endif()

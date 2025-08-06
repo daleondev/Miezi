@@ -1,5 +1,5 @@
 module;
-#include <GL/gl.h>
+// #include <GL/gl.h>
 export module mz.renderer.gl;
 
 import std;
