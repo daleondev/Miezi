@@ -9,6 +9,9 @@ import mz.window.glfw;
 import mz.events;
 import mz.events.window;
 
+import mz.graphics.render;
+import mz.graphics.opengl.render;
+
 import mz.core.logging;
 
 static bool running = true;
@@ -22,7 +25,10 @@ int main()
             running = false;
     });
 
+    std::unique_ptr<mz::RenderBase> renderer = std::make_unique<mz::GlRenderer>(window->getContext().get());
+
     while(running) {
         window->update();
+        renderer->clear(glm::vec4(1.0f));
     }
 }

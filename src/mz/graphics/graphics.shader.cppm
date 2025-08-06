@@ -39,15 +39,21 @@ namespace mz {
 
     };
 
-    class ShaderStore
+    export class ShaderStoreBase
     {
     public:
+        virtual ~ShaderStoreBase() = default;
+
+        virtual std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromSource(const std::string& name, const std::string& vertSource, const std::string& fragSource) = 0;
+        virtual std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromFiles(const std::string& filePath) = 0;
+        
         void add(const std::shared_ptr<ShaderBase>& shader)
         {
             const auto name = shader->getName();
             assert(s_shaders.find(name) == s_shaders.end() && "shader already exists");
             s_shaders[name] = shader;
         }
+        
         std::shared_ptr<ShaderBase> get(const std::string& name)
         {
             assert(s_shaders.find(name) != s_shaders.end() && "shader not found");
@@ -57,10 +63,9 @@ namespace mz {
         bool exists(const std::string& name) { return s_shaders.find(name) != s_shaders.end(); }
         void clear() { s_shaders.clear(); }
 
-    private:
+    protected:
         std::map<std::string, std::shared_ptr<ShaderBase>> s_shaders;
-    };
 
-    export ShaderStore g_shaderStore;
+    };
 
 }

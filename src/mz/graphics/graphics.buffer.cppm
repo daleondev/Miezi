@@ -95,7 +95,7 @@ namespace mz {
         }
     };
 
-    class BufferLayout : IIterable<BufferElement>
+    export class BufferLayout : IIterable<BufferElement>
     {
     public:
         typedef std::vector<BufferElement>::iterator BufferLayoutIterator;

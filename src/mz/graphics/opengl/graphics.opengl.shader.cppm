@@ -22,6 +22,31 @@ namespace mz {
 
         std::expected<void, ShaderError> link() override
         {
+            glLinkProgram(m_program);
+
+            GLint linked = 0;
+            glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
+            if (linked == GL_FALSE) {
+                GLint length = 0;
+                glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length);
+
+                std::vector<GLchar> msg(length);
+                glGetProgramInfoLog(m_program, length, &length, msg.data());
+
+                glDeleteProgram(m_program);
+
+                glDeleteShader(m_fragmentShader);
+                glDeleteShader(m_vertexShader);
+
+                MZ_ERROR("Shader linking failed: {}", msg.data());
+                return std::unexpected(ShaderError::LinkError);
+            }
+
+            glDetachShader(m_program, m_fragmentShader);
+            glDetachShader(m_program, m_vertexShader);
+            glDeleteShader(m_fragmentShader);
+            glDeleteShader(m_vertexShader);
+
             return {};
         }
 
@@ -109,23 +134,23 @@ namespace mz {
 
     };
 
-    export class GlShaderStoreWrapper
+    export class GlShaderStore : public ShaderStoreBase
     {
     public:
-        static std::expected<std::shared_ptr<GlShader>, ShaderError> loadFromSource(const std::string& name, const std::string& vertSource, const std::string& fragSource)
+        std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromSource(const std::string& name, const std::string& vertSource, const std::string& fragSource) override
         {
-            assert(!g_shaderStore.exists(name) && "Shader already loaded");
+            assert(!exists(name) && "Shader already loaded");
 
             std::shared_ptr<ShaderBase> shader = std::make_shared<GlShader>(name);
             shader->add(ShaderType::VertexShader, vertSource.c_str());
             shader->add(ShaderType::FragmentShader, fragSource.c_str());
             shader->link();
 
-            g_shaderStore.add(shader);
-            return dynamic_pointer_cast<GlShader>(shader);
+            add(shader);
+            return shader;
         }
         
-        static std::expected<std::shared_ptr<GlShader>, ShaderError> loadFromFiles(const std::string& filePath)
+        std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromFiles(const std::string& filePath) override
         {
             const std::filesystem::path vertFile = filePath + ".vert";
             if (!std::filesystem::exists(vertFile)) {
@@ -140,15 +165,15 @@ namespace mz {
             }
             
             const std::string name = vertFile.filename().stem().string();
-            assert(!g_shaderStore.exists(name) && "Shader already loaded");
+            assert(!exists(name) && "Shader already loaded");
 
             std::shared_ptr<ShaderBase> shader = std::make_shared<GlShader>(name);
             shader->addFromFile(ShaderType::VertexShader, vertFile);
             shader->addFromFile(ShaderType::FragmentShader, fragFile);
             shader->link();
 
-            g_shaderStore.add(shader);
-            return dynamic_pointer_cast<GlShader>(shader);
+            add(shader);
+            return shader;
         }
     };
 

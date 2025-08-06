@@ -110,10 +110,10 @@ target_link_libraries(Miezi
         glm
         imgui
     PRIVATE
-        Threads::Threads
+        glad_gl_core_46
         OpenGL::GL 
         OpenGL::GLU
-        glad_gl_core_46)
+        Threads::Threads)
 
 # set OS define
 if(WIN32) 
