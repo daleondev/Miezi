@@ -51,6 +51,8 @@ namespace mz {
             m_context{ std::move(context) }, m_input{ std::move(input) } { }
         virtual ~WindowBase() = default;
 
+        static std::shared_ptr<IWindow> create(const std::string& title, const glm::vec2& size);
+
         const std::string& getTitle() const override { return m_data.title; }
         const glm::vec2& getSize() const override { return m_data.size; }
         bool getVSync() const override { return m_data.vSync; }

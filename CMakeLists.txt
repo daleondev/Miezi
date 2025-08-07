@@ -79,20 +79,47 @@ file(GLOB_RECURSE MODULES
     CONFIGURE_DEPENDS 
         src/*.cppm)
 
+# get cpp files
+file(GLOB_RECURSE SOURCES 
+    CONFIGURE_DEPENDS 
+        src/*.cpp)
+
+# get header files
+file(GLOB_RECURSE HEADERS 
+    CONFIGURE_DEPENDS 
+        src/*.h
+        src/*.hpp)
+
 # set files for target
 target_sources(Miezi 
-    PUBLIC
+    PRIVATE
         FILE_SET cxx_modules TYPE CXX_MODULES FILES
         ${MODULES}
     PRIVATE 
-        src/main.cpp)
+        ${SOURCES}
+        ${HEADERS})
+
+# mark header files to exclude from build
+foreach(h IN LISTS HEADERS)
+    set_source_files_properties(${h} PROPERTIES HEADER_FILE_ONLY TRUE)
+endforeach()
+
+# group source files for IDE
+source_group(
+    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
+    PREFIX "Source Files" 
+    FILES ${SOURCES})
+
+# group header files for IDE
+source_group(
+    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
+    PREFIX "Header Files" 
+    FILES ${HEADERS})
 
 # set cxx standard
 target_compile_features(Miezi
     PRIVATE 
-        cxx_std_23
-    INTERFACE
-        cxx_std_20)
+        cxx_std_23)
 
 # include directories
 target_include_directories(Miezi 
@@ -127,6 +154,8 @@ endif()
 # defines
 target_compile_definitions(Miezi 
     PRIVATE 
+        MZ_WINDOW_GLFW
+        MZ_RENDERER_OPENGL
         MZ_ENABLE_ASSERTS
         ${OS_DEFINE})
 

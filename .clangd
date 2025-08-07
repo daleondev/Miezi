@@ -13,3 +13,4 @@ CompileFlags:
     - -DMZ_ENABLE_ASSERTS
     - -I/home/david/Dokumente/Miezi/src
     - -I/home/david/Dokumente/Miezi/build/gladsources/glad_gl_core_46/include
+    - -Wno-module-import-in-extern-c

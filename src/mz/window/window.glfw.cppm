@@ -1,7 +1,6 @@
 module;
 #include "mz/core/core.h"
 
-#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 export module mz.window.glfw;
 
@@ -35,7 +34,7 @@ namespace mz {
 
         void init()
         {
-            GlGraphicsContext::init(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress));
+            GlGraphicsContext::init(glfwGetProcAddress);
         }
 
     private:

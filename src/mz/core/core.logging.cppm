@@ -29,13 +29,11 @@ namespace mz {
     public:
         Logger()
         {
-            std::println("logger created");
             start(&Logger::loggingTask, this);
         }
         ~Logger()
         {
             shutdown();
-            std::println("logger destroyed");
         }
 
         void shutdown() override
@@ -95,28 +93,21 @@ namespace mz {
 
         void printMessage(const LogLevel level, const Timestamp& timestamp, const std::string& location, const std::string& message)
         {
-            auto color = ConsoleColor::Standard;
+            auto consoleColor = ConsoleColor::Standard;
             switch (level) {
-                case LogLevel::Trace:
-                    color = ConsoleColor::Standard;
-                    break;
-                case LogLevel::Info:
-                    color = ConsoleColor::Green;
-                    break;
-                case LogLevel::Warn:
-                    color = ConsoleColor::Yellow;
-                    break;
-                case LogLevel::Error: case LogLevel::Fatal:
-                    color = ConsoleColor::Red;
-                    break;
+                case LogLevel::Trace:   consoleColor = ConsoleColor::Standard; break;
+                case LogLevel::Info:    consoleColor = ConsoleColor::Green;    break;
+                case LogLevel::Warn:    consoleColor = ConsoleColor::Yellow;   break;
+                case LogLevel::Error:   consoleColor = ConsoleColor::Red;      break;
+                case LogLevel::Fatal:   consoleColor = ConsoleColor::Red;      break;
             }
 
-            setColor(color);
+            setConsoleColor(consoleColor);
             std::println("[{}] <{}>: {}", timestamp.timeStr(), location, message);
-            setColor(ConsoleColor::Standard);
+            setConsoleColor(ConsoleColor::Standard);
         }
 
-        static void setColor(const ConsoleColor color)
+        static void setConsoleColor(const ConsoleColor color)
         {
             std::print("\033[{}m", static_cast<std::uint16_t>(color));
         }
