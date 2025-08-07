@@ -1,7 +1,11 @@
 module;
+
 #include "mz/core/core.h"
 
 #include <GLFW/glfw3.h>
+
+#define NATIVE_GLFW_WINDOW reinterpret_cast<GLFWwindow*>(m_window->getNativeWindow())
+
 export module mz.graphics.window.glfw;
 
 import std;
@@ -22,43 +26,37 @@ namespace mz {
     export class GlfwGlContext : public GlRenderContext
     {
     public:
-        GlfwGlContext() = default;
+        GlfwGlContext(IWindow* window) : GlRenderContext(window) { }
         ~GlfwGlContext() = default;
 
         void makeCurrent() override
         {
-            MZ_ASSERT(m_window, "Window for gl context not set");
-            glfwMakeContextCurrent(m_window);
+            MZ_ASSERT(NATIVE_GLFW_WINDOW, "Window for gl context not set");
+            glfwMakeContextCurrent(NATIVE_GLFW_WINDOW);
         }
 
         void init()
         {
             GlRenderContext::init(glfwGetProcAddress);
         }
-
-    private:
-        GLFWwindow* m_window;
-
-        friend class GlfwWindow;
-        
     };
 
-    export class GlfwInput : public IInput
+    export class GlfwInput : public InputBase
     {
     public:
-        GlfwInput() = default;
+        GlfwInput(IWindow* window) : InputBase(window) { }
         ~GlfwInput() = default;
         
         bool isKeyPressed(const int key) const override 
         {
             MZ_ASSERT(m_window, "Window for input not set");
-            return glfwGetKey(m_window, key) == GLFW_PRESS; 
+            return glfwGetKey(NATIVE_GLFW_WINDOW, key) == GLFW_PRESS; 
         }
 
         bool isMousePressed(const int button) const override 
         {
             MZ_ASSERT(m_window, "Window for input not set");
-            return glfwGetMouseButton(m_window, button) == GLFW_PRESS; 
+            return glfwGetMouseButton(NATIVE_GLFW_WINDOW, button) == GLFW_PRESS; 
         }
 
         glm::vec2 getMousePosition() const override
@@ -66,22 +64,16 @@ namespace mz {
             MZ_ASSERT(m_window, "Window for input not set");
 
             double xpos, ypos;
-		    glfwGetCursorPos(m_window, &xpos, &ypos);
+		    glfwGetCursorPos(NATIVE_GLFW_WINDOW, &xpos, &ypos);
 		    return { static_cast<float>(xpos), static_cast<float>(ypos) };
         }
-        
-    private:
-        GLFWwindow* m_window;
-
-        friend class GlfwWindow;
-
     };
 
     export class GlfwWindow : public WindowBase
     {
     public:
         GlfwWindow(const std::string& title, const glm::vec2& size) 
-            : WindowBase(title, size, std::make_unique<GlfwGlContext>(), std::make_unique<GlfwInput>()), m_window{ nullptr }
+            : WindowBase(title, size, std::make_unique<GlfwGlContext>(this), std::make_unique<GlfwInput>(this)), m_window{ nullptr }
         {
             open();
         }
@@ -106,11 +98,8 @@ namespace mz {
             glfwSetWindowUserPointer(m_window.get() , &m_data);
             glfwMakeContextCurrent(m_window.get());
             
-            m_context->asPtrUnchecked<GlfwGlContext>()->m_window = m_window.get();
             m_context->makeCurrent();
             m_context->asPtrUnchecked<GlfwGlContext>()->init();
-
-            m_input->asPtrUnchecked<GlfwInput>()->m_window = m_window.get();
 
             setVSync(true);
             setupCallbacks();

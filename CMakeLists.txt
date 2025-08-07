@@ -54,6 +54,9 @@ target_compile_features(glm
         cxx_std_23)
 target_compile_definitions(glm 
     PUBLIC
+        GLM_GTC_INLINE_NAMESPACE
+        GLM_EXT_INLINE_NAMESPACE
+        GLM_GTX_INLINE_NAMESPACE
         GLM_ENABLE_EXPERIMENTAL)
 
 # ----------------------------------

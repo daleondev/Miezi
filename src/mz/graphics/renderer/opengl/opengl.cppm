@@ -9,6 +9,7 @@ import glm;
 
 import mz.core.logging;
 
+import mz.graphics.window;
 import mz.graphics.renderer;
 import mz.graphics.renderer.opengl.resources;
 
@@ -17,23 +18,27 @@ namespace mz {
     export class GlRenderContext : public IRenderContext
     {
     public:
-        GlRenderContext() : m_initialized{ false } {}
+        GlRenderContext(IWindow* window) : m_window{ window }, m_initialized{ false } {}
         virtual ~GlRenderContext() = default;
 
         void init(GLADloadfunc loadFunc)
         {
-            if (!m_initialized) {
-                int version = gladLoadGL(loadFunc);
-                MZ_ASSERT(version != 0, "Failed to initialize GLAD");
-                MZ_INFO("OpenGL:");
-                MZ_INFO("\tOpenGL Vendor: {}", (char*)glGetString(GL_VENDOR));
-                MZ_INFO("\tOpenGL Renderer: {}", (char*)glGetString(GL_RENDERER));
-                MZ_INFO("\tOpenGL Version: {}", (char*)glGetString(GL_VERSION));
-                MZ_INFO("\tGLSL Version: {}", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-                MZ_INFO("\tGlad Version: {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
-                m_initialized = true;
-            }
+            if (m_initialized)
+                return;
+
+            const int version = gladLoadGL(loadFunc);
+            MZ_ASSERT(version != 0, "Failed to initialize GLAD");
+            MZ_INFO("OpenGL:");
+            MZ_INFO("\tOpenGL Vendor: {}", (char*)glGetString(GL_VENDOR));
+            MZ_INFO("\tOpenGL Renderer: {}", (char*)glGetString(GL_RENDERER));
+            MZ_INFO("\tOpenGL Version: {}", (char*)glGetString(GL_VERSION));
+            MZ_INFO("\tGLSL Version: {}", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+            MZ_INFO("\tGlad Version: {}.{}", GLAD_VERSION_MAJOR(version), GLAD_VERSION_MINOR(version));
+            m_initialized = true;
         }
+
+    protected:
+        IWindow* m_window;
 
     private:
         bool m_initialized;

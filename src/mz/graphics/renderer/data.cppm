@@ -1,12 +1,32 @@
+module;
+#include "mz/core/core.h"
 export module mz.graphics.renderer.data;
 
 import std;
 import glm;
 
+import mz.core.logging;
 import mz.graphics.renderer.buffers;
 import mz.graphics.renderer.resources;
 
 namespace mz { 
+
+    template <typename T>
+    concept BufferType = std::same_as<T, float> || std::same_as<T, std::uint32_t>;
+
+    // todo: custom memory stuff -> reinterpret data, dont copy
+    export template <typename S, BufferType D>
+    std::vector<D> convertBufferData(const std::vector<S>& source)
+    {
+        static_assert(std::is_trivially_copyable_v<S>, "Source type must be trivially copyable");
+        static_assert(std::is_trivially_copyable_v<D>, "Destination type must be trivially copyable");
+
+        MZ_ASSERT(sizeof(S) % sizeof(D) == 0 || sizeof(D) % sizeof(S) == 0, "Incompatible type sizes for conversion");
+        const std::size_t sizeInBytes = source.size()*sizeof(S);
+        std::vector<D> dest(sizeInBytes / sizeof(D));
+        std::memcpy(dest.data(), source.data(), sizeInBytes);
+        return dest;
+    };
 
     export struct RenderData
     {

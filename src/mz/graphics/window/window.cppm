@@ -20,6 +20,17 @@ namespace mz {
         virtual glm::vec2 getMousePosition() const = 0;
     };
 
+    export class IWindow;
+    export class InputBase : public IInput
+    {
+    public:
+        InputBase(IWindow* window) : m_window{ window } { }
+        virtual ~InputBase() = default;
+        
+    protected:
+        IWindow* m_window;
+    };
+
     export class IWindow : public ICastable
     {
     public:
