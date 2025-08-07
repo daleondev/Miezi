@@ -12,10 +12,10 @@ import mz.graphics.renderer.buffers;
 
 namespace mz { 
 
-    export class IGraphicsResource : public ICastable
+    export class IRenderResource : public ICastable
     {
     public:
-        virtual ~IGraphicsResource() = default;
+        virtual ~IRenderResource() = default;
 
         virtual void bind() const = 0;
         virtual void release() const = 0;
@@ -25,7 +25,7 @@ namespace mz {
     //                      VertexArray
     //------------------------------------------------------
 
-    export class VertexArrayBase : public IGraphicsResource
+    export class VertexArrayBase : public IRenderResource
     {
     public:
         virtual ~VertexArrayBase() = default;
@@ -49,8 +49,9 @@ namespace mz {
     export enum class ShaderError
     {
         InvalidFile,
+        InvalidType,
         CompileError,
-        LinkError
+        LinkError,
     };
 
     export enum class ShaderType
@@ -59,7 +60,7 @@ namespace mz {
         FragmentShader
     };
 
-    export class ShaderBase : public IGraphicsResource
+    export class ShaderBase : public IRenderResource
     {
     public:
         ShaderBase(const std::string& name) : m_name{ name } { }

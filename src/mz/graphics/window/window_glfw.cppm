@@ -19,50 +19,61 @@ import mz.graphics.renderer.opengl;
 
 namespace mz { 
 
-    export class GlfwGlContext : public GlGraphicsContext
+    export class GlfwGlContext : public GlRenderContext
     {
     public:
-        GlfwGlContext(GLFWwindow* window)
-            : m_window{ window } {}
+        GlfwGlContext() = default;
         ~GlfwGlContext() = default;
 
         void makeCurrent() override
         {
-            if (m_window)
-                glfwMakeContextCurrent(m_window);
+            MZ_ASSERT(m_window, "Window for gl context not set");
+            glfwMakeContextCurrent(m_window);
         }
 
         void init()
         {
-            GlGraphicsContext::init(glfwGetProcAddress);
+            GlRenderContext::init(glfwGetProcAddress);
         }
 
     private:
         GLFWwindow* m_window;
+
+        friend class GlfwWindow;
         
     };
 
     export class GlfwInput : public IInput
     {
     public:
-        GlfwInput(GLFWwindow* window)
-            : m_window{ window } {}
+        GlfwInput() = default;
         ~GlfwInput() = default;
         
-        bool isKeyPressed(const int key) const override { return glfwGetKey(m_window, key) == GLFW_PRESS; }
+        bool isKeyPressed(const int key) const override 
+        {
+            MZ_ASSERT(m_window, "Window for input not set");
+            return glfwGetKey(m_window, key) == GLFW_PRESS; 
+        }
 
-        bool isMousePressed(const int button) const override { return glfwGetMouseButton(m_window, button) == GLFW_PRESS; }
+        bool isMousePressed(const int button) const override 
+        {
+            MZ_ASSERT(m_window, "Window for input not set");
+            return glfwGetMouseButton(m_window, button) == GLFW_PRESS; 
+        }
 
         glm::vec2 getMousePosition() const override
         {
+            MZ_ASSERT(m_window, "Window for input not set");
+
             double xpos, ypos;
 		    glfwGetCursorPos(m_window, &xpos, &ypos);
-
 		    return { static_cast<float>(xpos), static_cast<float>(ypos) };
         }
         
     private:
         GLFWwindow* m_window;
+
+        friend class GlfwWindow;
 
     };
 
@@ -70,7 +81,7 @@ namespace mz {
     {
     public:
         GlfwWindow(const std::string& title, const glm::vec2& size) 
-            : WindowBase(title, size, std::make_unique<GlfwGlContext>(m_window), std::make_unique<GlfwInput>(m_window))
+            : WindowBase(title, size, std::make_unique<GlfwGlContext>(), std::make_unique<GlfwInput>()), m_window{ nullptr }
         {
             open();
         }
@@ -91,12 +102,15 @@ namespace mz {
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
             glfwWindowHint(GLFW_SAMPLES, 4);
 
-            m_window = glfwCreateWindow(m_data.size.x, m_data.size.y, m_data.title.c_str(), nullptr, nullptr);
-            glfwSetWindowUserPointer(m_window, &m_data);
-            glfwMakeContextCurrent(m_window);
+            m_window = std::unique_ptr<GLFWwindow, WindowDeleter>(glfwCreateWindow(m_data.size.x, m_data.size.y, m_data.title.c_str(), nullptr, nullptr), WindowDeleter{});
+            glfwSetWindowUserPointer(m_window.get() , &m_data);
+            glfwMakeContextCurrent(m_window.get());
             
+            m_context->asPtrUnchecked<GlfwGlContext>()->m_window = m_window.get();
             m_context->makeCurrent();
             m_context->asPtrUnchecked<GlfwGlContext>()->init();
+
+            m_input->asPtrUnchecked<GlfwInput>()->m_window = m_window.get();
 
             setVSync(true);
             setupCallbacks();
@@ -106,7 +120,7 @@ namespace mz {
 
         void close() override
         {
-            glfwDestroyWindow(m_window);
+            m_window.reset();
 
             if (--m_windowCount == 0)
                 glfwTerminate();
@@ -117,7 +131,7 @@ namespace mz {
         void update() override
         {
             glfwPollEvents();
-            glfwSwapBuffers(m_window);
+            glfwSwapBuffers(m_window.get());
         }
 
         void setVSync(const bool enabled) override
@@ -127,13 +141,13 @@ namespace mz {
 
         void* getNativeWindow() const override
         {
-            return m_window;
+            return m_window.get();
         }
 
     private:
         void setupCallbacks()
         {
-            glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height) -> void {
+            glfwSetWindowSizeCallback(m_window.get(), [](GLFWwindow* window, int width, int height) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
                 data.size.x = static_cast<float>(width);
                 data.size.y = static_cast<float>(height);
@@ -142,14 +156,14 @@ namespace mz {
                 data.eventCallback(&event);
             });
 
-            glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window) -> void {
+            glfwSetWindowCloseCallback(m_window.get(), [](GLFWwindow* window) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
                 WindowCloseEvent event;
                 data.eventCallback(&event);
             });
 
-            glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods) -> void {
+            glfwSetKeyCallback(m_window.get(), [](GLFWwindow* window, int key, int scancode, int action, int mods) -> void {
                 MZ_UNUSED(scancode);
                 MZ_UNUSED(mods);
 
@@ -178,7 +192,7 @@ namespace mz {
                 }
             });
 
-            glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods) -> void {
+            glfwSetMouseButtonCallback(m_window.get(), [](GLFWwindow* window, int button, int action, int mods) -> void {
                 MZ_UNUSED(mods);
 
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
@@ -200,21 +214,21 @@ namespace mz {
                 }
             });
 
-            glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset) -> void {
+            glfwSetScrollCallback(m_window.get(), [](GLFWwindow* window, double xOffset, double yOffset) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
                 
                 MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
                 data.eventCallback(&event);
             });
 
-            glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xPos, double yPos) -> void {
+            glfwSetCursorPosCallback(m_window.get(), [](GLFWwindow* window, double xPos, double yPos) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
                 
                 MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
                 data.eventCallback(&event);
             });
 
-            glfwSetCursorEnterCallback(m_window, [](GLFWwindow* window, int entered) -> void {
+            glfwSetCursorEnterCallback(m_window.get(), [](GLFWwindow* window, int entered) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
                 
                 if (entered) {
@@ -227,7 +241,7 @@ namespace mz {
                 }
             });
 
-            glfwSetDropCallback(m_window, [](GLFWwindow* window, int pathCount, const char* cpaths[]) -> void {
+            glfwSetDropCallback(m_window.get(), [](GLFWwindow* window, int pathCount, const char* cpaths[]) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
                 
                 std::vector<std::string> paths(pathCount);
@@ -240,7 +254,11 @@ namespace mz {
             });
         }
 
-        GLFWwindow* m_window;
+        struct WindowDeleter 
+        {
+            void operator()(GLFWwindow* window) { glfwDestroyWindow(window); }
+        };
+        std::unique_ptr<GLFWwindow, WindowDeleter> m_window;
 
         inline static std::size_t m_windowCount = 0;
         

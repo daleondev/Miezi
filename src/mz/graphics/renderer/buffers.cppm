@@ -133,10 +133,10 @@ namespace mz {
     };
 
     export template <typename T>
-    class IGraphicsBuffer : public ICastable
+    class IRenderBuffer : public ICastable
     {
     public:
-        virtual ~IGraphicsBuffer() = default;
+        virtual ~IRenderBuffer() = default;
 
         virtual void bind() const = 0;
         virtual void release() const = 0;
@@ -148,7 +148,7 @@ namespace mz {
     //                      VertexBuffer
     //------------------------------------------------------
 
-    export class VertexBufferBase : public IGraphicsBuffer<float>
+    export class VertexBufferBase : public IRenderBuffer<float>
     {
     public:
         virtual ~VertexBufferBase() = default;
@@ -165,7 +165,7 @@ namespace mz {
     //                      IndexBuffer
     //------------------------------------------------------
 
-    export class IndexBufferBase : public IGraphicsBuffer<std::uint32_t>
+    export class IndexBufferBase : public IRenderBuffer<std::uint32_t>
     {
     public:
         virtual ~IndexBufferBase() = default;

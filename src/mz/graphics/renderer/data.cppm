@@ -8,7 +8,7 @@ import mz.graphics.renderer.resources;
 
 namespace mz { 
 
-    export struct GraphicsData
+    export struct RenderData
     {
         std::shared_ptr<VertexArrayBase> vertexArray;
         std::shared_ptr<VertexBufferBase> vertexBuffer;

@@ -149,6 +149,7 @@ namespace mz {
             switch (type) {
                 case ShaderType::VertexShader: shaderType = GL_VERTEX_SHADER; break;
                 case ShaderType::FragmentShader: shaderType = GL_FRAGMENT_SHADER; break;
+                default: return std::unexpected(ShaderError::InvalidType);
             }
 
             if (!compile(shaderType, source.c_str()))
@@ -169,6 +170,7 @@ namespace mz {
             switch (type) {
                 case ShaderType::VertexShader: shaderType = GL_VERTEX_SHADER; break;
                 case ShaderType::FragmentShader: shaderType = GL_FRAGMENT_SHADER; break;
+                default: return std::unexpected(ShaderError::InvalidType);
             }
 
             if (!compile(shaderType, shaderSource.c_str()))

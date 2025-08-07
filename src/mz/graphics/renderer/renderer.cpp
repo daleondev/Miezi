@@ -7,7 +7,7 @@ import mz.graphics.renderer.opengl;
 
 namespace mz {
 
-    std::shared_ptr<RenderBase> RenderBase::create(IGraphicsContext* context)
+    std::shared_ptr<RenderBase> RenderBase::create(IRenderContext* context)
     {
 #ifdef MZ_GRAPHICS_OPENGL
         return std::make_shared<GlRenderer>(context);

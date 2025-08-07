@@ -14,11 +14,11 @@ import mz.graphics.renderer.opengl.resources;
 
 namespace mz { 
 
-    export class GlGraphicsContext : public IGraphicsContext
+    export class GlRenderContext : public IRenderContext
     {
     public:
-        GlGraphicsContext() : m_initialized{ false } {}
-        virtual ~GlGraphicsContext() = default;
+        GlRenderContext() : m_initialized{ false } {}
+        virtual ~GlRenderContext() = default;
 
         void init(GLADloadfunc loadFunc)
         {
@@ -43,10 +43,10 @@ namespace mz {
     export class GlRenderer : public RenderBase
     {
     public:
-        GlRenderer(IGraphicsContext* context) 
+        GlRenderer(IRenderContext* context) 
             : RenderBase(context, std::make_unique<GlShaderStore>()) 
         { 
-            MZ_ASSERT(context->is<GlGraphicsContext>(), "Invalid graphics context type");
+            MZ_ASSERT(context->is<GlRenderContext>(), "Invalid graphics context type");
 
             glEnable(GL_DEPTH_TEST);
             glClearDepthf(1.0f);
