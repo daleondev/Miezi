@@ -77,18 +77,18 @@ add_executable(Miezi)
 # get module files
 file(GLOB_RECURSE MODULES 
     CONFIGURE_DEPENDS 
-        src/*.cppm)
+        src/mz/*.cppm)
 
 # get cpp files
 file(GLOB_RECURSE SOURCES 
     CONFIGURE_DEPENDS 
-        src/*.cpp)
+        src/mz/*.cpp)
 
 # get header files
 file(GLOB_RECURSE HEADERS 
     CONFIGURE_DEPENDS 
-        src/*.h
-        src/*.hpp)
+        src/mz/*.h
+        src/mz/*.hpp)
 
 # set files for target
 target_sources(Miezi 
@@ -96,6 +96,7 @@ target_sources(Miezi
         FILE_SET cxx_modules TYPE CXX_MODULES FILES
         ${MODULES}
     PRIVATE 
+        src/main.cpp
         ${SOURCES}
         ${HEADERS})
 
@@ -104,17 +105,13 @@ foreach(h IN LISTS HEADERS)
     set_source_files_properties(${h} PROPERTIES HEADER_FILE_ONLY TRUE)
 endforeach()
 
-# group modules for IDE
-source_group(
-    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
-    PREFIX "Modules" 
-    FILES ${MODULES})
-
 # group source files for IDE
 source_group(
     TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
     PREFIX "Source Files" 
-    FILES ${SOURCES})
+    FILES 
+        ${SOURCES}
+        ${MODULES})
 
 # group header files for IDE
 source_group(
