@@ -1,12 +1,14 @@
 module;
-#include <cassert>
+#include "mz/core/core.h"
 export module mz.graphics.buffer;
 
 import std;
 import glm;
 
-import mz.graphics;
+import mz.core.logging;
 import mz.core.behaviours;
+
+import mz.graphics;
 
 namespace mz { 
 
@@ -51,7 +53,7 @@ namespace mz {
             case ShaderDataType::None:       return 0;
         }
 
-        assert(false && "Unknown shader data type");
+        MZ_ASSERT(false, "Unknown shader data type");
         return 0;
     }
 
@@ -90,7 +92,7 @@ namespace mz {
                 case ShaderDataType::None:       return 0;
             }
 
-            assert(false && "Unknown shader data type");
+            MZ_ASSERT(false, "Unknown shader data type");
             return 0;
         }
     };

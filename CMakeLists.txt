@@ -127,6 +127,7 @@ endif()
 # defines
 target_compile_definitions(Miezi 
     PRIVATE 
+        MZ_ENABLE_ASSERTS
         ${OS_DEFINE})
 
 # compile options

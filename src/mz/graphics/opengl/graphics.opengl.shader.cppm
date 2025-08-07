@@ -2,7 +2,6 @@ module;
 #include "mz/core/core.h"
 
 #include <glad/gl.h>
-#include <cassert>
 export module mz.graphics.opengl.shader;
 
 import std;
@@ -139,7 +138,7 @@ namespace mz {
     public:
         std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromSource(const std::string& name, const std::string& vertSource, const std::string& fragSource) override
         {
-            assert(!exists(name) && "Shader already loaded");
+            MZ_ASSERT(!exists(name), "Shader already loaded");
 
             std::shared_ptr<ShaderBase> shader = std::make_shared<GlShader>(name);
             shader->add(ShaderType::VertexShader, vertSource.c_str());
@@ -165,7 +164,7 @@ namespace mz {
             }
             
             const std::string name = vertFile.filename().stem().string();
-            assert(!exists(name) && "Shader already loaded");
+            MZ_ASSERT(!exists(name), "Shader already loaded");
 
             std::shared_ptr<ShaderBase> shader = std::make_shared<GlShader>(name);
             shader->addFromFile(ShaderType::VertexShader, vertFile);

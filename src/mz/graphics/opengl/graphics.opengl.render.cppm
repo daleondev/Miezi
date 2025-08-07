@@ -1,10 +1,13 @@
 module;
+#include "mz/core/core.h"
+
 #include <glad/gl.h>
-#include <cassert>
 export module mz.graphics.opengl.render;
 
 import std;
 import glm;
+
+import mz.core.logging;
 
 import mz.graphics;
 import mz.graphics.render;
@@ -19,7 +22,7 @@ namespace mz {
         GlRenderer(IGraphicsContext* context) 
             : RenderBase(context, std::make_unique<GlShaderStore>()) 
         { 
-            assert(context->is<GlGraphicsContext>() && "Invalid graphics context type");
+            MZ_ASSERT(context->is<GlGraphicsContext>(), "Invalid graphics context type");
 
             glEnable(GL_DEPTH_TEST);
             glClearDepthf(1.0f);

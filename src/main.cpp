@@ -12,8 +12,6 @@ import mz.events.window;
 import mz.graphics.render;
 import mz.graphics.opengl.render;
 
-import mz.core.logging;
-
 static bool running = true;
 
 int main()

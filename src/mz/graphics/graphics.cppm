@@ -10,7 +10,6 @@ namespace mz {
         virtual ~IGraphicsContext() = default;
 
         virtual void makeCurrent() = 0;
-        virtual void swapBuffers() = 0;
     };
 
     export class IGraphicsObject : public ICastable

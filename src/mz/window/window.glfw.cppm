@@ -1,11 +1,14 @@
 module;
 #include "mz/core/core.h"
 
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 export module mz.window.glfw;
 
 import std;
 import glm;
+
+import mz.core.logging;
 
 import mz.window;
 import mz.events;
@@ -14,8 +17,6 @@ import mz.events.key;
 import mz.events.mouse;
 
 import mz.graphics.opengl;
-
-import mz.core.logging;
 
 namespace mz { 
 
@@ -32,10 +33,9 @@ namespace mz {
                 glfwMakeContextCurrent(m_window);
         }
 
-        void swapBuffers() override
+        void init()
         {
-            if (m_window)
-                glfwSwapBuffers(m_window);
+            GlGraphicsContext::init(reinterpret_cast<GLADloadfunc>(glfwGetProcAddress));
         }
 
     private:
@@ -95,14 +95,11 @@ namespace mz {
             m_window = glfwCreateWindow(m_data.size.x, m_data.size.y, m_data.title.c_str(), nullptr, nullptr);
             glfwSetWindowUserPointer(m_window, &m_data);
             glfwMakeContextCurrent(m_window);
+            
+            m_context->makeCurrent();
+            m_context->asPtrUnchecked<GlfwGlContext>()->init();
+
             setVSync(true);
-
-            MZ_INFO("{}", "OpenGL:");
-            MZ_INFO("\tOpenGL Vendor: {}", (char*)glGetString(GL_VENDOR));
-            MZ_INFO("\tOpenGL Renderer: {}", (char*)glGetString(GL_RENDERER));
-            MZ_INFO("\tOpenGL Version: {}", (char*)glGetString(GL_VERSION));
-            MZ_INFO("\tGLSL Version: {}", (char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
-
             setupCallbacks();
 
             MZ_INFO("Created Window with title: {} and size: {}, {}", m_data.title, m_data.size.x, m_data.size.y);
@@ -121,7 +118,7 @@ namespace mz {
         void update() override
         {
             glfwPollEvents();
-            m_context->swapBuffers();
+            glfwSwapBuffers(m_window);
         }
 
         void setVSync(const bool enabled) override

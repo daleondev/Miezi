@@ -1,5 +1,5 @@
 module;
-#include <cassert>
+#include "mz/core/core.h"
 export module mz.graphics.render;
 
 import std;

@@ -1,9 +1,10 @@
 module;
-#include <cassert>
+#include "mz/core/core.h"
 export module mz.graphics.shader;
 
 import std;
 
+import mz.core.logging;
 import mz.graphics;
 
 namespace mz { 
@@ -50,13 +51,13 @@ namespace mz {
         void add(const std::shared_ptr<ShaderBase>& shader)
         {
             const auto name = shader->getName();
-            assert(s_shaders.find(name) == s_shaders.end() && "shader already exists");
+            MZ_ASSERT(s_shaders.find(name) == s_shaders.end(), "shader already exists");
             s_shaders[name] = shader;
         }
         
         std::shared_ptr<ShaderBase> get(const std::string& name)
         {
-            assert(s_shaders.find(name) != s_shaders.end() && "shader not found");
+            MZ_ASSERT(s_shaders.find(name) != s_shaders.end(), "shader not found");
             return s_shaders[name];
         }
 

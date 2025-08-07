@@ -1,10 +1,12 @@
 module;
+#include "mz/core/core.h"
+
 #include <glad/gl.h>
-#include <cassert>
 export module mz.graphics.opengl.buffer;
 
 import std;
 
+import mz.core.logging;
 import mz.graphics.buffer;
 
 namespace mz { 
@@ -100,7 +102,7 @@ namespace mz {
             case ShaderDataType::None:       return GL_NONE;
         }
 
-        assert(false && "Unknown shader data type");
+        MZ_ASSERT(false, "Unknown shader data type");
         return 0;
     }
 
@@ -119,10 +121,10 @@ namespace mz {
 
         void addVertexBuffer(const std::shared_ptr<VertexBufferBase>& vertexBuffer) override
         {
-            assert(vertexBuffer->is<GlVertexBuffer>() && "Invalid Vertex Buffer type");
+            MZ_ASSERT(vertexBuffer->is<GlVertexBuffer>(), "Invalid Vertex Buffer type");
 
             const auto& layout = vertexBuffer->getLayout();
-            assert(!layout.getElements().empty() && "Vertex buffer has no layout!");
+            MZ_ASSERT(!layout.getElements().empty(), "Vertex buffer has no layout!");
 
             glBindVertexArray(m_array);
             vertexBuffer->bind();     
@@ -139,7 +141,7 @@ namespace mz {
 
         void setIndexBuffer(const std::shared_ptr<IndexBufferBase>& indexBuffer) override
         {
-            assert(indexBuffer->is<GlIndexBuffer>() && "Invalid Index Buffer type");
+            MZ_ASSERT(indexBuffer->is<GlIndexBuffer>(), "Invalid Index Buffer type");
 
             glBindVertexArray(m_array);
             indexBuffer->bind();

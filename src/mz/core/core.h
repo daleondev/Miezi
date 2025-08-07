@@ -5,14 +5,36 @@
 
 #define METHOD_NAME             mz::functionToLocation(std::source_location::current().function_name())
 
-#define MZ_TRACE(fmt, ...)		mz::g_logger.trace(true, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_INFO(fmt, ...)		mz::g_logger.info(true, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_WARN(fmt, ...)		mz::g_logger.warn(true, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_ERROR(fmt, ...)		mz::g_logger.error(true, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_FATAL(fmt, ...)		mz::g_logger.fatal(true, METHOD_NAME, fmt, __VA_ARGS__)
+#define MZ_TRACE(fmt, ...)		mz::g_logger.trace(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_INFO(fmt, ...)		mz::g_logger.info(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_WARN(fmt, ...)		mz::g_logger.warn(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_ERROR(fmt, ...)		mz::g_logger.error(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_FATAL(fmt, ...)		mz::g_logger.fatal(true, METHOD_NAME, fmt, ##__VA_ARGS__)
 
-#define MZ_TRACE_NOW(fmt, ...)	mz::g_logger.trace(false, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_INFO_NOW(fmt, ...)	mz::g_logger.info(false, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_WARN_NOW(fmt, ...)	mz::g_logger.warn(false, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_ERROR_NOW(fmt, ...)	mz::g_logger.error(false, METHOD_NAME, fmt, __VA_ARGS__)
-#define MZ_FATAL_NOW(fmt, ...)	mz::g_logger.fatal(false, METHOD_NAME, fmt, __VA_ARGS__)
+#define MZ_TRACE_NOW(fmt, ...)	mz::g_logger.trace(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_INFO_NOW(fmt, ...)	mz::g_logger.info(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_WARN_NOW(fmt, ...)	mz::g_logger.warn(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_ERROR_NOW(fmt, ...)	mz::g_logger.error(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_FATAL_NOW(fmt, ...)	mz::g_logger.fatal(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+
+#ifdef MZ_ENABLE_ASSERTS
+    #ifdef MZ_OS_WINDOWS
+        #include <intrin.h>
+        #define MZ_DEBUG_BREAK() __debugbreak()
+    #elif MZ_OS_LINUX
+        #include <csignal>
+        #define MZ_DEBUG_BREAK() raise(SIGTRAP)
+    #else
+        #define MZ_DEBUG_BREAK() ((void)0)
+    #endif
+
+    #define MZ_ASSERT(x, msg, ...) \
+        do { \
+            if (!(x)) { \
+                MZ_FATAL_NOW("Assertion failed: " msg, ##__VA_ARGS__); \
+                MZ_DEBUG_BREAK(); \
+            } \
+        } while (false)
+#else
+    #define MZ_ASSERT(x, msg, ...) ((void)0)
+#endif
