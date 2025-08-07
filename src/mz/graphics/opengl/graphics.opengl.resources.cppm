@@ -2,16 +2,110 @@ module;
 #include "mz/core/core.h"
 
 #include <glad/gl.h>
-export module mz.graphics.opengl.shader;
+export module mz.graphics.opengl.resources;
 
 import std;
 import glm;
 
 import mz.core.logging;
-import mz.graphics.shader;
+import mz.graphics.resources;
+import mz.graphics.buffers;
+import mz.graphics.opengl.buffers;
 import mz.util;
 
 namespace mz {
+
+    static GLenum ShaderDataTypeToOpenGLBaseType(const ShaderDataType type)
+    {
+        switch (type)
+        {
+            case ShaderDataType::Bool:       return GL_BOOL;
+            case ShaderDataType::Float:      return GL_FLOAT;
+            case ShaderDataType::Float2:     return GL_FLOAT;
+            case ShaderDataType::Float3:     return GL_FLOAT;
+            case ShaderDataType::Float4:     return GL_FLOAT;
+            case ShaderDataType::Float2x2:   return GL_FLOAT;
+            case ShaderDataType::Float3x3:   return GL_FLOAT;
+            case ShaderDataType::Float4x4:   return GL_FLOAT;
+            case ShaderDataType::Int:        return GL_INT;
+            case ShaderDataType::Int2:       return GL_INT;
+            case ShaderDataType::Int3:       return GL_INT;
+            case ShaderDataType::Int4:       return GL_INT;
+            case ShaderDataType::Int2x2:     return GL_INT;
+            case ShaderDataType::Int3x3:     return GL_INT;
+            case ShaderDataType::Int4x4:     return GL_INT;
+            case ShaderDataType::None:       return GL_NONE;
+        }
+
+        MZ_ASSERT(false, "Unknown shader data type");
+        return 0;
+    }
+
+    //------------------------------------------------------
+    //                      VertexArray
+    //------------------------------------------------------
+
+    export class GlVertexArray : public VertexArrayBase
+    {
+    public:
+        GlVertexArray()
+        {
+            glGenVertexArrays(1, &m_array);
+        }
+
+        ~GlVertexArray()
+        {
+            glDeleteVertexArrays(1, &m_array);
+        }
+
+        void addVertexBuffer(const std::shared_ptr<VertexBufferBase>& vertexBuffer) override
+        {
+            MZ_ASSERT(vertexBuffer->is<GlVertexBuffer>(), "Invalid Vertex Buffer type");
+
+            const auto& layout = vertexBuffer->getLayout();
+            MZ_ASSERT(!layout.getElements().empty(), "Vertex buffer has no layout!");
+
+            glBindVertexArray(m_array);
+            vertexBuffer->bind();     
+
+            std::size_t index = 0;
+            for (const auto& element : layout) {
+                glEnableVertexAttribArray(index);
+                glVertexAttribPointer(  index++, element.getComponentCount(), ShaderDataTypeToOpenGLBaseType(element.type), 
+                                        (GLboolean)element.normalized, layout.getStride(), (const void*)element.offset);
+            }
+
+            m_vertexBuffers.push_back(vertexBuffer);
+        }
+
+        void setIndexBuffer(const std::shared_ptr<IndexBufferBase>& indexBuffer) override
+        {
+            MZ_ASSERT(indexBuffer->is<GlIndexBuffer>(), "Invalid Index Buffer type");
+
+            glBindVertexArray(m_array);
+            indexBuffer->bind();
+
+            m_indexBuffer = indexBuffer;
+        }
+
+        void bind() const override
+        {
+            glBindVertexArray(m_array);
+        }
+
+        void release() const override
+        {
+            glBindVertexArray(0);
+        }
+
+    private:
+        GLuint m_array;
+
+    };
+
+    //------------------------------------------------------
+    //                      Shader
+    //------------------------------------------------------
 
     export class GlShader : public ShaderBase
     {

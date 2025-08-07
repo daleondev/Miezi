@@ -46,12 +46,9 @@ namespace mz {
     export class WindowBase : public IWindow
     {
     public:
-        WindowBase(const std::string& title, const glm::vec2& size, std::unique_ptr<IGraphicsContext>&& context, std::unique_ptr<IInput>&& input) 
-            : m_data{ .title = title, .size = size, .vSync = false, .eventCallback = [](IEvent*) { } }, 
-            m_context{ std::move(context) }, m_input{ std::move(input) } { }
+        static std::shared_ptr<WindowBase> create(const std::string& title, const glm::vec2& size);
+        
         virtual ~WindowBase() = default;
-
-        static std::shared_ptr<IWindow> create(const std::string& title, const glm::vec2& size);
 
         const std::string& getTitle() const override { return m_data.title; }
         const glm::vec2& getSize() const override { return m_data.size; }
@@ -64,6 +61,10 @@ namespace mz {
         const std::unique_ptr<IInput>& getInput() const override { return m_input; }
       
     protected:
+        WindowBase(const std::string& title, const glm::vec2& size, std::unique_ptr<IGraphicsContext>&& context, std::unique_ptr<IInput>&& input) 
+            : m_data{ .title = title, .size = size, .vSync = false, .eventCallback = [](IEvent*) { } }, 
+            m_context{ std::move(context) }, m_input{ std::move(input) } { }
+
         struct WindowData {
             std::string title;
             glm::vec2 size;
@@ -75,6 +76,7 @@ namespace mz {
 
         std::unique_ptr<IGraphicsContext> m_context;
         std::unique_ptr<IInput> m_input;
+
     };
 
 }

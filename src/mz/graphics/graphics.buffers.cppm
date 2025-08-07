@@ -1,6 +1,6 @@
 module;
 #include "mz/core/core.h"
-export module mz.graphics.buffer;
+export module mz.graphics.buffers;
 
 import std;
 import glm;
@@ -8,7 +8,7 @@ import glm;
 import mz.core.logging;
 import mz.core.behaviours;
 
-import mz.graphics;
+// import mz.graphics;
 
 namespace mz { 
 
@@ -134,12 +134,26 @@ namespace mz {
         std::size_t m_stride;
     };
 
-    export class VertexBufferBase : public IGraphicsObject
+    export template <typename T>
+    class IGraphicsBuffer : public ICastable
+    {
+    public:
+        virtual ~IGraphicsBuffer() = default;
+
+        virtual void bind() const = 0;
+        virtual void release() const = 0;
+
+        virtual void allocate(const std::vector<T>& data) = 0;
+    };
+
+    //------------------------------------------------------
+    //                      VertexBuffer
+    //------------------------------------------------------
+
+    export class VertexBufferBase : public IGraphicsBuffer<float>
     {
     public:
         virtual ~VertexBufferBase() = default;
-
-        virtual void allocate(const std::vector<float>& vertices) = 0;
 
         virtual void setLayout(const BufferLayout& layout) { m_layout = layout; }
         virtual const BufferLayout& getLayout() const { return m_layout; }
@@ -149,12 +163,14 @@ namespace mz {
 
     };
 
-    export class IndexBufferBase : public IGraphicsObject
+    //------------------------------------------------------
+    //                      IndexBuffer
+    //------------------------------------------------------
+
+    export class IndexBufferBase : public IGraphicsBuffer<std::uint32_t>
     {
     public:
         virtual ~IndexBufferBase() = default;
-
-        virtual void allocate(const std::vector<std::uint32_t>& vertices) = 0;
 
         virtual std::size_t getCount() { return m_count; }
 
@@ -163,21 +179,6 @@ namespace mz {
 
     };
 
-    export class VertexArrayBase : public IGraphicsObject
-    {
-    public:
-        virtual ~VertexArrayBase() = default;
-
-        virtual void addVertexBuffer(const std::shared_ptr<VertexBufferBase>& vertexBuffer) = 0;
-        virtual void setIndexBuffer(const std::shared_ptr<IndexBufferBase>& indexBuffer) = 0;
-
-        inline const std::vector<std::shared_ptr<VertexBufferBase>>& getVertexBuffers() const { return m_vertexBuffers; }
-        inline const std::shared_ptr<IndexBufferBase>& getIndexBuffer() const { return m_indexBuffer; }
-
-    protected:
-        std::vector<std::shared_ptr<VertexBufferBase>> m_vertexBuffers;
-        std::shared_ptr<IndexBufferBase> m_indexBuffer;
-
-    };
+    
 
 }

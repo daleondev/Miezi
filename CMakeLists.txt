@@ -104,6 +104,12 @@ foreach(h IN LISTS HEADERS)
     set_source_files_properties(${h} PROPERTIES HEADER_FILE_ONLY TRUE)
 endforeach()
 
+# group modules for IDE
+source_group(
+    TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  
+    PREFIX "Modules" 
+    FILES ${MODULES})
+
 # group source files for IDE
 source_group(
     TREE ${CMAKE_CURRENT_SOURCE_DIR}/src  

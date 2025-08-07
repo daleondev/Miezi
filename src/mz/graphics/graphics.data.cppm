@@ -1,19 +1,14 @@
-module;
-#include "mz/core/core.h"
-export module mz.graphics.render;
+export module mz.graphics.data;
 
 import std;
 import glm;
 
-import mz.core.behaviours;
-
-import mz.graphics;
-import mz.graphics.buffer;
-import mz.graphics.shader;
+import mz.graphics.buffers;
+import mz.graphics.resources;
 
 namespace mz { 
 
-    struct RenderData
+    export struct GraphicsData
     {
         std::shared_ptr<VertexArrayBase> vertexArray;
         std::shared_ptr<VertexBufferBase> vertexBuffer;
@@ -29,60 +24,11 @@ namespace mz {
         }
     };
 
-    export class RenderBase : public ICastable
-    {
-    public:
-        RenderBase(IGraphicsContext* context, std::unique_ptr<ShaderStoreBase>&& shaderStore) 
-            : m_context{ context }, m_shaderStore{ std::move(shaderStore) } 
-        {
-            m_context->makeCurrent();
-        }
-        virtual ~RenderBase()
-        {
-            m_pointData.clear();
-            m_lineData.clear();
-            m_rectData.clear();
-            m_circData.clear();
-            m_planeData.clear();
-            m_boxData.clear();
-            m_sphereData.clear();
-            m_meshData.clear();
-        
-            m_shaderStore->clear();
-        }
-
-        virtual void clear(const glm::vec4& color) = 0;
-        // virtual void drawPoint(/*OrbitCamera& camera, */const glm::mat4& transform, const glm::vec4& color, const float lineWidth = 1.0f, const bool smooth = true);
-        // virtual void drawLine(/*OrbitCamera& camera, */const glm::mat4& transform, const glm::vec4& color, const float borderWidth = 1.0f, const glm::vec4& borderColor = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
-        // virtual void drawRect(/*OrbitCamera& camera, */const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, const float borderWidth = 1.0f, const glm::vec4& borderColor = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
-        // virtual void drawRect(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawCircle(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawCircle(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawBox(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawBox(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-
-    protected:
-        IGraphicsContext* m_context;
-        std::unique_ptr<ShaderStoreBase> m_shaderStore;
-
-        RenderData m_pointData;
-        RenderData m_lineData;
-        RenderData m_rectData;
-        RenderData m_circData;
-        RenderData m_planeData;
-        RenderData m_boxData;
-        RenderData m_sphereData;
-
-        std::map<std::string, RenderData> m_meshData;
-        // std::map<std::uint32_t, std::tuple<RenderData, TextureBase>> m_pcData;
-
-    };
-
     //------------------------------------------------------
     //                      Line
     //------------------------------------------------------
 
-    struct LineData
+    export struct LineData
     {
         struct Vertex
         {
@@ -103,7 +49,7 @@ namespace mz {
     //                      Rect
     //------------------------------------------------------
 
-    struct RectData
+    export struct RectData
     {
         struct Vertex
         {
@@ -136,7 +82,7 @@ namespace mz {
     static constexpr float CIRCLE_RADIUS = 0.5f;
     static constexpr std::uint16_t CIRCLE_SEGMENTS = 64;
 
-    struct CircleData
+    export struct CircleData
     {
         struct Vertex
         {
@@ -184,7 +130,7 @@ namespace mz {
     //                      Plane
     //------------------------------------------------------
 
-    struct PlaneData
+    export struct PlaneData
     {
         struct Vertex
         {
@@ -216,7 +162,7 @@ namespace mz {
     //                      Box
     //------------------------------------------------------
 
-    struct BoxData
+    export struct BoxData
     {
         struct Vertex
         {
@@ -299,7 +245,7 @@ namespace mz {
     static constexpr std::uint16_t SPHERE_RINGS = 16;
     static constexpr std::uint16_t SPHERE_SECTORS = 32;
 
-    struct SphereData
+    export struct SphereData
     {
         struct Vertex
         {
@@ -365,7 +311,7 @@ namespace mz {
     //                      Mesh
     //------------------------------------------------------
 
-    struct MeshData
+    export struct MeshData
     {
         struct Vertex
         {
@@ -388,7 +334,7 @@ namespace mz {
     //                      Pointcloud
     //------------------------------------------------------
 
-    struct PointcloudData
+    export struct PointcloudData
     {
         struct Vertex
         {

@@ -8,8 +8,8 @@ import mz.window;
 import mz.events;
 import mz.events.window;
 
-import mz.graphics.render;
-import mz.graphics.opengl.render;
+import mz.graphics;
+import mz.graphics.opengl;
 
 static bool running = true;
 
