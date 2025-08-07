@@ -1,14 +1,12 @@
 module;
 #include "mz/core/core.h"
-export module mz.graphics.buffers;
+export module mz.graphics.renderer.buffers;
 
 import std;
 import glm;
 
 import mz.core.logging;
 import mz.core.behaviours;
-
-// import mz.graphics;
 
 namespace mz { 
 

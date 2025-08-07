@@ -2,15 +2,15 @@ module;
 #include "mz/core/core.h"
 
 #include <glad/gl.h>
-export module mz.graphics.opengl;
+export module mz.graphics.renderer.opengl;
 
 import std;
 import glm;
 
 import mz.core.logging;
 
-import mz.graphics;
-import mz.graphics.opengl.resources;
+import mz.graphics.renderer;
+import mz.graphics.renderer.opengl.resources;
 
 namespace mz { 
 

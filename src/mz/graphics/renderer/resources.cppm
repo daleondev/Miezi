@@ -1,6 +1,6 @@
 module;
 #include "mz/core/core.h"
-export module mz.graphics.resources;
+export module mz.graphics.renderer.resources;
 
 import std;
 import glm;
@@ -8,7 +8,7 @@ import glm;
 import mz.core.logging;
 import mz.core.behaviours;
 
-import mz.graphics.buffers;
+import mz.graphics.renderer.buffers;
 
 namespace mz { 
 

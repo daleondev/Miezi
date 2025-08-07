@@ -3,13 +3,12 @@
 import std;
 import glm;
 
-import mz.window;
-
 import mz.events;
 import mz.events.window;
 
-import mz.graphics;
-import mz.graphics.opengl;
+import mz.graphics.window;
+import mz.graphics.renderer;
+import mz.graphics.renderer.opengl;
 
 static bool running = true;
 

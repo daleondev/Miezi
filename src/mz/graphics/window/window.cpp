@@ -1,9 +1,9 @@
 module;
 #include "mz/core/core.h"
-module mz.window;
+module mz.graphics.window;
 
 import mz.core.logging;
-import mz.window.glfw;
+import mz.graphics.window.glfw;
 
 namespace mz {
 

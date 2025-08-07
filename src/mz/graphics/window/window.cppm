@@ -1,11 +1,12 @@
-export module mz.window;
+export module mz.graphics.window;
 
 import std;
 import glm;
 
 import mz.core.behaviours;
 import mz.events;
-import mz.graphics;
+
+import mz.graphics.renderer;
 
 namespace mz { 
 

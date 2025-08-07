@@ -1,10 +1,10 @@
-export module mz.graphics.data;
+export module mz.graphics.renderer.data;
 
 import std;
 import glm;
 
-import mz.graphics.buffers;
-import mz.graphics.resources;
+import mz.graphics.renderer.buffers;
+import mz.graphics.renderer.resources;
 
 namespace mz { 
 

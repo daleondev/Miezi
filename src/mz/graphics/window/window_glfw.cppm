@@ -2,20 +2,20 @@ module;
 #include "mz/core/core.h"
 
 #include <GLFW/glfw3.h>
-export module mz.window.glfw;
+export module mz.graphics.window.glfw;
 
 import std;
 import glm;
 
 import mz.core.logging;
 
-import mz.window;
 import mz.events;
 import mz.events.window;
 import mz.events.key;
 import mz.events.mouse;
 
-import mz.graphics.opengl;
+import mz.graphics.window;
+import mz.graphics.renderer.opengl;
 
 namespace mz { 
 

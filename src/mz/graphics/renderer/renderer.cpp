@@ -1,15 +1,15 @@
 module;
 #include "mz/core/core.h"
-module mz.graphics;
+module mz.graphics.renderer;
 
 import mz.core.logging;
-import mz.graphics.opengl;
+import mz.graphics.renderer.opengl;
 
 namespace mz {
 
     std::shared_ptr<RenderBase> RenderBase::create(IGraphicsContext* context)
     {
-#ifdef MZ_RENDERER_OPENGL
+#ifdef MZ_GRAPHICS_OPENGL
         return std::make_shared<GlRenderer>(context);
 #endif
 
