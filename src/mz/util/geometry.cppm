@@ -45,6 +45,9 @@ namespace mz {
         Vec(const T& vec) : T(vec) {}
         Vec(T&& vec) : T(std::move(vec)) {}
 
+        bool isFinite() const { return !glm::any(glm::isinf(**this)); }
+        bool hasNaN() const { return glm::any(glm::isnan(**this)); }
+
         Mat3 skewSymmetricCross_alt() const requires (Size == 3);
         Mat3 rotationTo_alt(const Vec3& vec) const requires (Size == 3);
         Mat3 rotationTo(const Vec3& vec) const requires (Size == 3);
@@ -145,13 +148,42 @@ namespace mz {
         const Vec<glm::vec<Size, Scalar>>& zAxis() const { return m_vecs[2]; }
         const Vec<glm::vec<Size, Scalar>>& translation() const { return m_vecs[Size-1]; }
 
-        Mat determinant() const { return glm::determinant(**this); }
+        bool isAffine() const 
+        { 
+            Scalar expected = 1;
+            for (std::size_t i = Size; i > 0; i--) {
+                if ((*this)[i-1][Size-1] != expected) return false;
+                expected = 0;
+            }
+            return true;
+        }
 
-        Mat inverted() const { return glm::inverse(**this); }
+        bool isFinite() const 
+        { 
+            for (std::size_t i = 0; i < Size; ++i) 
+                if (!m_vecs[i].isFinite())
+                    return false;
+            return true;
+        }
+
+        bool hasNaN() const 
+        { 
+            for (std::size_t i = 0; i < Size; ++i) 
+                if (!m_vecs[i].hasNaN())
+                    return false;
+            return true;
+        }
+
+        Scalar determinant() const { return glm::determinant(**this); }
+
+        Mat inverted() const { return isAffine() ? glm::affineInverse(**this) : glm::inverse(**this); }
         Mat& invert() { return (*this = inverted()); }
 
         Mat transposed() const { return glm::transpose(**this); }
         Mat& transpose() { return (*this = transposed()); }
+        
+        Mat invertedTransposed() const { return glm::inverseTranspose(**this); }
+        Mat& inverseTranspose() { return (*this = invertedTransposed()); }
 
         Mat rescaled() const
         {
@@ -230,14 +262,16 @@ namespace mz {
         Scalar maxValue() const 
         {
             Scalar maxVal = std::numeric_limits<Scalar>::min();
-            for (std::size_t i = 0; i < Size; ++i) maxVal = glm::max(maxVal, m_vecs[i].maxValue());
+            for (std::size_t i = 0; i < Size; ++i) 
+                maxVal = glm::max(maxVal, m_vecs[i].maxValue());
             return maxVal;
         }
 
         Scalar minValue() const 
         {
             Scalar minVal = std::numeric_limits<Scalar>::max();
-            for (std::size_t i = 0; i < Size; ++i) minVal = glm::min(minVal, m_vecs[i].minValue());
+            for (std::size_t i = 0; i < Size; ++i) 
+                minVal = glm::min(minVal, m_vecs[i].minValue());
             return minVal;
         }
 
@@ -265,7 +299,6 @@ namespace mz {
 
         T& operator*() { return *this; }
         const T& operator*() const { return *this; }
-
 
     };
 

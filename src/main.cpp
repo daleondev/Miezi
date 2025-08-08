@@ -50,7 +50,19 @@ int main()
     v2.print();
     r1.print();    
     r2.print(); 
-    MZ_INFO("{}", v1.isNormalized());
+
+    MZ_TRACE("{}", v1.isFinite());
+    MZ_TRACE("{}", v1.hasNaN());
+
+    MZ_TRACE("{}", r1.isFinite());
+    MZ_TRACE("{}", r1.hasNaN());
+    MZ_TRACE("{}", r1.asMat4().isAffine());
+
+    const auto m = mz::Mat4(1.0f).fillRandom().rescale();
+    m.print();
+
+    m.inverted().transposed().print();
+    m.invertedTransposed().print();
 
     running = false;
     using namespace std::chrono_literals;
