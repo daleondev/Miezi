@@ -37,7 +37,8 @@ namespace mz {
     {
     public:
         using Scalar = typename T::value_type;
-        static constexpr std::size_t Size = T::length();
+        using SizeType = T::length_type;
+        static constexpr SizeType Size = T::length();
 
         using T::T;
 
@@ -48,8 +49,7 @@ namespace mz {
         bool isFinite() const { return !glm::any(glm::isinf(**this)); }
         bool hasNaN() const { return glm::any(glm::isnan(**this)); }
 
-        Mat3 skewSymmetricCross_alt() const requires (Size == 3);
-        Mat3 rotationTo_alt(const Vec3& vec) const requires (Size == 3);
+        Mat3 skewSymmetricCross() const requires (Size == 3);
         Mat3 rotationTo(const Vec3& vec) const requires (Size == 3);
 
         Scalar length() const { return glm::length(**this); }
@@ -102,14 +102,36 @@ namespace mz {
         Vec3 fillRandom(const Scalar radius = 1.0f) requires (Size == 3) { return (*this = glm::sphericalRand(radius)); }
         Vec4 fillRandom(const Scalar radius = 1.0f) requires (Size == 4) { return (*this = Vec4(glm::sphericalRand(radius), (*this)[Size-1])); }
 
-        Scalar maxValue() const;
-        Scalar minValue() const;
+        Scalar maxValue() const
+        {
+            constexpr SizeType n = Size == 4 ? 3 : Size;
+            Scalar maxVal = std::numeric_limits<Scalar>::lowest();
+            for (SizeType i = 0; i < n; ++i) maxVal = glm::max(maxVal, (*this)[i]);
+            return maxVal;
+        }
+
+        Scalar minValue() const
+        {
+            constexpr SizeType n = Size == 4 ? 3 : Size;
+            Scalar minVal = std::numeric_limits<Scalar>::max();
+            for (SizeType i = 0; i < n; ++i) minVal = glm::min(minVal, (*this)[i]);
+            return minVal;
+        }
 
         Scalar* data() { return glm::value_ptr(**this); }
         const Scalar* data() const { return glm::value_ptr(**this); }
 
-        std::string toPrettyString(const bool printType = true) const;
         std::string toString() const { return glm::to_string(**this); }
+        std::string toPrettyString(const bool printType = true) const
+        {
+            std::stringstream ss;
+            if (printType) ss << "vec" << Size << ' ';
+            ss << '(';
+            for (SizeType i = 0; i < Size; ++i)
+                ss << std::format("{:8.4f}{}", (*this)[i], (i == Size - 1 ? " " : ", "));
+            ss << ')';
+            return ss.str();
+        }
         void print() const { MZ_TRACE("{}", toPrettyString()); } 
 
     private:
@@ -130,7 +152,8 @@ namespace mz {
     {
     public:
         using Scalar = typename T::value_type;
-        static constexpr std::size_t Size = T::length();
+        using SizeType = T::length_type;
+        static constexpr SizeType Size = T::length();
 
         using T::T;
 
@@ -151,7 +174,7 @@ namespace mz {
         bool isAffine() const 
         { 
             Scalar expected = 1;
-            for (std::size_t i = Size; i > 0; i--) {
+            for (SizeType i = Size; i > 0; i--) {
                 if ((*this)[i-1][Size-1] != expected) return false;
                 expected = 0;
             }
@@ -160,7 +183,7 @@ namespace mz {
 
         bool isFinite() const 
         { 
-            for (std::size_t i = 0; i < Size; ++i) 
+            for (SizeType i = 0; i < Size; ++i) 
                 if (!m_vecs[i].isFinite())
                     return false;
             return true;
@@ -168,7 +191,7 @@ namespace mz {
 
         bool hasNaN() const 
         { 
-            for (std::size_t i = 0; i < Size; ++i) 
+            for (SizeType i = 0; i < Size; ++i) 
                 if (!m_vecs[i].hasNaN())
                     return false;
             return true;
@@ -254,7 +277,7 @@ namespace mz {
 
         Mat& fillRandom()
         {
-            for (std::size_t i = 0; i < Size; ++i)
+            for (SizeType i = 0; i < Size; ++i)
                 m_vecs[i].fillRandom();
             return *this;
         }
@@ -262,7 +285,7 @@ namespace mz {
         Scalar maxValue() const 
         {
             Scalar maxVal = std::numeric_limits<Scalar>::min();
-            for (std::size_t i = 0; i < Size; ++i) 
+            for (SizeType i = 0; i < Size; ++i) 
                 maxVal = glm::max(maxVal, m_vecs[i].maxValue());
             return maxVal;
         }
@@ -270,7 +293,7 @@ namespace mz {
         Scalar minValue() const 
         {
             Scalar minVal = std::numeric_limits<Scalar>::max();
-            for (std::size_t i = 0; i < Size; ++i) 
+            for (SizeType i = 0; i < Size; ++i) 
                 minVal = glm::min(minVal, m_vecs[i].minValue());
             return minVal;
         }
@@ -284,7 +307,7 @@ namespace mz {
             std::stringstream ss;
             if (printMatType) ss << "mat" << Size << "x" << Size << ' ';
             ss << "(\n";
-            for (std::size_t i = 0; i < Size; ++i) {
+            for (SizeType i = 0; i < Size; ++i) {
                 ss << '\t';
                 ss << m_vecs[i].toPrettyString(printVecType);
                 ss << (i == Size-1 ? "\n" : ",\n");

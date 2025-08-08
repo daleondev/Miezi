@@ -44,12 +44,10 @@ int main()
     const auto v2 = mz::Vec3().fillRandom().normalize();
 
     const auto r1 = v1.rotationTo(v2);
-    const auto r2 = v1.rotationTo_alt(v2);
 
     v1.print();
     v2.print();
     r1.print();    
-    r2.print(); 
 
     MZ_TRACE("{}", v1.isFinite());
     MZ_TRACE("{}", v1.hasNaN());
