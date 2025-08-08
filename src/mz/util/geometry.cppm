@@ -49,37 +49,38 @@ namespace mz {
         Mat3 rotationTo_alt(const Vec3& vec) const requires (Size == 3);
         Mat3 rotationTo(const Vec3& vec) const requires (Size == 3);
 
-        Vec3 projected(const Vec3& obj, const Mat4 model, const Mat4 proj, const Vec4 viewPort) const requires (Size == 3);
-        Vec3& project(const Vec3& obj, const Mat4 model, const Mat4 proj, const Vec4 viewPort) requires (Size == 3);
+        Scalar length() const { return glm::length(**this); }
+        Scalar dist(const Vec& other) const { return glm::distance(**this, other); }
 
-        Scalar length() const { return glm::length(*this); }
-        Scalar dist(const Vec& other) const { return glm::distance(*this, other); }
+        Vec3 projected(const Mat4 model, const Mat4 proj, const Vec4 viewPort) const requires (Size == 3);
+        Vec3& project(const Mat4 model, const Mat4 proj, const Vec4 viewPort) requires (Size == 3);
 
-        Vec normalized() const { return glm::normalize(*this); }
-        Vec& normalize() { return (*this = glm::normalize(*this)); }
+        Vec normalized() const { return glm::normalize(**this); }
+        Vec& normalize() { return (*this = glm::normalize(**this)); }
+        bool isNormalized() const { return glm::epsilonEqual<float>(length(), 1.0f, glm::epsilon<float>()); }
 
-        Vec reflected(const Vec& normal) const { return glm::reflect(*this, normal); }
-        Vec& reflect(const Vec& normal) { return (*this = glm::reflect(*this, normal)); }
+        Vec reflected(const Vec& normal) const { return glm::reflect(**this, normal); }
+        Vec& reflect(const Vec& normal) { return (*this = glm::reflect(**this, normal)); }
 
-        Vec2 rotated(const Scalar angle) const requires (Size == 2) { return glm::rotate(*this, angle); }
-        Vec2& rotate(const Scalar angle) requires (Size == 2) { return (*this = glm::rotate(*this, angle)); }
-        Vec rotatedAround(const Vec& axis, const Scalar angle) const requires (Size >= 3) { return glm::rotate(*this, angle, axis); }
-        Vec& rotateAround(const Vec& axis, const Scalar angle) requires (Size >= 3) { return (*this = glm::rotate(*this, angle, axis)); }
+        Vec2 rotated(const Scalar angle) const requires (Size == 2) { return glm::rotate(**this, angle); }
+        Vec2& rotate(const Scalar angle) requires (Size == 2) { return (*this = glm::rotate(**this, angle)); }
+        Vec rotatedAround(const Vec& axis, const Scalar angle) const requires (Size >= 3) { return glm::rotate(**this, angle, axis); }
+        Vec& rotateAround(const Vec& axis, const Scalar angle) requires (Size >= 3) { return (*this = glm::rotate(**this, angle, axis)); }
 
-        Vec rotatedX(const Scalar angle) const requires (Size >= 3) { return glm::rotateX(*this, angle); }
-        Vec& rotateX(const Scalar angle) requires (Size >= 3) { return (*this = glm::rotateX(*this, angle)); }
-        Vec rotatedY(const Scalar angle) const requires (Size >= 3) { return glm::rotateY(*this, angle); }
-        Vec& rotateY(const Scalar angle) requires (Size >= 3) { return (*this = glm::rotateY(*this, angle)); }
-        Vec rotatedZ(const Scalar angle) const requires (Size >= 3) { return glm::rotateZ(*this, angle); }
-        Vec& rotateZ(const Scalar angle) requires (Size >= 3) { return (*this = glm::rotateZ(*this, angle)); }
+        Vec rotatedX(const Scalar angle) const requires (Size >= 3) { return glm::rotateX(**this, angle); }
+        Vec& rotateX(const Scalar angle) requires (Size >= 3) { return (*this = glm::rotateX(**this, angle)); }
+        Vec rotatedY(const Scalar angle) const requires (Size >= 3) { return glm::rotateY(**this, angle); }
+        Vec& rotateY(const Scalar angle) requires (Size >= 3) { return (*this = glm::rotateY(**this, angle)); }
+        Vec rotatedZ(const Scalar angle) const requires (Size >= 3) { return glm::rotateZ(**this, angle); }
+        Vec& rotateZ(const Scalar angle) requires (Size >= 3) { return (*this = glm::rotateZ(**this, angle)); }
 
         Scalar dot(const Vec& other) const { return glm::dot(**this, other); }
-        Vec cross(const Vec& other) const requires (Size <= 3) { return glm::cross(*this, other); }
+        Vec cross(const Vec& other) const requires (Size <= 3) { return glm::cross(**this, other); }
         Vec4 cross(const Vec4& B, const Vec4& C) const requires (Size == 4);
 
-        Scalar angleTo(const Vec& other) const { return glm::angle(this->normalized(), other.normalized()); }
-        Scalar orientedAngleTo(const Vec2& other) const requires (Size == 2) { return glm::orientedAngle(this->normalized(), other.normalized()); }
-        Scalar orientedAngleTo(const Vec3& other, const Vec3& ref) const requires (Size == 3) { return glm::orientedAngle(this->normalized(), other.normalized(), ref.normalized()); }
+        Scalar angleTo(const Vec& other) const { return glm::angle(*this->normalized(), other.normalized()); }
+        Scalar orientedAngleTo(const Vec2& other) const requires (Size == 2) { return glm::orientedAngle(*this->normalized(), other.normalized()); }
+        Scalar orientedAngleTo(const Vec3& other, const Vec3& ref) const requires (Size == 3) { return glm::orientedAngle(*this->normalized(), other.normalized(), ref.normalized()); }
 
         operator T&() { return *this; }
         operator const T&() const { return *this; }
@@ -101,14 +102,14 @@ namespace mz {
         Vec3 fillRandom(const Scalar radius = 1.0f) requires (Size == 3) { return (*this = glm::sphericalRand(radius)); }
         Vec4 fillRandom(const Scalar radius = 1.0f) requires (Size == 4) { return (*this = Vec4(glm::sphericalRand(radius), (*this)[Size-1])); }
 
-        Scalar* data() { return glm::value_ptr((T&)*this); }
-        const Scalar* data() const { return glm::value_ptr((T&)*this); }
-
         Scalar maxValue() const;
         Scalar minValue() const;
 
+        Scalar* data() { return glm::value_ptr(**this); }
+        const Scalar* data() const { return glm::value_ptr(**this); }
+
         std::string toPrettyString(const bool printType = true) const;
-        std::string toString() const { return glm::to_string(*this); }
+        std::string toString() const { return glm::to_string(**this); }
         void print() const { MZ_TRACE("{}", toPrettyString()); } 
 
     };

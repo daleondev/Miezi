@@ -50,6 +50,7 @@ int main()
     v2.print();
     r1.print();    
     r2.print(); 
+    MZ_INFO("{}", v1.isNormalized());
 
     running = false;
     using namespace std::chrono_literals;

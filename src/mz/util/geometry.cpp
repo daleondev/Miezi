@@ -36,20 +36,20 @@ namespace mz {
     template<VectorType T>
     Mat3 Vec<T>::rotationTo(const Vec3& vec) const requires (Size == 3)
     { 
-        return glm::toMat3(glm::rotation(*this, vec)); 
+        return glm::toMat3(glm::rotation(**this, vec)); 
     }
     template Mat3 Vec3::rotationTo(const Vec3& vec) const;
 
     template<VectorType T>
-    Vec3 Vec<T>::projected(const Vec3& obj, const Mat4 model, const Mat4 proj, const Vec4 viewPort) const requires (Size == 3)
+    Vec3 Vec<T>::projected(const Mat4 model, const Mat4 proj, const Vec4 viewPort) const requires (Size == 3)
     {
-        return glm::project(obj, model, proj, viewPort);
+        return glm::project(**this, model, proj, viewPort);
     }
 
     template<VectorType T>
-    Vec3& Vec<T>::project(const Vec3& obj, const Mat4 model, const Mat4 proj, const Vec4 viewPort) requires (Size == 3)
+    Vec3& Vec<T>::project(const Mat4 model, const Mat4 proj, const Vec4 viewPort) requires (Size == 3)
     {
-        return (*this = glm::project(obj, model, proj, viewPort));
+        return (*this = glm::project(**this, model, proj, viewPort));
     }
 
     template<VectorType T>
