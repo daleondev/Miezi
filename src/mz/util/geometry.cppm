@@ -236,6 +236,32 @@ namespace mz {
         static Mat createLookAt(const Vec3& eye, const Vec3& center, const Vec3& up) { return T(glm::lookAt(*eye, *center, *up)); }
         Mat& lookAt(const Vec3& eye, const Vec3& center, const Vec3& up) { return (*this = createLookAt(eye, center, up)); }
 
+        static Mat createOrtho(const Scalar left, const Scalar right, const Scalar bottom, const Scalar top, const Scalar zNear, const Scalar zFar)
+        { 
+#ifdef MZ_RENDERER_OPENGL
+            return T(glm::orthoRH_NO(left, right, bottom, top, zNear, zFar)); 
+#else
+            return T(glm::orthoRH_ZO(left, right, bottom, top, zNear, zFar)); 
+#endif
+        }
+        Mat& setOrtho(const Scalar left, const Scalar right, const Scalar bottom, const Scalar top, const Scalar zNear, const Scalar zFar)
+        { 
+            return (*this = createOrtho(left, right, bottom, top, zNear, zFar)); 
+        }
+
+        static Mat createPerspective(const Scalar fov, const Scalar width, const Scalar height, const Scalar zNear, const Scalar zFar)
+        { 
+#ifdef MZ_RENDERER_OPENGL
+            return T(glm::perspectiveFovRH_NO(fov, width, height, zNear, zFar)); 
+#else
+            return T(glm::perspectiveFovRH_ZO(left, right, bottom, top, zNear, zFar)); 
+#endif
+        }
+        Mat& setPerspective(const Scalar fov, const Scalar width, const Scalar height, const Scalar zNear, const Scalar zFar)
+        { 
+            return (*this = createPerspective(fov, width, height, zNear, zFar)); 
+        }
+
         static Mat createAngleAxis(const Vec3& axis, const Scalar angle) { return T(glm::axisAngleMatrix(*axis, angle)); }
         Mat& fromAngleAxis(const Vec3& axis, const Scalar angle) { return (*this = createAngleAxis(axis, angle)); }
 

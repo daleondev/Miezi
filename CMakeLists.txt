@@ -161,7 +161,7 @@ endif()
 target_compile_definitions(Miezi 
     PRIVATE 
         MZ_WINDOW_GLFW
-        MZ_GRAPHICS_OPENGL
+        MZ_RENDERER_OPENGL
         MZ_ENABLE_ASSERTS
         ${OS_DEFINE})
 

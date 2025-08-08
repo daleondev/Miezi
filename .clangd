@@ -12,7 +12,7 @@ CompileFlags:
     - -DMZ_OS_LINUX
     - -DMZ_ENABLE_ASSERTS
     - -DMZ_WINDOW_GLFW
-    - -DMZ_GRAPHICS_OPENGL
+    - -DMZ_RENDERER_OPENGL
     - -I/home/david/Dokumente/Miezi/src
     - -I/home/david/Dokumente/Miezi/build/gladsources/glad_gl_core_46/include
     - -Wno-module-import-in-extern-c

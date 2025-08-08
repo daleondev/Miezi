@@ -9,7 +9,7 @@ namespace mz {
 
     std::shared_ptr<RenderBase> RenderBase::create(IRenderContext* context)
     {
-#ifdef MZ_GRAPHICS_OPENGL
+#ifdef MZ_RENDERER_OPENGL
         return std::make_shared<GlRenderer>(context);
 #endif
 
