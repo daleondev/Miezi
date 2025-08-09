@@ -6,12 +6,22 @@ CMAKE_PATH="$HOME/development/cmake-install/bin/cmake"
 CLANG_PATH="$HOME/development/llvm-install/bin/clang++"
 # ================
 
-case ":$LD_LIBRARY_PATH:" in
+# Add to LD_LIBRARY_PATH only if not already present
+case ":${LD_LIBRARY_PATH:-}:" in
     *":$LLVM_LIB_PATH:"*) ;;
-    *) export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LLVM_LIB_PATH" ;;
+    *)
+        if [[ -n "${LD_LIBRARY_PATH:-}" ]]; then
+            export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$LLVM_LIB_PATH"
+        else
+            export LD_LIBRARY_PATH="$LLVM_LIB_PATH"
+        fi
+        ;;
 esac
 
-export CXX="$CLANG_PATH" #"`clang++ --version | awk '/Dir/{print $2F}'`"
+# Export compiler for build tools
+export CXX="$CLANG_PATH"
+
+# Set aliases
 alias cmake="$CMAKE_PATH"
 alias clang++="$CLANG_PATH"
 
