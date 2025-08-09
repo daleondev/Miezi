@@ -5,7 +5,6 @@ module;
 export module mz.graphics.renderer.opengl.resources;
 
 import std;
-import glm;
 
 import mz.core.logging;
 import mz.graphics.renderer.resources;

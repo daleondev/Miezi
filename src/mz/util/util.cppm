@@ -1,7 +1,12 @@
+module;
+#include "mz/core/core.h"
 export module mz.util;
 
 import std;
-import glm;
+
+import mz.util.geometry;
+import mz.core.behaviours;
+import mz.core.logging;
 
 namespace mz {
 
@@ -43,7 +48,7 @@ namespace mz {
         return content;
     }
 
-    export std::uint32_t vecToRGBA(const glm::vec4& color)
+    export std::uint32_t vecToRGBA(const Vec4& color)
     {
         const std::uint8_t r = static_cast<std::uint8_t>(color.r * 255.0f);
         const std::uint8_t g = static_cast<std::uint8_t>(color.g * 255.0f);
@@ -109,5 +114,15 @@ namespace mz {
         bool m_falling;
 
     };
+
+    export template<typename T>
+    void printIterable(IIterable<T>* iterable)
+    {
+        std::stringstream ss;
+        for (std::size_t i = 0; i < iterable->size(); ++i)
+            ss << "\n" << i << ": " << (*iterable)[i];
+
+        MZ_TRACE("{}", ss.str());
+    }
 
 }

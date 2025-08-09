@@ -4,6 +4,7 @@
 import std;
 import glm;
 
+import mz.core.behaviours;
 import mz.core.logging;
 
 import mz.events;
@@ -13,14 +14,41 @@ import mz.graphics.window;
 import mz.graphics.renderer;
 import mz.graphics.renderer.opengl;
 
+import mz.util;
 import mz.util.geometry;
+
+using namespace mz;
 
 static bool running = true;
 
-void test(glm::vec2 t)
+class Test : public IIterable<int>
 {
-    MZ_INFO("{}", glm::gtx::to_string(t));
-}
+public:
+    Test()
+    {
+        m_ints = {
+            11,
+            -2542,
+            4367435
+        };
+    }
+
+    int* begin() override { return m_ints.data(); }
+    int* end() override { return m_ints.data() + m_ints.size(); }
+    const int* begin() const override { return m_ints.data(); }
+    const int* end() const override { return m_ints.data() + m_ints.size(); }
+
+    constexpr std::size_t size() const override { return m_ints.size(); }
+
+    int* data() override { return m_ints.data(); }
+    const int* data() const override { return m_ints.data(); }
+
+    virtual int& operator[](const std::size_t i) override { return m_ints[i]; }
+    virtual const int& operator[](const std::size_t i) const override { return m_ints[i]; }
+
+private:
+    std::vector<int> m_ints;
+};
 
 int main()
 {
@@ -40,33 +68,31 @@ int main()
     //     renderer->clear(glm::vec4(1.0f));
     // }
 
-    const auto v1 = mz::Vec3().fillRandom().normalize();
-    const auto v2 = mz::Vec3().fillRandom().normalize();
 
-    const auto r1 = v1.rotationTo(v2);
+    const auto pos = Vec3::createRandom(10.0f);
 
-    v1.print();
-    v2.print();
-    r1.print();    
+    const auto view = Mat4::createLookAt(pos, Vec3(0.0f, 0.0f, 0.0f), Vec3::UnitY());
+    view.print();
 
-    MZ_TRACE("{}", v1.isFinite());
-    MZ_TRACE("{}", v1.hasNaN());
+    auto viewTest = Mat4::Identity().translated(pos).inverted();
+    viewTest.print();
 
-    MZ_TRACE("{}", r1.isFinite());
-    MZ_TRACE("{}", r1.hasNaN());
-    MZ_TRACE("{}", r1.asMat4().isAffine());
+    Test t;
+    printIterable<int>(&t);
 
-    const auto m = mz::Mat4(1.0f).fillRandom().rescale();
-    m.print();
+    // auto arr = t.toArray();
 
-    m.inverted().transposed().print();
-    m.invertedTransposed().print();
+    // ContainerWrapper<std::unique_ptr<float[]>> cont(new float[5]);
+    // cont[2] = 5.0f;
+    // auto v = cont.toVector();
+    // auto 
 
-    std::string str(10, '\0');
-    str[0] = '1';
-    str[4] = '5';
+    Array<int> arr(10, 3); 
+    printIterable<int>(&arr);
 
-    MZ_TRACE("{}", str);
+    arr.resize(20, 4);
+    printIterable<int>(&arr);
+
 
     running = false;
     using namespace std::chrono_literals;

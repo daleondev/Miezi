@@ -5,13 +5,14 @@ module;
 export module mz.graphics.renderer.opengl;
 
 import std;
-import glm;
 
 import mz.core.logging;
 
 import mz.graphics.window;
 import mz.graphics.renderer;
 import mz.graphics.renderer.opengl.resources;
+
+import mz.util.geometry;
 
 namespace mz { 
 
@@ -66,7 +67,7 @@ namespace mz {
         }
         ~GlRenderer() = default;
 
-        void clear(const glm::vec4& color) override
+        void clear(const Vec4& color) override
         {
             m_context->makeCurrent();
 

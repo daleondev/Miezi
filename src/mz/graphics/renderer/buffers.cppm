@@ -116,6 +116,14 @@ namespace mz {
         const BufferElement* begin() const override { return m_elements.data(); }
         const BufferElement* end() const override { return m_elements.data() + m_elements.size(); }
 
+        constexpr std::size_t size() const override { return m_elements.size(); }
+
+        BufferElement* data() override { return m_elements.data(); }
+        const BufferElement* data() const override { return m_elements.data(); }
+
+        virtual BufferElement& operator[](const std::size_t i) override { return m_elements[i]; }
+        virtual const BufferElement& operator[](const std::size_t i) const override { return m_elements[i]; }
+
     private:
         void calculateOffsetsAndStride()
         {

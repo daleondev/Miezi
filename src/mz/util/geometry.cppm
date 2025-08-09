@@ -5,6 +5,8 @@ export module mz.util.geometry;
 import std;
 import glm;
 
+export import mz.util.math;
+
 import mz.core.logging;
 
 namespace mz {
@@ -40,6 +42,10 @@ namespace mz {
         using SizeType = T::length_type;
         static constexpr SizeType Size = T::length();
 
+        static Vec3 UnitX() requires(Size == 3) { return {1.0f, 0.0f, 0.0f}; }
+        static Vec3 UnitY() requires(Size == 3) { return {0.0f, 1.0f, 0.0f}; }
+        static Vec3 UnitZ() requires(Size == 3) { return {0.0f, 0.0f, 1.0f}; }
+        
         using T::T;
 
         Vec() : T(0.0f) {}
@@ -49,7 +55,7 @@ namespace mz {
         bool isFinite() const { return !glm::any(glm::isinf(**this)); }
         bool hasNaN() const { return glm::any(glm::isnan(**this)); }
 
-        Mat3 skewSymmetricCross() const requires (Size == 3);
+        Mat3 skewSymmetricMat() const requires (Size == 3);
         Mat3 rotationTo(const Vec3& vec) const requires (Size == 3);
 
         Scalar length() const { return glm::length(**this); }
@@ -61,6 +67,10 @@ namespace mz {
         Vec normalized() const { return glm::normalize(**this); }
         Vec& normalize() { return (*this = normalized()); }
         bool isNormalized() const { return glm::epsilonEqual<float>(length(), 1.0f, glm::epsilon<float>()); }
+
+        Vec normalizedHomogeneous() const requires (Size == 4) { return *this / this->w; }
+        Vec& normalizeHomogeneous() requires (Size == 4) { return (*this = normalizedHomogeneous()); }
+        bool isNormalizedHomogeneous() const requires (Size == 4) { return glm::epsilonEqual<float>(this->w, 1.0f, glm::epsilon<float>()); }
 
         Vec reflected(const Vec& normal) const { return glm::reflect(**this, *normal); }
         Vec& reflect(const Vec& normal) { return (*this = reflected(normal)); }
@@ -98,9 +108,12 @@ namespace mz {
         Vec4 asVec4(const float w = 0.0f) const requires (Size == 3) { return Vec4(*this, w); }
         Vec4 asVec4() const requires (Size >= 4) { return *this; }
 
-        Vec2 fillRandom(const Scalar radius = 1.0f) requires (Size == 2) { return (*this = glm::circularRand(radius)); }
-        Vec3 fillRandom(const Scalar radius = 1.0f) requires (Size == 3) { return (*this = glm::sphericalRand(radius)); }
-        Vec4 fillRandom(const Scalar radius = 1.0f) requires (Size == 4) { return (*this = Vec4(glm::sphericalRand(radius), (*this)[Size-1])); }
+        static Vec2 createRandom(const Scalar radius = 1.0f) requires (Size == 2) { return glm::circularRand(radius); }
+        Vec2& fillRandom(const Scalar radius = 1.0f) requires (Size == 2) { return (*this = createRandom(radius)); }
+        static Vec3 createRandom(const Scalar radius = 1.0f) requires (Size == 3) { return glm::sphericalRand(radius); }
+        Vec3& fillRandom(const Scalar radius = 1.0f) requires (Size == 3) { return (*this = createRandom(radius)); }
+        static Vec4 createRandom(const Scalar radius = 1.0f, const Scalar w = 0.0f) requires (Size == 4) { return Vec4(glm::sphericalRand(radius), w); }
+        Vec4& fillRandom(const Scalar radius = 1.0f) requires (Size == 4) { return (*this = createRandom(radius, (*this)[Size-1])); }
 
         Scalar maxValue() const
         {
@@ -154,6 +167,8 @@ namespace mz {
         using Scalar = typename T::value_type;
         using SizeType = T::length_type;
         static constexpr SizeType Size = T::length();
+
+        static Mat Identity() { return 1.0f; }
 
         using T::T;
 
@@ -249,17 +264,17 @@ namespace mz {
             return (*this = createOrtho(left, right, bottom, top, zNear, zFar)); 
         }
 
-        static Mat createPerspective(const Scalar fov, const Scalar width, const Scalar height, const Scalar zNear, const Scalar zFar)
+        static Mat createPerspective(const Scalar fovy, const Scalar aspect, const Scalar zNear, const Scalar zFar)
         { 
 #ifdef MZ_RENDERER_OPENGL
-            return T(glm::perspectiveFovRH_NO(fov, width, height, zNear, zFar)); 
+            return T(glm::perspectiveRH_NO(fovy, aspect, zNear, zFar)); 
 #else
-            return T(glm::perspectiveFovRH_ZO(left, right, bottom, top, zNear, zFar)); 
+            return T(glm::perspectiveRH_ZO(fovy, aspect, zNear, zFar)); 
 #endif
         }
-        Mat& setPerspective(const Scalar fov, const Scalar width, const Scalar height, const Scalar zNear, const Scalar zFar)
+        Mat& setPerspective(const Scalar fov, const Scalar aspect, const Scalar zNear, const Scalar zFar)
         { 
-            return (*this = createPerspective(fov, width, height, zNear, zFar)); 
+            return (*this = createPerspective(fov, aspect, zNear, zFar)); 
         }
 
         static Mat createAngleAxis(const Vec3& axis, const Scalar angle) { return T(glm::axisAngleMatrix(*axis, angle)); }

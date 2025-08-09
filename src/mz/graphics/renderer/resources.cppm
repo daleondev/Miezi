@@ -3,7 +3,6 @@ module;
 export module mz.graphics.renderer.resources;
 
 import std;
-import glm;
 
 import mz.core.logging;
 import mz.core.behaviours;

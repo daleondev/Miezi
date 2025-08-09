@@ -170,3 +170,17 @@ target_compile_options(Miezi
     PRIVATE 
         $<$<CXX_COMPILER_ID:MSVC>:/W4>
         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>)
+
+# output dir
+set(OUTPUT_DIR 
+    ${CMAKE_CURRENT_SOURCE_DIR}/${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR})
+if(UNIX)
+    set(OUTPUT_DIR 
+        ${OUTPUT_DIR}/$<CONFIGURATION>)
+endif()
+set_target_properties(Miezi
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${OUTPUT_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${OUTPUT_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}/bin"
+)

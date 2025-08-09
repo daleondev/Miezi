@@ -1,12 +1,13 @@
 export module mz.graphics.renderer;
 
 import std;
-import glm;
 
 import mz.core.behaviours;
 
 import mz.graphics.renderer.resources;
 import mz.graphics.renderer.data;
+
+import mz.util.geometry;
 
 namespace mz { 
 
@@ -23,15 +24,15 @@ namespace mz {
     public:
         virtual ~IRenderer() = default;
 
-        virtual void clear(const glm::vec4& color) = 0;
-        // virtual void drawPoint(/*OrbitCamera& camera, */const glm::mat4& transform, const glm::vec4& color, const float lineWidth = 1.0f, const bool smooth = true);
-        // virtual void drawLine(/*OrbitCamera& camera, */const glm::mat4& transform, const glm::vec4& color, const float borderWidth = 1.0f, const glm::vec4& borderColor = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
-        // virtual void drawRect(/*OrbitCamera& camera, */const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, const float borderWidth = 1.0f, const glm::vec4& borderColor = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
-        // virtual void drawRect(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawCircle(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawCircle(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawBox(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
-        // virtual void drawBox(/*OrbitCamera& camera, */const glm::vec3& position, const glm::vec4& color, const float size);
+        virtual void clear(const Vec4& color) = 0;
+        // virtual void drawPoint(/*OrbitCamera& camera, */const glm::mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = true);
+        // virtual void drawLine(/*OrbitCamera& camera, */const glm::mat4& transform, const Vec4& color, const float borderWidth = 1.0f, const Vec4& borderColor = Vec4{0.0f, 0.0f, 0.0f, 1.0f});
+        // virtual void drawRect(/*OrbitCamera& camera, */const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, const float borderWidth = 1.0f, const Vec4& borderColor = Vec4{0.0f, 0.0f, 0.0f, 1.0f});
+        // virtual void drawRect(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
+        // virtual void drawCircle(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
+        // virtual void drawCircle(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
+        // virtual void drawBox(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
+        // virtual void drawBox(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
     };
 
     export class RenderBase : public IRenderer

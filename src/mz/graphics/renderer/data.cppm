@@ -3,11 +3,12 @@ module;
 export module mz.graphics.renderer.data;
 
 import std;
-import glm;
 
 import mz.core.logging;
 import mz.graphics.renderer.buffers;
 import mz.graphics.renderer.resources;
+
+import mz.util.geometry;
 
 namespace mz { 
 
@@ -52,7 +53,7 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
+            Vec3 pos;
         };
 
         inline static const BufferLayout layout = {
@@ -60,8 +61,8 @@ namespace mz {
         };
 
         static constexpr const std::array<Vertex, 2> vertices = {
-            Vertex{glm::vec3{0.0f, 0.0f, 0.0f}},
-            Vertex{glm::vec3{0.0f, 0.0f, 1.0f}}
+            Vertex{Vec3{0.0f, 0.0f, 0.0f}},
+            Vertex{Vec3{0.0f, 0.0f, 1.0f}}
         };
     };
 
@@ -73,8 +74,8 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec2 uv;
+            Vec3 pos;
+            Vec2 uv;
         };
 
         inline static const BufferLayout layout = {
@@ -83,10 +84,10 @@ namespace mz {
         };
 
         static constexpr const std::array<Vertex, 4> vertices = {
-            Vertex{glm::vec3{-0.5f, -0.5f, 0.0f},    glm::vec2{0.0f, 0.0f}},
-            Vertex{glm::vec3{ 0.5f, -0.5f, 0.0f},    glm::vec2{1.0f, 0.0f}},
-            Vertex{glm::vec3{ 0.5f,  0.5f, 0.0f},    glm::vec2{1.0f, 1.0f}},
-            Vertex{glm::vec3{-0.5f,  0.5f, 0.0f},    glm::vec2{0.0f, 1.0f}}
+            Vertex{Vec3{-0.5f, -0.5f, 0.0f},    Vec2{0.0f, 0.0f}},
+            Vertex{Vec3{ 0.5f, -0.5f, 0.0f},    Vec2{1.0f, 0.0f}},
+            Vertex{Vec3{ 0.5f,  0.5f, 0.0f},    Vec2{1.0f, 1.0f}},
+            Vertex{Vec3{-0.5f,  0.5f, 0.0f},    Vec2{0.0f, 1.0f}}
         };
 
         static constexpr const std::array<std::array<std::uint32_t, 3>, 2> indices = {
@@ -106,8 +107,8 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec2 uv;
+            Vec3 pos;
+            Vec2 uv;
         };
 
         inline static const BufferLayout layout = {
@@ -122,16 +123,16 @@ namespace mz {
             std::array<std::array<std::uint32_t, 3>, CIRCLE_SEGMENTS> indices{};
 
             // Center vertex
-            vertices[0].pos = glm::vec3(0.0f, 0.0f, 0.0f);
-            vertices[0].uv  = glm::vec2(0.5f, 0.5f);
+            vertices[0].pos = Vec3(0.0f, 0.0f, 0.0f);
+            vertices[0].uv  = Vec2(0.5f, 0.5f);
 
             for (std::uint16_t i = 0; i < CIRCLE_SEGMENTS; ++i) {
                 float theta = 2.0f * std::numbers::pi_v<float> * i / CIRCLE_SEGMENTS;
                 float x = std::cos(theta);
                 float y = std::sin(theta);
 
-                vertices[i + 1].pos = glm::vec3(x * CIRCLE_RADIUS, y * CIRCLE_RADIUS, 0.0f);
-                vertices[i + 1].uv  = glm::vec2(0.5f + 0.5f * x, 0.5f + 0.5f * y);
+                vertices[i + 1].pos = Vec3(x * CIRCLE_RADIUS, y * CIRCLE_RADIUS, 0.0f);
+                vertices[i + 1].uv  = Vec2(0.5f + 0.5f * x, 0.5f + 0.5f * y);
             }
 
             // Indices: triangle fan
@@ -154,9 +155,9 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec2 uv;
-            glm::vec3 normal;
+            Vec3 pos;
+            Vec2 uv;
+            Vec3 normal;
         };
 
         inline static const BufferLayout layout = {
@@ -166,10 +167,10 @@ namespace mz {
         };
 
         static constexpr const std::array<Vertex, 4> vertices = {
-            Vertex{glm::vec3{-0.5f, -0.5f, 0.0f},    glm::vec2{0.0f, 0.0f},     glm::vec3{0.0f, 0.0f, 1.0f}},
-            Vertex{glm::vec3{ 0.5f, -0.5f, 0.0f},    glm::vec2{1.0f, 0.0f},     glm::vec3{0.0f, 0.0f, 1.0f}},
-            Vertex{glm::vec3{ 0.5f,  0.5f, 0.0f},    glm::vec2{1.0f, 1.0f},     glm::vec3{0.0f, 0.0f, 1.0f}},
-            Vertex{glm::vec3{-0.5f,  0.5f, 0.0f},    glm::vec2{0.0f, 1.0f},     glm::vec3{0.0f, 0.0f, 1.0f}}
+            Vertex{Vec3{-0.5f, -0.5f, 0.0f},    Vec2{0.0f, 0.0f},     Vec3{0.0f, 0.0f, 1.0f}},
+            Vertex{Vec3{ 0.5f, -0.5f, 0.0f},    Vec2{1.0f, 0.0f},     Vec3{0.0f, 0.0f, 1.0f}},
+            Vertex{Vec3{ 0.5f,  0.5f, 0.0f},    Vec2{1.0f, 1.0f},     Vec3{0.0f, 0.0f, 1.0f}},
+            Vertex{Vec3{-0.5f,  0.5f, 0.0f},    Vec2{0.0f, 1.0f},     Vec3{0.0f, 0.0f, 1.0f}}
         };
 
         static constexpr const std::array<std::array<std::uint32_t, 3>, 2> indices = {
@@ -186,9 +187,9 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec2 uv;
-            glm::vec3 normal;
+            Vec3 pos;
+            Vec2 uv;
+            Vec3 normal;
         };
 
         inline static const BufferLayout layout = {
@@ -199,40 +200,40 @@ namespace mz {
 
         static constexpr const std::array<Vertex, 24> vertices = {
             // Front face (+Z)
-            Vertex{glm::vec3{-0.5f, -0.5f,  0.5f},    glm::vec2{0.0f, 0.0f},    glm::vec3{ 0.0f,  0.0f,  1.0f}}, // Bottom-left
-            Vertex{glm::vec3{ 0.5f, -0.5f,  0.5f},    glm::vec2{1.0f, 0.0f},    glm::vec3{ 0.0f,  0.0f,  1.0f}}, // Bottom-right
-            Vertex{glm::vec3{ 0.5f,  0.5f,  0.5f},    glm::vec2{1.0f, 1.0f},    glm::vec3{ 0.0f,  0.0f,  1.0f}}, // Top-right
-            Vertex{glm::vec3{-0.5f,  0.5f,  0.5f},    glm::vec2{0.0f, 1.0f},    glm::vec3{ 0.0f,  0.0f,  1.0f}}, // Top-left
+            Vertex{Vec3{-0.5f, -0.5f,  0.5f},    Vec2{0.0f, 0.0f},    Vec3{ 0.0f,  0.0f,  1.0f}}, // Bottom-left
+            Vertex{Vec3{ 0.5f, -0.5f,  0.5f},    Vec2{1.0f, 0.0f},    Vec3{ 0.0f,  0.0f,  1.0f}}, // Bottom-right
+            Vertex{Vec3{ 0.5f,  0.5f,  0.5f},    Vec2{1.0f, 1.0f},    Vec3{ 0.0f,  0.0f,  1.0f}}, // Top-right
+            Vertex{Vec3{-0.5f,  0.5f,  0.5f},    Vec2{0.0f, 1.0f},    Vec3{ 0.0f,  0.0f,  1.0f}}, // Top-left
 
             // Back face (-Z)
-            Vertex{glm::vec3{-0.5f, -0.5f, -0.5f},    glm::vec2{1.0f, 0.0f},    glm::vec3{ 0.0f,  0.0f, -1.0f}}, // Bottom-right
-            Vertex{glm::vec3{ 0.5f, -0.5f, -0.5f},    glm::vec2{0.0f, 0.0f},    glm::vec3{ 0.0f,  0.0f, -1.0f}}, // Bottom-left
-            Vertex{glm::vec3{ 0.5f,  0.5f, -0.5f},    glm::vec2{0.0f, 1.0f},    glm::vec3{ 0.0f,  0.0f, -1.0f}}, // Top-left
-            Vertex{glm::vec3{-0.5f,  0.5f, -0.5f},    glm::vec2{1.0f, 1.0f},    glm::vec3{ 0.0f,  0.0f, -1.0f}}, // Top-right
+            Vertex{Vec3{-0.5f, -0.5f, -0.5f},    Vec2{1.0f, 0.0f},    Vec3{ 0.0f,  0.0f, -1.0f}}, // Bottom-right
+            Vertex{Vec3{ 0.5f, -0.5f, -0.5f},    Vec2{0.0f, 0.0f},    Vec3{ 0.0f,  0.0f, -1.0f}}, // Bottom-left
+            Vertex{Vec3{ 0.5f,  0.5f, -0.5f},    Vec2{0.0f, 1.0f},    Vec3{ 0.0f,  0.0f, -1.0f}}, // Top-left
+            Vertex{Vec3{-0.5f,  0.5f, -0.5f},    Vec2{1.0f, 1.0f},    Vec3{ 0.0f,  0.0f, -1.0f}}, // Top-right
 
             // Left face (-X)
-            Vertex{glm::vec3{-0.5f, -0.5f, -0.5f},    glm::vec2{0.0f, 0.0f},    glm::vec3{-1.0f,  0.0f,  0.0f}}, // Bottom-left
-            Vertex{glm::vec3{-0.5f, -0.5f,  0.5f},    glm::vec2{1.0f, 0.0f},    glm::vec3{-1.0f,  0.0f,  0.0f}}, // Bottom-right
-            Vertex{glm::vec3{-0.5f,  0.5f,  0.5f},    glm::vec2{1.0f, 1.0f},    glm::vec3{-1.0f,  0.0f,  0.0f}}, // Top-right
-            Vertex{glm::vec3{-0.5f,  0.5f, -0.5f},    glm::vec2{0.0f, 1.0f},    glm::vec3{-1.0f,  0.0f,  0.0f}}, // Top-left
+            Vertex{Vec3{-0.5f, -0.5f, -0.5f},    Vec2{0.0f, 0.0f},    Vec3{-1.0f,  0.0f,  0.0f}}, // Bottom-left
+            Vertex{Vec3{-0.5f, -0.5f,  0.5f},    Vec2{1.0f, 0.0f},    Vec3{-1.0f,  0.0f,  0.0f}}, // Bottom-right
+            Vertex{Vec3{-0.5f,  0.5f,  0.5f},    Vec2{1.0f, 1.0f},    Vec3{-1.0f,  0.0f,  0.0f}}, // Top-right
+            Vertex{Vec3{-0.5f,  0.5f, -0.5f},    Vec2{0.0f, 1.0f},    Vec3{-1.0f,  0.0f,  0.0f}}, // Top-left
 
             // Right face (+X)
-            Vertex{glm::vec3{ 0.5f, -0.5f,  0.5f},    glm::vec2{0.0f, 0.0f},    glm::vec3{ 1.0f,  0.0f,  0.0f}}, // Bottom-left
-            Vertex{glm::vec3{ 0.5f, -0.5f, -0.5f},    glm::vec2{1.0f, 0.0f},    glm::vec3{ 1.0f,  0.0f,  0.0f}}, // Bottom-right
-            Vertex{glm::vec3{ 0.5f,  0.5f, -0.5f},    glm::vec2{1.0f, 1.0f},    glm::vec3{ 1.0f,  0.0f,  0.0f}}, // Top-right
-            Vertex{glm::vec3{ 0.5f,  0.5f,  0.5f},    glm::vec2{0.0f, 1.0f},    glm::vec3{ 1.0f,  0.0f,  0.0f}}, // Top-left
+            Vertex{Vec3{ 0.5f, -0.5f,  0.5f},    Vec2{0.0f, 0.0f},    Vec3{ 1.0f,  0.0f,  0.0f}}, // Bottom-left
+            Vertex{Vec3{ 0.5f, -0.5f, -0.5f},    Vec2{1.0f, 0.0f},    Vec3{ 1.0f,  0.0f,  0.0f}}, // Bottom-right
+            Vertex{Vec3{ 0.5f,  0.5f, -0.5f},    Vec2{1.0f, 1.0f},    Vec3{ 1.0f,  0.0f,  0.0f}}, // Top-right
+            Vertex{Vec3{ 0.5f,  0.5f,  0.5f},    Vec2{0.0f, 1.0f},    Vec3{ 1.0f,  0.0f,  0.0f}}, // Top-left
 
             // Top face (+Y)
-            Vertex{glm::vec3{-0.5f,  0.5f,  0.5f},    glm::vec2{0.0f, 0.0f},    glm::vec3{ 0.0f,  1.0f,  0.0f}}, // Bottom-left
-            Vertex{glm::vec3{ 0.5f,  0.5f,  0.5f},    glm::vec2{1.0f, 0.0f},    glm::vec3{ 0.0f,  1.0f,  0.0f}}, // Bottom-right
-            Vertex{glm::vec3{ 0.5f,  0.5f, -0.5f},    glm::vec2{1.0f, 1.0f},    glm::vec3{ 0.0f,  1.0f,  0.0f}}, // Top-right
-            Vertex{glm::vec3{-0.5f,  0.5f, -0.5f},    glm::vec2{0.0f, 1.0f},    glm::vec3{ 0.0f,  1.0f,  0.0f}}, // Top-left
+            Vertex{Vec3{-0.5f,  0.5f,  0.5f},    Vec2{0.0f, 0.0f},    Vec3{ 0.0f,  1.0f,  0.0f}}, // Bottom-left
+            Vertex{Vec3{ 0.5f,  0.5f,  0.5f},    Vec2{1.0f, 0.0f},    Vec3{ 0.0f,  1.0f,  0.0f}}, // Bottom-right
+            Vertex{Vec3{ 0.5f,  0.5f, -0.5f},    Vec2{1.0f, 1.0f},    Vec3{ 0.0f,  1.0f,  0.0f}}, // Top-right
+            Vertex{Vec3{-0.5f,  0.5f, -0.5f},    Vec2{0.0f, 1.0f},    Vec3{ 0.0f,  1.0f,  0.0f}}, // Top-left
 
             // Bottom face (-Y)
-            Vertex{glm::vec3{-0.5f, -0.5f, -0.5f},    glm::vec2{0.0f, 0.0f},    glm::vec3{ 0.0f, -1.0f,  0.0f}}, // Bottom-left
-            Vertex{glm::vec3{ 0.5f, -0.5f, -0.5f},    glm::vec2{1.0f, 0.0f},    glm::vec3{ 0.0f, -1.0f,  0.0f}}, // Bottom-right
-            Vertex{glm::vec3{ 0.5f, -0.5f,  0.5f},    glm::vec2{1.0f, 1.0f},    glm::vec3{ 0.0f, -1.0f,  0.0f}}, // Top-right
-            Vertex{glm::vec3{-0.5f, -0.5f,  0.5f},    glm::vec2{0.0f, 1.0f},    glm::vec3{ 0.0f, -1.0f,  0.0f}}  // Top-left
+            Vertex{Vec3{-0.5f, -0.5f, -0.5f},    Vec2{0.0f, 0.0f},    Vec3{ 0.0f, -1.0f,  0.0f}}, // Bottom-left
+            Vertex{Vec3{ 0.5f, -0.5f, -0.5f},    Vec2{1.0f, 0.0f},    Vec3{ 0.0f, -1.0f,  0.0f}}, // Bottom-right
+            Vertex{Vec3{ 0.5f, -0.5f,  0.5f},    Vec2{1.0f, 1.0f},    Vec3{ 0.0f, -1.0f,  0.0f}}, // Top-right
+            Vertex{Vec3{-0.5f, -0.5f,  0.5f},    Vec2{0.0f, 1.0f},    Vec3{ 0.0f, -1.0f,  0.0f}}  // Top-left
         };
 
         static constexpr std::array<std::array<std::uint32_t, 3>, 12> indices = {
@@ -269,9 +270,9 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec2 uv;
-            glm::vec3 normal;
+            Vec3 pos;
+            Vec2 uv;
+            Vec3 normal;
         };
 
         inline static const BufferLayout layout = {
@@ -302,9 +303,9 @@ namespace mz {
                     const float v = r * R; // [0,1]
 
                     vertices[vertexIndex++] = Vertex{
-                        glm::vec3{x * SPHERE_RADIUS, y * SPHERE_RADIUS, z * SPHERE_RADIUS},
-                        glm::vec2{u, v},
-                        glm::normalize(glm::vec3{x, y, z})
+                        Vec3{x * SPHERE_RADIUS, y * SPHERE_RADIUS, z * SPHERE_RADIUS},
+                        Vec2{u, v},
+                        Vec3{x, y, z}.normalized()
                     };
                 }
             }
@@ -335,9 +336,9 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec4 color;
-            glm::vec3 normal;
+            Vec3 pos;
+            Vec4 color;
+            Vec3 normal;
         };
 
         inline static const BufferLayout layout = {
@@ -358,8 +359,8 @@ namespace mz {
     {
         struct Vertex
         {
-            glm::vec3 pos;
-            glm::vec2 uv;
+            Vec3 pos;
+            Vec2 uv;
         };
 
         inline static const BufferLayout layout = {

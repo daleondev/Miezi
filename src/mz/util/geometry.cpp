@@ -10,7 +10,7 @@ import mz.core.logging;
 namespace mz {
 
     template<VectorType T>
-    Mat3 Vec<T>::skewSymmetricCross() const requires (Size == 3)
+    Mat3 Vec<T>::skewSymmetricMat() const requires (Size == 3)
     {
         const Vec3& v = *this;
         return {
@@ -19,7 +19,7 @@ namespace mz {
             {  v[1],-v[0], 0.0f }
         };
     }
-    template Mat3 Vec3::skewSymmetricCross() const requires (Size == 3);
+    template Mat3 Vec3::skewSymmetricMat() const requires (Size == 3);
 
     template<VectorType T>
     Mat3 Vec<T>::rotationTo(const Vec3& vec) const requires (Size == 3)
