@@ -123,7 +123,7 @@ namespace mz {
                 GLint length = 0;
                 glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length);
 
-                std::vector<GLchar> msg(length);
+                std::string msg(length, '\0');
                 glGetProgramInfoLog(m_program, length, &length, msg.data());
 
                 glDeleteProgram(m_program);
@@ -131,7 +131,7 @@ namespace mz {
                 glDeleteShader(m_fragmentShader);
                 glDeleteShader(m_vertexShader);
 
-                MZ_ERROR("Shader linking failed: {}", msg.data());
+                MZ_ERROR("Shader linking failed: {}", msg);
                 return std::unexpected(ShaderError::LinkError);
             }
 
@@ -204,12 +204,12 @@ namespace mz {
                 GLint length = 0;
                 glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 
-                std::vector<GLchar> msg(length);
+                std::string msg(length, '\0');
                 glGetShaderInfoLog(shader, length, &length, msg.data());
 
                 glDeleteShader(shader);
 
-                MZ_ERROR("Shader compilation failed: {}", msg.data());
+                MZ_ERROR("Shader compilation failed: {}", msg);
                 return false;
             }
 

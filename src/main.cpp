@@ -62,6 +62,12 @@ int main()
     m.inverted().transposed().print();
     m.invertedTransposed().print();
 
+    std::string str(10, '\0');
+    str[0] = '1';
+    str[4] = '5';
+
+    MZ_TRACE("{}", str);
+
     running = false;
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(100ms);

@@ -3,7 +3,7 @@ if(WIN32)
     cmake_minimum_required(VERSION 3.31.6 FATAL_ERROR)
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "0e5b6991-d74f-4b3d-a41c-cf096e0b2508")
 else()
-    cmake_minimum_required(VERSION 4.0.3 FATAL_ERROR)
+    cmake_minimum_required(VERSION 4.1.0 FATAL_ERROR)
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 endif()
 
