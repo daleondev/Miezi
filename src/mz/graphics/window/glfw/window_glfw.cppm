@@ -239,7 +239,7 @@ namespace mz {
                     paths[i] = cpaths[i];
                 }
 
-                MouseDroppedEvent event(paths);
+                MouseDroppedEvent event(&paths);
                 data.eventCallback(&event);
             });
         }

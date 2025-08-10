@@ -113,28 +113,28 @@ namespace mz {
     export class MouseDroppedEvent : public EventBase, public IIterable<std::string>
     {
     public:
-        MouseDroppedEvent(const DynamicArray<std::string>& paths) : m_paths{ paths } {}
+        MouseDroppedEvent(IContainer<std::string>* paths) : m_paths{ paths } {}
 
-        DynamicArray<std::string> getPaths() const { return m_paths; }
-        std::size_t getNumPaths() const { return m_paths.size(); }
-        std::string getPath(const std::size_t idx) const { return m_paths[idx]; }
+        IContainer<std::string>* getPaths() const { return m_paths; }
+        std::size_t getNumPaths() const { return m_paths->size(); }
+        std::string getPath(const std::size_t idx) const { return (*m_paths)[idx]; }
 
         std::string toString() const override
         {
             std::stringstream ss;
             ss << getName() << ":";
-            for (std::size_t i = 0; i < m_paths.size(); ++i)
-                ss << "\n\tPath_" << i << ": " << m_paths[i];
+            for (std::size_t i = 0; i < m_paths->size(); ++i)
+                ss << "\n\tPath_" << i << ": " << (*m_paths)[i];
             return ss.str();
         }
 
         EVENT_CLASS_TYPE(MouseDropped)
         EVENT_CLASS_CATEGORY(EventCategory::Mouse)
 
-        ITERABLE_CONTAINER(m_paths, std::string);
+        ITERABLE_CONTAINER_PTR(m_paths, std::string);
 
     private:
-        DynamicArray<std::string> m_paths;
+        IContainer<std::string>* m_paths;
 
     };
 

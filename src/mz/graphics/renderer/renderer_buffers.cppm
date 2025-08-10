@@ -105,7 +105,7 @@ namespace mz {
             calculateOffsetsAndStride();
         }
 
-        inline const DynamicArray<BufferElement>& getElements() const { return m_elements; }
+        inline const IContainer<BufferElement>* getElements() const { return &m_elements; }
         inline std::size_t getStride() const { return m_stride; }
 
         ITERABLE_CONTAINER(m_elements, BufferElement);

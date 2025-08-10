@@ -72,6 +72,7 @@ namespace mz {
         virtual std::ranges::iterator_t<std::span<T>> end() = 0;
         virtual std::ranges::iterator_t<std::span<const T>> end() const = 0;
 
+        virtual bool empty() const = 0;
         virtual std::size_t size() const = 0;
 
         virtual T* data() = 0;
@@ -146,7 +147,6 @@ namespace mz {
         }
 
         constexpr bool empty() const { return m_size == 0; } 
-
         constexpr std::size_t size() const { return m_size; } 
 
         constexpr auto begin() noexcept { return std::span{data(), m_size}.begin(); }
@@ -199,8 +199,16 @@ namespace mz {
     export template<typename T>
     using Vector = FlatContainer<std::vector<T>>;
 
+    export template<typename T>
+    class IContainer : public ICastable, public IIterable<T>
+    {
+    public:
+        virtual DynamicArray<T> toDynamicArray() const = 0;
+        virtual Vector<T> toVector() const = 0;
+    };
+
     export template<std::ranges::contiguous_range T>
-    class FlatContainer : public T, public IIterable<std::ranges::range_value_t<T>>
+    class FlatContainer : public T, public IContainer<std::ranges::range_value_t<T>>
     {
     public:
         using value_type = std::ranges::range_value_t<T>;
@@ -209,15 +217,8 @@ namespace mz {
         operator T&() { return static_cast<T&>(*this); }
         operator const T&() const { return static_cast<T&>(*this); }
 
-        DynamicArray<value_type> toDynamicArray()
-        {
-            DynamicArray<value_type> arr(T::size());
-            std::ranges::copy(*this, arr.begin());
-            return arr;
-        }
-
         template<std::size_t N>
-        Array<value_type, N> toArray()
+        Array<value_type, N> toArray() const
         {
             Array<value_type, N> arr;
             const std::size_t copySize = std::min(N, T::size());
@@ -225,7 +226,14 @@ namespace mz {
             return arr;
         }
 
-        Vector<value_type> toVector()
+        DynamicArray<value_type> toDynamicArray() const override
+        {
+            DynamicArray<value_type> arr(T::size());
+            std::ranges::copy(*this, arr.begin());
+            return arr;
+        }
+
+        Vector<value_type> toVector() const override
         {
             Vector<value_type> vec(T::size());
             std::ranges::copy(*this, vec.begin());
@@ -238,6 +246,7 @@ namespace mz {
         std::ranges::iterator_t<std::span<value_type>> end() override { return T::end(); }
         std::ranges::iterator_t<std::span<const value_type>> end() const override { return T::end(); }
 
+        bool empty() const  override { return T::empty(); }
         std::size_t size() const  override { return T::size(); }
 
         value_type* data() override { return T::data(); }
