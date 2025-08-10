@@ -5,7 +5,7 @@ export module mz.graphics.renderer.resources;
 import std;
 
 import mz.core.logging;
-import mz.core.behaviours;
+import mz.core.types;
 
 import mz.graphics.renderer.buffers;
 

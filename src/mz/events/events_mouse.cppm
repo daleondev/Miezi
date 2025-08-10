@@ -5,7 +5,7 @@ export module mz.events.mouse;
 import std;
 import glm;
 
-import mz.core.behaviours;
+import mz.core.types;
 import mz.events;
 
 namespace mz { 

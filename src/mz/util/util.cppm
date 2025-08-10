@@ -4,8 +4,8 @@ export module mz.util;
 
 import std;
 
-import mz.util.geometry;
-import mz.core.behaviours;
+import mz.math.geometry;
+import mz.core.types;
 import mz.core.logging;
 
 namespace mz {

@@ -1,4 +1,4 @@
-export module mz.core.behaviours;
+export module mz.core.types;
 
 import std;
 
@@ -99,19 +99,26 @@ namespace mz {
         Array(const std::size_t size) : Base(new T[size]), m_size{ size } {}
         Array(const std::size_t size, const T val) : Base(new T[size]), m_size{ size } 
         {
-            std::fill(Base::get(), Base::get()+m_size, val);
+            std::fill(begin(), end(), val);
         }
 
-        void resize(const std::size_t size, const T& val = T{}) {
-            Array newArray(size);
+        void clear() 
+        {
+            Base::reset();
+            m_size = 0;
+        }
+
+        void resize(const std::size_t size, const T& val = T{}) 
+        {
+            T* newArray = new T[size];
 
             const std::size_t copySize = (size < m_size) ? size : m_size;
-            std::move(begin(), end(), newArray.begin());
+            std::move(begin(), begin()+copySize, newArray);
 
             if (size > copySize)
-                std::fill(newArray.begin()+m_size, newArray.end(), val);
+                std::fill(newArray+copySize, newArray+size, val);
 
-            Base::reset(newArray.release());
+            Base::reset(newArray);
             m_size = size;
         }
 

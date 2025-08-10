@@ -1,11 +1,11 @@
 module;
 #include "mz/core/core.h"
-export module mz.util.geometry;
+export module mz.math.geometry;
 
 import std;
 import glm;
 
-export import mz.util.math;
+export import mz.math.constants;
 
 import mz.core.logging;
 

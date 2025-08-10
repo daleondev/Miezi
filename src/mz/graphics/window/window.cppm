@@ -3,7 +3,7 @@ export module mz.graphics.window;
 import std;
 import glm;
 
-import mz.core.behaviours;
+import mz.core.types;
 import mz.events;
 
 import mz.graphics.renderer;

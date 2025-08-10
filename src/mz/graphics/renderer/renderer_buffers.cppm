@@ -6,7 +6,7 @@ import std;
 import glm;
 
 import mz.core.logging;
-import mz.core.behaviours;
+import mz.core.types;
 
 namespace mz { 
 

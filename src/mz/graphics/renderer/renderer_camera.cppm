@@ -2,9 +2,9 @@ export module mz.graphics.renderer.camera;
 
 import std;
 
-import mz.core.behaviours;
+import mz.core.types;
 
-import mz.util.geometry;
+import mz.math.geometry;
 
 namespace mz {
 

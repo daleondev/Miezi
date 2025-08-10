@@ -4,7 +4,7 @@
 import std;
 import glm;
 
-import mz.core.behaviours;
+import mz.core.types;
 import mz.core.logging;
 
 import mz.events;
@@ -15,7 +15,7 @@ import mz.graphics.renderer;
 import mz.graphics.renderer.opengl;
 
 import mz.util;
-import mz.util.geometry;
+import mz.math.geometry;
 
 using namespace mz;
 
@@ -91,6 +91,9 @@ int main()
     printIterable<int>(&arr);
 
     arr.resize(20, 4);
+    printIterable<int>(&arr);
+
+    arr.resize(4, 12);
     printIterable<int>(&arr);
 
 

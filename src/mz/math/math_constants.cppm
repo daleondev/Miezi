@@ -1,4 +1,4 @@
-export module mz.util.math;
+export module mz.math.constants;
 
 import std;
 import glm;

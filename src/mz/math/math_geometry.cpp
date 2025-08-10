@@ -1,6 +1,6 @@
 module;
 #include "mz/core/core.h"
-module mz.util.geometry;
+module mz.math.geometry;
 
 import std;
 import glm;

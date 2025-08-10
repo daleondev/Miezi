@@ -8,7 +8,7 @@ import mz.core.logging;
 import mz.graphics.renderer.buffers;
 import mz.graphics.renderer.resources;
 
-import mz.util.geometry;
+import mz.math.geometry;
 
 namespace mz { 
 

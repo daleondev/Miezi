@@ -12,7 +12,7 @@ import mz.graphics.window;
 import mz.graphics.renderer;
 import mz.graphics.renderer.opengl.resources;
 
-import mz.util.geometry;
+import mz.math.geometry;
 
 namespace mz { 
 

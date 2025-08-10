@@ -2,7 +2,7 @@ export module mz.events;
 
 import std;
 
-import mz.core.behaviours;
+import mz.core.types;
 
 namespace mz { 
 
