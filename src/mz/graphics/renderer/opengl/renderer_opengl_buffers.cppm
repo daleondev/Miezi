@@ -6,7 +6,9 @@ export module mz.graphics.renderer.opengl.buffers;
 
 import std;
 
+import mz.core.types;
 import mz.core.logging;
+
 import mz.graphics.renderer.buffers;
 
 namespace mz { 
@@ -24,10 +26,10 @@ namespace mz {
             glDeleteBuffers(1, &m_buffer);
         }
 
-        void allocate(const std::vector<float>& vertices) override
+        void allocate(const IIterable<float>* vertices) override
         {
             glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
-            glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices->size()*sizeof(GLfloat), vertices->data(), GL_STATIC_DRAW);
         }
 
         void bind() const override
@@ -58,11 +60,11 @@ namespace mz {
             glDeleteBuffers(1, &m_buffer);
         }
 
-        void allocate(const std::vector<std::uint32_t>& indices) override
+        void allocate(const IIterable<std::uint32_t>* indices) override
         {
-            m_count = indices.size();
+            m_count = indices->size();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size()*sizeof(GLuint), indices->data(), GL_STATIC_DRAW);
         }
 
         void bind() const override

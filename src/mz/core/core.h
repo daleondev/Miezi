@@ -66,11 +66,11 @@
                                                         value_type& operator[](const std::size_t i) override { return (*container)[i]; } \
                                                         const value_type& operator[](const std::size_t i) const override { return (*container)[i]; }
 
-#define ITERABLE_CONTAINER(container, value_type)   std::ranges::iterator_t<std::span<value_type>> begin() override { return container.begin(); } \
-                                                    std::ranges::iterator_t<std::span<const value_type>> begin() const override { return container.begin(); } \
+#define ITERABLE_CONTAINER(container, value_type)   IIterable<value_type>::Iterator begin() override { return container.begin(); } \
+                                                    IIterable<value_type>::ConstIterator begin() const override { return container.begin(); } \
                                                     \
-                                                    std::ranges::iterator_t<std::span<value_type>> end() override { return container.end(); } \
-                                                    std::ranges::iterator_t<std::span<const value_type>> end() const override { return container.end(); } \
+                                                    IIterable<value_type>::Iterator end() override { return container.end(); } \
+                                                    IIterable<value_type>::ConstIterator end() const override { return container.end(); } \
                                                     \
                                                     bool empty() const override { return container.empty(); } \
                                                     std::size_t size() const override { return container.size(); } \

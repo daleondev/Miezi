@@ -27,16 +27,18 @@ namespace mz {
     export class VertexArrayBase : public IRenderResource
     {
     public:
+        using VertexBufferPtr = std::shared_ptr<VertexBufferBase>;
+
         virtual ~VertexArrayBase() = default;
 
         virtual void addVertexBuffer(const std::shared_ptr<VertexBufferBase>& vertexBuffer) = 0;
         virtual void setIndexBuffer(const std::shared_ptr<IndexBufferBase>& indexBuffer) = 0;
 
-        inline const std::vector<std::shared_ptr<VertexBufferBase>>& getVertexBuffers() const { return m_vertexBuffers; }
+        inline const Vector<VertexBufferPtr>& getVertexBuffers() const { return m_vertexBuffers; }
         inline const std::shared_ptr<IndexBufferBase>& getIndexBuffer() const { return m_indexBuffer; }
 
     protected:
-        std::vector<std::shared_ptr<VertexBufferBase>> m_vertexBuffers;
+        Vector<VertexBufferPtr> m_vertexBuffers;
         std::shared_ptr<IndexBufferBase> m_indexBuffer;
 
     };

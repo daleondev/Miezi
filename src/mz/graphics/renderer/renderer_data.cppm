@@ -5,29 +5,14 @@ export module mz.graphics.renderer.data;
 import std;
 
 import mz.core.logging;
+import mz.core.types;
+
 import mz.graphics.renderer.buffers;
 import mz.graphics.renderer.resources;
 
 import mz.math.geometry;
 
 namespace mz { 
-
-    template <typename T>
-    concept BufferType = std::same_as<T, float> || std::same_as<T, std::uint32_t>;
-
-    // todo: custom memory stuff -> reinterpret data, dont copy
-    export template <typename S, BufferType D>
-    std::vector<D> convertBufferData(const std::vector<S>& source)
-    {
-        static_assert(std::is_trivially_copyable_v<S>, "Source type must be trivially copyable");
-        static_assert(std::is_trivially_copyable_v<D>, "Destination type must be trivially copyable");
-
-        MZ_ASSERT(sizeof(S) % sizeof(D) == 0 || sizeof(D) % sizeof(S) == 0, "Incompatible type sizes for conversion");
-        const std::size_t sizeInBytes = source.size()*sizeof(S);
-        std::vector<D> dest(sizeInBytes / sizeof(D));
-        std::memcpy(dest.data(), source.data(), sizeInBytes);
-        return dest;
-    };
 
     export struct RenderData
     {
@@ -60,7 +45,7 @@ namespace mz {
             { ShaderDataType::Float3, "a_pos" }
         };
 
-        static constexpr const std::array<Vertex, 2> vertices = {
+        static constexpr const Array<Vertex, 2> vertices = std::array<Vertex, 2>{
             Vertex{Vec3{0.0f, 0.0f, 0.0f}},
             Vertex{Vec3{0.0f, 0.0f, 1.0f}}
         };
@@ -347,8 +332,8 @@ namespace mz {
             { ShaderDataType::Float3, "a_normal" }
         };
 
-        std::vector<Vertex> vertices = {};
-        std::vector<std::array<std::uint32_t, 3>> indices = {};
+        Vector<Vertex> vertices = {};
+        Vector<std::array<std::uint32_t, 3>> indices = {};
     };
 
     //------------------------------------------------------
@@ -368,7 +353,7 @@ namespace mz {
             { ShaderDataType::Float2, "a_uv" }
         };
 
-        std::vector<Vertex> vertices = {};
+        Vector<Vertex> vertices = {};
     };
 
 }

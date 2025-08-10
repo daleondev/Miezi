@@ -62,7 +62,7 @@ namespace mz {
             MZ_ASSERT(vertexBuffer->is<GlVertexBuffer>(), "Invalid Vertex Buffer type");
 
             const auto& layout = vertexBuffer->getLayout();
-            MZ_ASSERT(!layout.getElements()->empty(), "Vertex buffer has no layout!");
+            MZ_ASSERT(!layout.getElements().empty(), "Vertex buffer has no layout!");
 
             glBindVertexArray(m_array);
             vertexBuffer->bind();     

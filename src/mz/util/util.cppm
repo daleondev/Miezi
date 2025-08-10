@@ -4,15 +4,16 @@ export module mz.util;
 
 import std;
 
-import mz.math.geometry;
 import mz.core.types;
 import mz.core.logging;
 
+import mz.math.geometry;
+
 namespace mz {
 
-    export std::vector<std::string> splitString(std::string str, const char* delims)
+    export Vector<std::string> splitString(std::string str, const char* delims)
     {
-        std::vector<std::string> parts;
+        Vector<std::string> parts;
 
         std::size_t prev = 0, pos;
         while ((pos = str.find_first_of(delims, prev)) != std::string::npos) {

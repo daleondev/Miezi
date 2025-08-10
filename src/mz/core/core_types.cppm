@@ -45,16 +45,16 @@ namespace mz {
         }
 
         template<class T>
-        T* asPtrUnchecked() { return static_cast<T*>(this); }
+        T* asPtrUnchecked() noexcept { return static_cast<T*>(this); }
 
         template<class T>
-        const T* asPtrUnchecked() const { return static_cast<const T*>(this); }
+        const T* asPtrUnchecked() const noexcept { return static_cast<const T*>(this); }
 
         template<class T>
-        T& asRefUnchecked() { return *asPtrUnchecked<T>(); }
+        T& asRefUnchecked() noexcept { return *asPtrUnchecked<T>(); }
 
         template<class T>
-        const T& asRefUnchecked() const { return *asPtrUnchecked<T>(); }
+        const T& asRefUnchecked() const noexcept { return *asPtrUnchecked<T>(); }
 
         template<class T>
         T asCopyUnchecked() const { return *asPtrUnchecked<T>(); }
@@ -64,13 +64,16 @@ namespace mz {
     class IIterable 
     {
     public:
+        using Iterator = std::ranges::iterator_t<std::span<T>>;
+        using ConstIterator = std::ranges::iterator_t<std::span<const T>>;
+
         ~IIterable() = default;
 
-        virtual std::ranges::iterator_t<std::span<T>> begin() = 0;
-        virtual std::ranges::iterator_t<std::span<const T>> begin() const = 0;
+        virtual Iterator begin() = 0;
+        virtual ConstIterator begin() const = 0;
 
-        virtual std::ranges::iterator_t<std::span<T>> end() = 0;
-        virtual std::ranges::iterator_t<std::span<const T>> end() const = 0;
+        virtual Iterator end() = 0;
+        virtual ConstIterator end() const = 0;
 
         virtual bool empty() const = 0;
         virtual std::size_t size() const = 0;
@@ -81,6 +84,11 @@ namespace mz {
         virtual T& operator[](const std::size_t i) = 0;
         virtual const T& operator[](const std::size_t i) const = 0;
     };
+
+    export template<typename T>
+    using IterableSharedPtr = std::shared_ptr<IIterable<T>>;
+    export template<typename T>
+    using IterableUnqiuePtr = std::unique_ptr<IIterable<T>>;
 
     export template<typename T> 
     requires std::default_initializable<T>
@@ -101,7 +109,7 @@ namespace mz {
         { 
             other.m_size = 0; 
         }
-        ManagedDynamicArray(const std::initializer_list<T>& data) noexcept : m_data{ std::make_unique<T[]>(data.size()) }, m_size{ data.size() } 
+        ManagedDynamicArray(const std::initializer_list<T>& data) : m_data{ std::make_unique<T[]>(data.size()) }, m_size{ data.size() } 
         {
             std::ranges::move(data, begin());
         }
@@ -190,11 +198,11 @@ namespace mz {
     export template<std::ranges::contiguous_range T>
     class FlatContainer;
 
-    export template<typename T>
-    using DynamicArray = FlatContainer<ManagedDynamicArray<T>>;
-
     export template<typename T, std::size_t N>
     using Array = FlatContainer<std::array<T, N>>;
+
+    export template<typename T>
+    using DynamicArray = FlatContainer<ManagedDynamicArray<T>>;
 
     export template<typename T>
     using Vector = FlatContainer<std::vector<T>>;
@@ -212,7 +220,11 @@ namespace mz {
     {
     public:
         using value_type = std::ranges::range_value_t<T>;
+
         using T::T;
+
+        constexpr FlatContainer(const T& cont) noexcept : T{ cont } { }
+        constexpr FlatContainer(T&& cont) noexcept : T{ std::move(cont) } { }
 
         operator T&() { return static_cast<T&>(*this); }
         operator const T&() const { return static_cast<T&>(*this); }
@@ -240,11 +252,11 @@ namespace mz {
             return vec;
         }
 
-        std::ranges::iterator_t<std::span<value_type>> begin() override { return T::begin(); }
-        std::ranges::iterator_t<std::span<const value_type>> begin() const override { return T::begin(); }
+        IIterable<value_type>::Iterator begin() override { return T::begin(); }
+        IIterable<value_type>::ConstIterator begin() const override { return T::begin(); }
 
-        std::ranges::iterator_t<std::span<value_type>> end() override { return T::end(); }
-        std::ranges::iterator_t<std::span<const value_type>> end() const override { return T::end(); }
+        IIterable<value_type>::Iterator end() override { return T::end(); }
+        IIterable<value_type>::ConstIterator end() const override { return T::end(); }
 
         bool empty() const  override { return T::empty(); }
         std::size_t size() const  override { return T::size(); }

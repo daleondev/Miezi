@@ -105,8 +105,8 @@ namespace mz {
             calculateOffsetsAndStride();
         }
 
-        inline const IContainer<BufferElement>* getElements() const { return &m_elements; }
-        inline std::size_t getStride() const { return m_stride; }
+        const DynamicArray<BufferElement>& getElements() const { return m_elements; }
+        std::size_t getStride() const { return m_stride; }
 
         ITERABLE_CONTAINER(m_elements, BufferElement);
 
@@ -115,7 +115,7 @@ namespace mz {
         {
             std::size_t offset = 0;
             m_stride = 0;
-            for (auto& element : m_elements) {
+            for (auto& element : *this) {
                 element.offset = offset;
                 offset += element.size;
                 m_stride += element.size;
@@ -135,7 +135,7 @@ namespace mz {
         virtual void bind() const = 0;
         virtual void release() const = 0;
 
-        virtual void allocate(const std::vector<T>& data) = 0;
+        virtual void allocate(const IIterable<T>* data) = 0;
     };
 
     //------------------------------------------------------
