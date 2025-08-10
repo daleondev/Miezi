@@ -51,12 +51,16 @@
 //                      Types
 //------------------------------------------------------
 
-#define ITERABLE_CONTAINER(value_type, container)   constexpr value_type* begin() override { return container.begin(); } \
-                                                    constexpr value_type* end() override { return container.end(); } \
-                                                    constexpr const value_type* begin() const override { return container.begin(); } \
-                                                    constexpr const value_type* end() const override { return container.end(); } \
-                                                    constexpr std::size_t size() const override { return container.size(); } \
-                                                    constexpr value_type* data() override { return container.data(); } \
-                                                    constexpr const value_type* data() const override { return container.data(); } \
-                                                    constexpr virtual value_type& operator[](const std::size_t i) override { return container[i]; } \
-                                                    constexpr virtual const value_type& operator[](const std::size_t i) const override { return container[i]; }
+#define ITERABLE_CONTAINER(container, value_type)   std::ranges::iterator_t<std::span<value_type>> begin() override { return container.begin(); } \
+                                                    std::ranges::iterator_t<std::span<const value_type>> begin() const override { return container.begin(); } \
+                                                    \
+                                                    std::ranges::iterator_t<std::span<value_type>> end() override { return container.end(); } \
+                                                    std::ranges::iterator_t<std::span<const value_type>> end() const override { return container.end(); } \
+                                                    \
+                                                    std::size_t size() const override { return container.size(); } \
+                                                    \
+                                                    value_type* data() override { return container.data(); } \
+                                                    const value_type* data() const override { return container.data(); } \
+                                                    \
+                                                    value_type& operator[](const std::size_t i) override { return container[i]; } \
+                                                    const value_type& operator[](const std::size_t i) const override { return container[i]; }

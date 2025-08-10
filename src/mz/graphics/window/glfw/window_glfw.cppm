@@ -11,6 +11,7 @@ export module mz.graphics.window.glfw;
 import std;
 import glm;
 
+import mz.core.types;
 import mz.core.logging;
 
 import mz.events;
@@ -233,7 +234,7 @@ namespace mz {
             glfwSetDropCallback(m_window.get(), [](GLFWwindow* window, int pathCount, const char* cpaths[]) -> void {
                 auto& data = *reinterpret_cast<WindowData*>(glfwGetWindowUserPointer(window));
                 
-                std::vector<std::string> paths(pathCount);
+                DynamicArray<std::string> paths(pathCount);
                 for (int i = 0; i < pathCount; ++i) {
                     paths[i] = cpaths[i];
                 }

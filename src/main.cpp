@@ -33,18 +33,7 @@ public:
         };
     }
 
-    constexpr int* begin() override { return m_ints.data(); }
-    constexpr int* end() override { return m_ints.data() + m_ints.size(); }
-    constexpr const int* begin() const override { return m_ints.data(); }
-    constexpr const int* end() const override { return m_ints.data() + m_ints.size(); }
-
-    constexpr std::size_t size() const override { return m_ints.size(); }
-
-    constexpr int* data() override { return m_ints.data(); }
-    constexpr const int* data() const override { return m_ints.data(); }
-
-    constexpr int& operator[](const std::size_t i) override { return m_ints[i]; }
-    constexpr const int& operator[](const std::size_t i) const override { return m_ints[i]; }
+    ITERABLE_CONTAINER(m_ints, int);
 
 private:
     std::vector<int> m_ints;
@@ -100,7 +89,7 @@ int main()
     // auto v = cont.toVector();
     // auto 
 
-    Array<int> arr(10, 3); 
+    DynamicArray<int> arr(10, 3); 
     // printRange(arr);
 
     arr.resize(20, 4);
@@ -109,23 +98,12 @@ int main()
     arr.resize(4, 12);
     // printRange(arr);
 
-    Array<int> arr2 = std::move(arr);
+    auto arr2 = arr.toArray<4>();
     // printRange(arr2);
 
-    auto& x = arr.unwrap();
 
-    Vector<std::tuple<int, std::string, int>> map {
-        {0, "hello", 5},
-        {1, "world", 124},
-        {2, "!!!", -23}
-    };
-    for (auto key : map.keys())
-        std::println("{}", key);
-    for (auto value : map.values())
-        std::println("{}", value);
-    for (auto pair : map)
-        std::println("{}", pair);
 
+    printIterable<int>(&arr2);
     
 
     running = false;

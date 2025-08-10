@@ -113,9 +113,9 @@ namespace mz {
     export class MouseDroppedEvent : public EventBase, public IIterable<std::string>
     {
     public:
-        MouseDroppedEvent(const Array<std::string>& paths) : m_paths{ paths } {}
+        MouseDroppedEvent(const DynamicArray<std::string>& paths) : m_paths{ paths } {}
 
-        Array<std::string> getPaths() const { return m_paths; }
+        DynamicArray<std::string> getPaths() const { return m_paths; }
         std::size_t getNumPaths() const { return m_paths.size(); }
         std::string getPath(const std::size_t idx) const { return m_paths[idx]; }
 
@@ -131,10 +131,10 @@ namespace mz {
         EVENT_CLASS_TYPE(MouseDropped)
         EVENT_CLASS_CATEGORY(EventCategory::Mouse)
 
-        ITERABLE_CONTAINER(m_paths);
+        ITERABLE_CONTAINER(m_paths, std::string);
 
     private:
-        Array<std::string> m_paths;
+        DynamicArray<std::string> m_paths;
 
     };
 
