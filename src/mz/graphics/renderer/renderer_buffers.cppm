@@ -98,9 +98,6 @@ namespace mz {
     export class BufferLayout : IIterable<BufferElement>
     {
     public:
-        typedef std::vector<BufferElement>::iterator BufferLayoutIterator;
-        typedef std::vector<BufferElement>::const_iterator BufferLayoutConstIterator;
-
         BufferLayout() = default;
         BufferLayout(const std::initializer_list<BufferElement>& elements)
             : m_elements(elements), m_stride(0)
@@ -108,7 +105,7 @@ namespace mz {
             calculateOffsetsAndStride();
         }
 
-        inline const std::vector<BufferElement>& getElements() const { return m_elements; }
+        inline const DynamicArray<BufferElement>& getElements() const { return m_elements; }
         inline std::size_t getStride() const { return m_stride; }
 
         ITERABLE_CONTAINER(m_elements, BufferElement);
@@ -125,7 +122,7 @@ namespace mz {
             }
         }
 
-        std::vector<BufferElement> m_elements;
+        DynamicArray<BufferElement> m_elements;
         std::size_t m_stride;
     };
 

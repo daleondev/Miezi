@@ -100,6 +100,30 @@ namespace mz {
         { 
             other.m_size = 0; 
         }
+        ManagedDynamicArray(const std::initializer_list<T>& data) noexcept : m_data{ std::make_unique<T[]>(data.size()) }, m_size{ data.size() } 
+        {
+            std::ranges::move(data, begin());
+        }
+
+        ManagedDynamicArray& operator=(const ManagedDynamicArray& other)
+        {
+            if (this != &other) {
+                ManagedDynamicArray temp(other);
+                std::swap(m_data, temp.m_data);
+                std::swap(m_size, temp.m_size);
+            }
+            return *this;
+        }
+
+        ManagedDynamicArray& operator=(ManagedDynamicArray&& other) noexcept
+        {
+            if (this != &other) {
+                m_data = std::move(other.m_data);
+                m_size = other.m_size;
+                other.m_size = 0;
+            }
+            return *this;
+        }
 
         void clear() noexcept
         {
@@ -120,6 +144,8 @@ namespace mz {
             m_data.swap(newData);
             m_size = size;
         }
+
+        constexpr bool empty() const { return m_size == 0; } 
 
         constexpr std::size_t size() const { return m_size; } 
 
