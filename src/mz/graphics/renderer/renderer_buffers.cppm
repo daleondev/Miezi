@@ -111,18 +111,18 @@ namespace mz {
         inline const std::vector<BufferElement>& getElements() const { return m_elements; }
         inline std::size_t getStride() const { return m_stride; }
 
-        BufferElement* begin() override { return m_elements.data(); }
-        BufferElement* end() override { return m_elements.data() + m_elements.size(); }
-        const BufferElement* begin() const override { return m_elements.data(); }
-        const BufferElement* end() const override { return m_elements.data() + m_elements.size(); }
+        constexpr BufferElement* begin() override { return m_elements.data(); }
+        constexpr BufferElement* end() override { return m_elements.data() + m_elements.size(); }
+        constexpr const BufferElement* begin() const override { return m_elements.data(); }
+        constexpr const BufferElement* end() const override { return m_elements.data() + m_elements.size(); }
 
         constexpr std::size_t size() const override { return m_elements.size(); }
 
-        BufferElement* data() override { return m_elements.data(); }
-        const BufferElement* data() const override { return m_elements.data(); }
+        constexpr BufferElement* data() override { return m_elements.data(); }
+        constexpr const BufferElement* data() const override { return m_elements.data(); }
 
-        virtual BufferElement& operator[](const std::size_t i) override { return m_elements[i]; }
-        virtual const BufferElement& operator[](const std::size_t i) const override { return m_elements[i]; }
+        constexpr virtual BufferElement& operator[](const std::size_t i) override { return m_elements[i]; }
+        constexpr virtual const BufferElement& operator[](const std::size_t i) const override { return m_elements[i]; }
 
     private:
         void calculateOffsetsAndStride()

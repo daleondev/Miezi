@@ -1,7 +1,15 @@
 #pragma once
 
+//------------------------------------------------------
+//                      General
+//------------------------------------------------------
+
 #define MZ_BIT(i)               (1 << i)
 #define MZ_UNUSED(x)            (void)x
+
+//------------------------------------------------------
+//                      Logging
+//------------------------------------------------------
 
 #define METHOD_NAME             mz::functionToLocation(std::source_location::current().function_name())
 
@@ -38,3 +46,17 @@
 #else
     #define MZ_ASSERT(x, msg, ...) ((void)0)
 #endif
+
+//------------------------------------------------------
+//                      Types
+//------------------------------------------------------
+
+#define ITERABLE_CONTAINER(value_type, container)   constexpr value_type* begin() override { return container.begin(); } \
+                                                    constexpr value_type* end() override { return container.end(); } \
+                                                    constexpr const value_type* begin() const override { return container.begin(); } \
+                                                    constexpr const value_type* end() const override { return container.end(); } \
+                                                    constexpr std::size_t size() const override { return container.size(); } \
+                                                    constexpr value_type* data() override { return container.data(); } \
+                                                    constexpr const value_type* data() const override { return container.data(); } \
+                                                    constexpr virtual value_type& operator[](const std::size_t i) override { return container[i]; } \
+                                                    constexpr virtual const value_type& operator[](const std::size_t i) const override { return container[i]; }

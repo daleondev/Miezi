@@ -95,8 +95,8 @@ namespace mz {
         Scalar orientedAngleTo(const Vec2& other) const requires (Size == 2) { return glm::orientedAngle(*this->normalized(), *other.normalized()); }
         Scalar orientedAngleTo(const Vec3& other, const Vec3& ref) const requires (Size == 3) { return glm::orientedAngle(*this->normalized(), *other.normalized(), *ref.normalized()); }
 
-        operator T&() { return *this; }
-        operator const T&() const { return *this; }
+        operator T&() { return **this; }
+        operator const T&() const { return **this; }
 
         Scalar operator^(const Vec& other) const { return dot(other); }
         Vec operator%(const Vec& other) const requires (Size <= 3) { return cross(other); }
@@ -310,8 +310,8 @@ namespace mz {
         Mat componentMult(const Mat& other) const { return glm::matrixCompMult(**this, *other); }
         Mat outerProduct(const Mat& other) const { return glm::outerProduct(**this, *other); }
 
-        operator T&() { return *this; }
-        operator const T&() const { return *this; }
+        operator T&() { return **this; }
+        operator const T&() const { return **this; }
 
         Mat3 asMat3() const { return *this; }
         Mat4 asMat4() const { return *this; }

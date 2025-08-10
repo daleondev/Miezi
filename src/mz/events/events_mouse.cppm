@@ -1,4 +1,5 @@
 module;
+#include "mz/core/core.h"
 #include "events.h"
 export module mz.events.mouse;
 
@@ -112,9 +113,9 @@ namespace mz {
     export class MouseDroppedEvent : public EventBase, public IIterable<std::string>
     {
     public:
-        MouseDroppedEvent(const std::vector<std::string>& paths) : m_paths(paths) {}
+        MouseDroppedEvent(const Array<std::string>& paths) : m_paths{ paths } {}
 
-        std::vector<std::string> getPaths() const { return m_paths; }
+        Array<std::string> getPaths() const { return m_paths; }
         std::size_t getNumPaths() const { return m_paths.size(); }
         std::string getPath(const std::size_t idx) const { return m_paths[idx]; }
 
@@ -130,21 +131,10 @@ namespace mz {
         EVENT_CLASS_TYPE(MouseDropped)
         EVENT_CLASS_CATEGORY(EventCategory::Mouse)
 
-        std::string* begin() override { return m_paths.data(); }
-        std::string* end() override { return m_paths.data() + m_paths.size(); }
-        const std::string* begin() const override { return m_paths.data(); }
-        const std::string* end() const override { return m_paths.data() + m_paths.size(); }
-
-        constexpr std::size_t size() const override { return m_paths.size(); }
-
-        std::string* data() override { return m_paths.data(); }
-        const std::string* data() const override { return m_paths.data(); }
-
-        virtual std::string& operator[](const std::size_t i) override { return m_paths[i]; }
-        virtual const std::string& operator[](const std::size_t i) const override { return m_paths[i]; }
+        ITERABLE_CONTAINER(m_paths);
 
     private:
-        std::vector<std::string> m_paths;
+        Array<std::string> m_paths;
 
     };
 
