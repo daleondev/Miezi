@@ -64,6 +64,12 @@ namespace mz {
             glEnable(GL_PROGRAM_POINT_SIZE);
             glEnable(GL_MULTISAMPLE);
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+            // -------------------------------------------------------
+
+            auto shader = m_shaderStore->loadFromFiles("assets/shaders/Line");
+            if (shader)
+                m_pointData.shader = *shader;
         }
         ~GlRenderer() = default;
 
@@ -73,6 +79,16 @@ namespace mz {
 
             glClearColor(color.r, color.g, color.b, color.a);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
+
+        void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size = 1.0f) const override
+        {
+            m_pointData.shader->bind();
+            m_pointData.shader->uploadVec3("u_pos", position);
+            m_pointData.shader->uploadVec4("u_color", color);
+
+            glPointSize(size);
+            glDrawArrays(GL_POINTS, 0, 1);
         }
     };
 

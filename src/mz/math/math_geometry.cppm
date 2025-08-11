@@ -52,19 +52,19 @@ namespace mz {
         Vec(const T& vec) : T(vec) {}
         Vec(T&& vec) : T(std::move(vec)) {}
 
-        bool isFinite() const { return !glm::any(glm::isinf(**this)); }
-        bool hasNaN() const { return glm::any(glm::isnan(**this)); }
+        bool isFinite() const { return !glm::any(glm::isinf((T&)*this)); }
+        bool hasNaN() const { return glm::any(glm::isnan((T&)*this)); }
 
         Mat3 skewSymmetricMat() const requires (Size == 3);
         Mat3 rotationTo(const Vec3& vec) const requires (Size == 3);
 
-        Scalar length() const { return glm::length(**this); }
-        Scalar dist(const Vec& other) const { return glm::distance(**this, other); }
+        Scalar length() const { return glm::length((T&)*this); }
+        Scalar dist(const Vec& other) const { return glm::distance((T&)*this, other); }
 
         Vec3 projected(const Mat4 model, const Mat4 proj, const Vec4 viewPort) const requires (Size == 3);
         Vec3& project(const Mat4 model, const Mat4 proj, const Vec4 viewPort) requires (Size == 3);
 
-        Vec normalized() const { return glm::normalize(**this); }
+        Vec normalized() const { return glm::normalize((T&)*this); }
         Vec& normalize() { return (*this = normalized()); }
         bool isNormalized() const { return glm::epsilonEqual<float>(length(), 1.0f, glm::epsilon<float>()); }
 
@@ -72,31 +72,31 @@ namespace mz {
         Vec& normalizeHomogeneous() requires (Size == 4) { return (*this = normalizedHomogeneous()); }
         bool isNormalizedHomogeneous() const requires (Size == 4) { return glm::epsilonEqual<float>(this->w, 1.0f, glm::epsilon<float>()); }
 
-        Vec reflected(const Vec& normal) const { return glm::reflect(**this, *normal); }
+        Vec reflected(const Vec& normal) const { return glm::reflect((T&)*this, *normal); }
         Vec& reflect(const Vec& normal) { return (*this = reflected(normal)); }
 
-        Vec2 rotated(const Scalar angle) const requires (Size == 2) { return glm::rotate(**this, angle); }
+        Vec2 rotated(const Scalar angle) const requires (Size == 2) { return glm::rotate((T&)*this, angle); }
         Vec2& rotate(const Scalar angle) requires (Size == 2) { return (*this = rotated(angle)); }
-        Vec rotatedAround(const Vec& axis, const Scalar angle) const requires (Size >= 3) { return glm::rotate(**this, angle, *axis); }
+        Vec rotatedAround(const Vec& axis, const Scalar angle) const requires (Size >= 3) { return glm::rotate((T&)*this, angle, *axis); }
         Vec& rotateAround(const Vec& axis, const Scalar angle) requires (Size >= 3) { return (*this = rotatedAround(axis, angle)); }
 
-        Vec rotatedX(const Scalar angle) const requires (Size >= 3) { return glm::rotateX(**this, angle); }
+        Vec rotatedX(const Scalar angle) const requires (Size >= 3) { return glm::rotateX((T&)*this, angle); }
         Vec& rotateX(const Scalar angle) requires (Size >= 3) { return (*this = rotatedX(angle)); }
-        Vec rotatedY(const Scalar angle) const requires (Size >= 3) { return glm::rotateY(**this, angle); }
+        Vec rotatedY(const Scalar angle) const requires (Size >= 3) { return glm::rotateY((T&)*this, angle); }
         Vec& rotateY(const Scalar angle) requires (Size >= 3) { return (*this = rotatedY(angle)); }
-        Vec rotatedZ(const Scalar angle) const requires (Size >= 3) { return glm::rotateZ(**this, angle); }
+        Vec rotatedZ(const Scalar angle) const requires (Size >= 3) { return glm::rotateZ((T&)*this, angle); }
         Vec& rotateZ(const Scalar angle) requires (Size >= 3) { return (*this = rotatedZ(angle)); }
 
-        Scalar dot(const Vec& other) const { return glm::dot(**this, *other); }
-        Vec cross(const Vec& other) const requires (Size <= 3) { return glm::cross(**this, *other); }
+        Scalar dot(const Vec& other) const { return glm::dot((T&)*this, *other); }
+        Vec cross(const Vec& other) const requires (Size <= 3) { return glm::cross((T&)*this, *other); }
         Vec4 cross(const Vec4& B, const Vec4& C) const requires (Size == 4);
 
-        Scalar angleTo(const Vec& other) const { return glm::angle(*this->normalized(), *other.normalized()); }
-        Scalar orientedAngleTo(const Vec2& other) const requires (Size == 2) { return glm::orientedAngle(*this->normalized(), *other.normalized()); }
-        Scalar orientedAngleTo(const Vec3& other, const Vec3& ref) const requires (Size == 3) { return glm::orientedAngle(*this->normalized(), *other.normalized(), *ref.normalized()); }
+        Scalar angleTo(const Vec& other) const { return glm::angle(*this->normalized(), (T&)other.normalized()); }
+        Scalar orientedAngleTo(const Vec2& other) const requires (Size == 2) { return glm::orientedAngle(*this->normalized(), (T&)other.normalized()); }
+        Scalar orientedAngleTo(const Vec3& other, const Vec3& ref) const requires (Size == 3) { return glm::orientedAngle(*this->normalized(), (T&)other.normalized(), (T&)ref.normalized()); }
 
-        operator T&() { return **this; }
-        operator const T&() const { return **this; }
+        operator T&() { return (T&)*this; }
+        operator const T&() const { return (T&)*this; }
 
         Scalar operator^(const Vec& other) const { return dot(other); }
         Vec operator%(const Vec& other) const requires (Size <= 3) { return cross(other); }
@@ -131,10 +131,10 @@ namespace mz {
             return minVal;
         }
 
-        Scalar* data() { return glm::value_ptr(**this); }
-        const Scalar* data() const { return glm::value_ptr(**this); }
+        Scalar* data() { return glm::value_ptr((T&)*this); }
+        const Scalar* data() const { return glm::value_ptr((T&)*this); }
 
-        std::string toString() const { return glm::to_string(**this); }
+        std::string toString() const { return glm::to_string((T&)*this); }
         std::string toPrettyString(const bool printType = true) const
         {
             std::stringstream ss;
@@ -148,8 +148,8 @@ namespace mz {
         void print() const { MZ_TRACE("{}", toPrettyString()); } 
 
     private:
-        T& operator*() { return *this; }
-        const T& operator*() const { return *this; }
+        // T& operator*() { return *this; }
+        // const T& operator*() const { return *this; }
 
         template<MatrixType>
         friend class Mat;
@@ -212,15 +212,15 @@ namespace mz {
             return true;
         }
 
-        Scalar determinant() const { return glm::determinant(**this); }
+        Scalar determinant() const { return glm::determinant((T&)*this); }
 
-        Mat inverted() const { return isAffine() ? glm::affineInverse(**this) : glm::inverse(**this); }
+        Mat inverted() const { return isAffine() ? glm::affineInverse((T&)*this) : glm::inverse((T&)*this); }
         Mat& invert() { return (*this = inverted()); }
 
-        Mat transposed() const { return glm::transpose(**this); }
+        Mat transposed() const { return glm::transpose((T&)*this); }
         Mat& transpose() { return (*this = transposed()); }
         
-        Mat invertedTransposed() const { return glm::inverseTranspose(**this); }
+        Mat invertedTransposed() const { return glm::inverseTranspose((T&)*this); }
         Mat& inverseTranspose() { return (*this = invertedTransposed()); }
 
         Mat rescaled() const
@@ -239,16 +239,16 @@ namespace mz {
             return *this;
         }
 
-        Mat rotated(const Vec3& axis, const Scalar angle) const { return T(glm::rotate(**this, angle, *axis)); }
+        Mat rotated(const Vec3& axis, const Scalar angle) const { return T(glm::rotate((T&)*this, angle, axis)); }
         Mat& rotate(const Vec3& axis, const Scalar angle) { return (*this = rotated(axis, angle)); }
 
-        Mat scaled(const Vec3& scale) const { return T(glm::scale(**this, *scale)); }
+        Mat scaled(const Vec3& scale) const { return T(glm::scale((T&)*this, scale)); }
         Mat& scale(const Vec3& scale) { return (*this = scaled(scale)); }
 
-        Mat translated(const Vec3& vec) const { return T(glm::translate(**this, *vec)); }
+        Mat translated(const Vec3& vec) const { return T(glm::translate((T&)*this, vec)); }
         Mat& translate(const Vec3& vec) { return (*this = translated(vec)); }
 
-        static Mat createLookAt(const Vec3& eye, const Vec3& center, const Vec3& up) { return T(glm::lookAt(*eye, *center, *up)); }
+        static Mat createLookAt(const Vec3& eye, const Vec3& center, const Vec3& up) { return T(glm::lookAt(eye, center, up)); }
         Mat& lookAt(const Vec3& eye, const Vec3& center, const Vec3& up) { return (*this = createLookAt(eye, center, up)); }
 
         static Mat createOrtho(const Scalar left, const Scalar right, const Scalar bottom, const Scalar top, const Scalar zNear, const Scalar zFar)
@@ -277,7 +277,7 @@ namespace mz {
             return (*this = createPerspective(fov, aspect, zNear, zFar)); 
         }
 
-        static Mat createAngleAxis(const Vec3& axis, const Scalar angle) { return T(glm::axisAngleMatrix(*axis, angle)); }
+        static Mat createAngleAxis(const Vec3& axis, const Scalar angle) { return T(glm::axisAngleMatrix(axis, angle)); }
         Mat& fromAngleAxis(const Vec3& axis, const Scalar angle) { return (*this = createAngleAxis(axis, angle)); }
 
         static Mat createEulerXYZ(const Vec3& eulerXYZ) { return T(glm::eulerAngleXYZ(eulerXYZ.x, eulerXYZ.y, eulerXYZ.z)); }
@@ -307,11 +307,11 @@ namespace mz {
             return eulerZYX;
         }
 
-        Mat componentMult(const Mat& other) const { return glm::matrixCompMult(**this, *other); }
-        Mat outerProduct(const Mat& other) const { return glm::outerProduct(**this, *other); }
+        Mat componentMult(const Mat& other) const { return glm::matrixCompMult((T&)*this, *other); }
+        Mat outerProduct(const Mat& other) const { return glm::outerProduct((T&)*this, *other); }
 
-        operator T&() { return **this; }
-        operator const T&() const { return **this; }
+        operator T&() { return (T&)*this; }
+        operator const T&() const { return (T&)*this; }
 
         Mat3 asMat3() const { return *this; }
         Mat4 asMat4() const { return *this; }
@@ -339,8 +339,8 @@ namespace mz {
             return minVal;
         }
 
-        Scalar* data() { return glm::value_ptr(**this); }
-        const Scalar* data() const { return glm::value_ptr(**this); }
+        Scalar* data() { return glm::value_ptr((T&)*this); }
+        const Scalar* data() const { return glm::value_ptr((T&)*this); }
 
         std::string toString() const { return glm::to_string(*this); }
         std::string toPrettyString(const bool printMatType = true, const bool printVecType = false) const 
@@ -359,10 +359,10 @@ namespace mz {
         void print() const { MZ_TRACE("{}", toPrettyString()); }
 
     private:
-        Vec<glm::vec<Size, Scalar>>* const m_vecs = reinterpret_cast<Vec<glm::vec<Size, Scalar>>* const>(data());
+        Vec<glm::vec<Size, Scalar>>* m_vecs = reinterpret_cast<Vec<glm::vec<Size, Scalar>>*>(data());
 
-        T& operator*() { return *this; }
-        const T& operator*() const { return *this; }
+        // T& operator*() { return *this; }
+        // const T& operator*() const { return *this; }
 
     };
 
@@ -384,19 +384,19 @@ namespace mz {
     template<VectorType T>
     Mat3 Vec<T>::rotationTo(const Vec3& vec) const requires (Size == 3)
     { 
-        return glm::toMat3(glm::rotation(**this, vec)); 
+        return glm::toMat3(glm::rotation((T&)*this, vec)); 
     }
 
     template<VectorType T>
     Vec3 Vec<T>::projected(const Mat4 model, const Mat4 proj, const Vec4 viewPort) const requires (Size == 3)
     {
-        return glm::project(**this, model, proj, viewPort);
+        return glm::project((T&)*this, model, proj, viewPort);
     }
 
     template<VectorType T>
     Vec3& Vec<T>::project(const Mat4 model, const Mat4 proj, const Vec4 viewPort) requires (Size == 3)
     {
-        return (*this = glm::project(**this, model, proj, viewPort));
+        return (*this = glm::project((T&)*this, model, proj, viewPort));
     }
 
     template<VectorType T>

@@ -7,10 +7,13 @@ export module mz.graphics.renderer.opengl.resources;
 import std;
 
 import mz.core.logging;
+
 import mz.graphics.renderer.resources;
 import mz.graphics.renderer.buffers;
 import mz.graphics.renderer.opengl.buffers;
+
 import mz.util;
+import mz.math.geometry;
 
 namespace mz {
 
@@ -112,6 +115,16 @@ namespace mz {
         GlShader(const std::string& name) : ShaderBase(name) {}
         ~GlShader() = default;
 
+        void bind() const override
+        {
+            glUseProgram(m_program);
+        }
+
+        void release() const override
+        {
+            glUseProgram(0);
+        }
+
         std::expected<void, ShaderError> link() override
         {
             glLinkProgram(m_program);
@@ -130,7 +143,7 @@ namespace mz {
                 glDeleteShader(m_fragmentShader);
                 glDeleteShader(m_vertexShader);
 
-                MZ_ERROR("Shader linking failed: {}", msg);
+                MZ_ERROR("Linking Shader {} failed: {}", m_name, msg);
                 return std::unexpected(ShaderError::LinkError);
             }
 
@@ -178,14 +191,88 @@ namespace mz {
             return {};
         }
 
-        void bind() const override
+        std::expected<void, ShaderError> uploadInt(const std::string& name, const int i) const override
         {
-            glUseProgram(m_program);
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+
+            glUniform1i(location, i);
+            return {};
         }
 
-        void release() const override
+        std::expected<void, ShaderError> uploadFloat(const std::string& name, const float f) const override
         {
-            glUseProgram(0);
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+
+            glUniform1f(location, f);
+            return {};
+        }
+ 
+        std::expected<void, ShaderError> uploadVec2(const std::string& name, const Vec2& vec) const override
+        {
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+
+            glUniform2fv(location, 1, vec.data());
+            return {};
+        }
+
+        std::expected<void, ShaderError> uploadVec3(const std::string& name, const Vec3& vec) const override
+        {
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+            
+            glUniform3fv(location, 1, vec.data());
+            return {};
+        }
+
+        std::expected<void, ShaderError> uploadVec4(const std::string& name, const Vec4& vec) const override
+        {
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+
+            glUniform4fv(location, 1, vec.data());
+            return {};
+        }
+ 
+        std::expected<void, ShaderError> uploadMat3(const std::string& name, const Mat3& mat) const override
+        {
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+
+            glUniformMatrix3fv(location, 1, GL_FALSE, mat.data());
+            return {};
+        }
+
+        std::expected<void, ShaderError> uploadMat4(const std::string& name, const Mat4& mat) const override
+        {
+            GLint location = glGetUniformLocation(m_program, name.c_str());
+            if (location == -1) {
+                MZ_ERROR("Uniform {} doesnt exist", name);
+                return std::unexpected(ShaderError::UniformNotFound);
+            }
+
+            glUniformMatrix4fv(location, 1, GL_FALSE, mat.data());
+            return {};
         }
 
     private:

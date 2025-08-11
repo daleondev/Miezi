@@ -9,6 +9,8 @@ import mz.core.types;
 
 import mz.graphics.renderer.buffers;
 
+import mz.math.geometry;
+
 namespace mz { 
 
     export class IRenderResource : public ICastable
@@ -53,6 +55,7 @@ namespace mz {
         InvalidType,
         CompileError,
         LinkError,
+        UniformNotFound
     };
 
     export enum class ShaderType
@@ -61,16 +64,32 @@ namespace mz {
         FragmentShader
     };
 
-    export class ShaderBase : public IRenderResource
+    export class IShader : public IRenderResource
     {
     public:
-        ShaderBase(const std::string& name) : m_name{ name } { }
-        virtual ~ShaderBase() = default;
+        virtual ~IShader() = default;
 
         virtual std::expected<void, ShaderError> link() = 0;
 
         virtual std::expected<void, ShaderError> add(const ShaderType type, const std::string& source) = 0;
         virtual std::expected<void, ShaderError> addFromFile(const ShaderType type, const std::filesystem::path& filePath) = 0;
+
+        virtual std::expected<void, ShaderError> uploadInt(const std::string& name, const int i) const = 0;
+        virtual std::expected<void, ShaderError> uploadFloat(const std::string& name, const float f) const = 0;
+ 
+        virtual std::expected<void, ShaderError> uploadVec2(const std::string& name, const Vec2& vec) const = 0;
+        virtual std::expected<void, ShaderError> uploadVec3(const std::string& name, const Vec3& vec) const = 0;
+        virtual std::expected<void, ShaderError> uploadVec4(const std::string& name, const Vec4& vec) const = 0;
+ 
+        virtual std::expected<void, ShaderError> uploadMat3(const std::string& name, const Mat3& mat) const = 0;
+        virtual std::expected<void, ShaderError> uploadMat4(const std::string& name, const Mat4& mat) const = 0;
+    };
+
+    export class ShaderBase : public IShader
+    {
+    public:
+        ShaderBase(const std::string& name) : m_name{ name } { }
+        virtual ~ShaderBase() = default;
 
         const std::string& getName() const { return m_name; }
 
