@@ -10,7 +10,8 @@ import mz.core.logging;
 
 import mz.graphics.renderer.resources;
 import mz.graphics.renderer.buffers;
-import mz.graphics.renderer.opengl.buffers;
+import mz.graphics.renderer.opengl.debug;
+export import mz.graphics.renderer.opengl.buffers;
 
 import mz.util;
 import mz.math.geometry;
@@ -112,8 +113,14 @@ namespace mz {
     export class GlShader : public ShaderBase
     {
     public:
-        GlShader(const std::string& name) : ShaderBase(name) {}
-        ~GlShader() = default;
+        GlShader(const std::string& name) : ShaderBase(name), m_fragmentShader{ 0 }, m_vertexShader{ 0 }, m_program{ 0 } 
+        {
+            m_program = glCreateProgram();
+        }
+        ~GlShader()
+        {
+            glDeleteProgram(m_program);
+        }
 
         void bind() const override
         {
@@ -128,22 +135,18 @@ namespace mz {
         std::expected<void, ShaderError> link() override
         {
             glLinkProgram(m_program);
+            
+            shaderDiagnostics(m_program, m_name.c_str());
 
             GLint linked = 0;
             glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
+
             if (linked == GL_FALSE) {
-                GLint length = 0;
-                glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length);
-
-                std::string msg(length, '\0');
-                glGetProgramInfoLog(m_program, length, &length, msg.data());
-
                 glDeleteProgram(m_program);
-
                 glDeleteShader(m_fragmentShader);
                 glDeleteShader(m_vertexShader);
 
-                MZ_ERROR("Linking Shader {} failed: {}", m_name, msg);
+                MZ_ERROR("Linking Shader {} failed", m_name);
                 return std::unexpected(ShaderError::LinkError);
             }
 
@@ -349,9 +352,18 @@ namespace mz {
             MZ_ASSERT(!exists(name), "Shader already loaded");
 
             std::shared_ptr<ShaderBase> shader = std::make_shared<GlShader>(name);
-            shader->addFromFile(ShaderType::VertexShader, vertFile);
-            shader->addFromFile(ShaderType::FragmentShader, fragFile);
-            shader->link();
+
+            auto result = shader->addFromFile(ShaderType::VertexShader, vertFile);
+            if (!result) 
+                return std::unexpected(result.error());
+
+            result = shader->addFromFile(ShaderType::FragmentShader, fragFile);
+            if (!result) 
+                return std::unexpected(result.error());
+
+            result = shader->link();
+            if (!result) 
+                return std::unexpected(result.error());
 
             add(shader);
             return shader;

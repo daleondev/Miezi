@@ -206,9 +206,11 @@ namespace mz {
     //                   Contiguous Data
     //------------------------------------------------------
 
-    template<typename T>
+    export template<typename T>
     struct ContigData : IIterable<T>
     {
+        ContigData(const std::size_t size, T* data) : dataSize{ size }, rawData{ data } {}
+
         std::size_t dataSize;
         T* rawData;
 
@@ -267,13 +269,13 @@ namespace mz {
         operator const T&() const { return static_cast<T&>(*this); }
 
         template<typename R>
-        ContigData<R> reinterpret()
+        ContigData<R> reinterpret() const
         {
             const std::size_t sizeInBytes = size()*sizeof(value_type);
-            return ContigData<R> {
-                .dataSize = sizeInBytes/sizeof(R),
-                .rawData = data()
-            };
+            return ContigData<R>(
+                sizeInBytes/sizeof(R), 
+                reinterpret_cast<R*>(const_cast<value_type*>(data())) // unsafe -> fix
+            );
         }
 
         template<std::size_t N>

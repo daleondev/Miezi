@@ -67,7 +67,7 @@ int main()
     auto renderer = RenderBase::create(window->getContext().get());
 
     OrthoCamera cam(-1, 1, -1, 1);
-    cam.setPosition({0.0f, 0.0f, 2.0f});
+    cam.setPosition({0.0f, 0.0f, -2.0f});
 
     while(running) {
         window->update();

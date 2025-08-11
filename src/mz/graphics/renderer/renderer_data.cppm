@@ -68,16 +68,16 @@ namespace mz {
             { ShaderDataType::Float2, "a_uv" }
         };
 
-        static constexpr const std::array<Vertex, 4> vertices = {
+        static constexpr const Array<Vertex, 4> vertices = std::array<Vertex, 4>{
             Vertex{Vec3{-0.5f, -0.5f, 0.0f},    Vec2{0.0f, 0.0f}},
             Vertex{Vec3{ 0.5f, -0.5f, 0.0f},    Vec2{1.0f, 0.0f}},
             Vertex{Vec3{ 0.5f,  0.5f, 0.0f},    Vec2{1.0f, 1.0f}},
             Vertex{Vec3{-0.5f,  0.5f, 0.0f},    Vec2{0.0f, 1.0f}}
         };
 
-        static constexpr const std::array<std::array<std::uint32_t, 3>, 2> indices = {
-            std::array<std::uint32_t, 3>{0, 1, 2}, 
-            std::array<std::uint32_t, 3>{2, 3, 0}
+        static constexpr const Array<std::uint32_t, 6> indices = std::array<std::uint32_t, 6>{
+            0, 1, 2, 
+            2, 3, 0
         };
     };
 
@@ -104,8 +104,8 @@ namespace mz {
         static auto generateCircle() {
             constexpr std::size_t vertexCount = CIRCLE_SEGMENTS + 1; // center + perimeter
 
-            std::array<Vertex, vertexCount> vertices{};
-            std::array<std::array<std::uint32_t, 3>, CIRCLE_SEGMENTS> indices{};
+            Array<Vertex, vertexCount> vertices{};
+            Array<Array<std::uint32_t, 3>, CIRCLE_SEGMENTS> indices{};
 
             // Center vertex
             vertices[0].pos = Vec3(0.0f, 0.0f, 0.0f);
@@ -151,16 +151,16 @@ namespace mz {
             { ShaderDataType::Float3, "a_normal" }
         };
 
-        static constexpr const std::array<Vertex, 4> vertices = {
+        static constexpr const Array<Vertex, 4> vertices = std::array<Vertex, 4>{
             Vertex{Vec3{-0.5f, -0.5f, 0.0f},    Vec2{0.0f, 0.0f},     Vec3{0.0f, 0.0f, 1.0f}},
             Vertex{Vec3{ 0.5f, -0.5f, 0.0f},    Vec2{1.0f, 0.0f},     Vec3{0.0f, 0.0f, 1.0f}},
             Vertex{Vec3{ 0.5f,  0.5f, 0.0f},    Vec2{1.0f, 1.0f},     Vec3{0.0f, 0.0f, 1.0f}},
             Vertex{Vec3{-0.5f,  0.5f, 0.0f},    Vec2{0.0f, 1.0f},     Vec3{0.0f, 0.0f, 1.0f}}
         };
 
-        static constexpr const std::array<std::array<std::uint32_t, 3>, 2> indices = {
-            std::array<std::uint32_t, 3>{0, 1, 2}, 
-            std::array<std::uint32_t, 3>{2, 3, 0}
+        static constexpr const Array<std::uint32_t, 6> indices = std::array<std::uint32_t, 6>{
+            0, 1, 2, 
+            2, 3, 0
         };
     };
 
@@ -183,7 +183,7 @@ namespace mz {
             { ShaderDataType::Float3, "a_normal" }
         };
 
-        static constexpr const std::array<Vertex, 24> vertices = {
+        static constexpr const Array<Vertex, 24> vertices = std::array<Vertex, 24>{
             // Front face (+Z)
             Vertex{Vec3{-0.5f, -0.5f,  0.5f},    Vec2{0.0f, 0.0f},    Vec3{ 0.0f,  0.0f,  1.0f}}, // Bottom-left
             Vertex{Vec3{ 0.5f, -0.5f,  0.5f},    Vec2{1.0f, 0.0f},    Vec3{ 0.0f,  0.0f,  1.0f}}, // Bottom-right
@@ -221,25 +221,25 @@ namespace mz {
             Vertex{Vec3{-0.5f, -0.5f,  0.5f},    Vec2{0.0f, 1.0f},    Vec3{ 0.0f, -1.0f,  0.0f}}  // Top-left
         };
 
-        static constexpr std::array<std::array<std::uint32_t, 3>, 12> indices = {
+        static constexpr Array<std::uint32_t, 36> indices = std::array<std::uint32_t, 36>{
             // Front face
-            std::array<std::uint32_t, 3>{0,  1,  2},
-            std::array<std::uint32_t, 3>{2,  3,  0},
+            0,  1,  2,
+            2,  3,  0,
             // Back face
-            std::array<std::uint32_t, 3>{4,  5,  6},
-            std::array<std::uint32_t, 3>{6,  7,  4},
+            4,  5,  6,
+            6,  7,  4,
             // Left face
-            std::array<std::uint32_t, 3>{8,  9, 10},
-            std::array<std::uint32_t, 3>{10, 11, 8},
+            8,  9, 10,
+            10, 11, 8,
             // Right face
-            std::array<std::uint32_t, 3>{12, 13, 14},
-            std::array<std::uint32_t, 3>{14, 15, 12},
+            12, 13, 14,
+            14, 15, 12,
             // Top face
-            std::array<std::uint32_t, 3>{16, 17, 18},
-            std::array<std::uint32_t, 3>{18, 19, 16},
+            16, 17, 18,
+            18, 19, 16,
             // Bottom face
-            std::array<std::uint32_t, 3>{20, 21, 22},
-            std::array<std::uint32_t, 3>{22, 23, 20},
+            20, 21, 22,
+            22, 23, 20,
         };
     };
 
@@ -270,8 +270,8 @@ namespace mz {
             constexpr std::size_t vertexCount = SPHERE_RINGS * SPHERE_SECTORS;
             constexpr std::size_t indexCount = (SPHERE_RINGS - 1) * SPHERE_SECTORS * 6;
 
-            std::array<Vertex, vertexCount> vertices{};
-            std::array<std::array<std::uint32_t, 3>, indexCount / 3> indices{};
+            Array<Vertex, vertexCount> vertices{};
+            Array<Array<std::uint32_t, 3>, indexCount / 3> indices{};
 
             constexpr float R = 1.0f / static_cast<float>(SPHERE_RINGS - 1);
             constexpr float S = 1.0f / static_cast<float>(SPHERE_SECTORS - 1);
@@ -304,8 +304,8 @@ namespace mz {
                     std::uint16_t i3 = (r + 1) * SPHERE_SECTORS + s;
                     std::uint16_t i4 = (r + 1) * SPHERE_SECTORS + (s + 1) % SPHERE_SECTORS;
 
-                    indices[indexIndex++] = {i1, i2, i4};
-                    indices[indexIndex++] = {i1, i4, i3};
+                    indices[indexIndex++] = std::array<std::uint32_t, 3>{i1, i2, i4};
+                    indices[indexIndex++] = std::array<std::uint32_t, 3>{i1, i4, i3};
                 }
             }
 
@@ -333,7 +333,7 @@ namespace mz {
         };
 
         Vector<Vertex> vertices = {};
-        Vector<std::array<std::uint32_t, 3>> indices = {};
+        Vector<Array<std::uint32_t, 3>> indices = {};
     };
 
     //------------------------------------------------------

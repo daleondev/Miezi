@@ -26,10 +26,10 @@ namespace mz {
             glDeleteBuffers(1, &m_buffer);
         }
 
-        void allocate(IContainer<float>* vertices) override
+        void allocate(const ContigData<float>& vertices) override
         {
             glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
-            glBufferData(GL_ARRAY_BUFFER, vertices->size()*sizeof(GLfloat), vertices->data(), GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
         }
 
         void bind() const override
@@ -60,11 +60,11 @@ namespace mz {
             glDeleteBuffers(1, &m_buffer);
         }
 
-        void allocate(IContainer<std::uint32_t>* indices) override
+        void allocate(const ContigData<std::uint32_t>& indices) override
         {
-            m_count = indices->size();
+            m_count = indices.size();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size()*sizeof(GLuint), indices->data(), GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
         }
 
         void bind() const override
