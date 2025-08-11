@@ -21,7 +21,7 @@ namespace mz {
         std::shared_ptr<IndexBufferBase> indexBuffer;
         std::shared_ptr<ShaderBase> shader;
 
-        void clear()
+        void reset()
         {
             vertexArray.reset();
             vertexBuffer.reset();

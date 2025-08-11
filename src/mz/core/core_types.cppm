@@ -4,6 +4,10 @@ import std;
 
 namespace mz {
 
+    //------------------------------------------------------
+    //                      Castable
+    //------------------------------------------------------
+
     export class ICastable 
     {
     public:
@@ -60,6 +64,10 @@ namespace mz {
         T asCopyUnchecked() const { return *asPtrUnchecked<T>(); }
     };
 
+    //------------------------------------------------------
+    //                      Iterable
+    //------------------------------------------------------
+
     export template<typename T>
     class IIterable 
     {
@@ -85,10 +93,9 @@ namespace mz {
         virtual const T& operator[](const std::size_t i) const = 0;
     };
 
-    export template<typename T>
-    using IterableSharedPtr = std::shared_ptr<IIterable<T>>;
-    export template<typename T>
-    using IterableUnqiuePtr = std::unique_ptr<IIterable<T>>;
+    //------------------------------------------------------
+    //                Managed Dynamic Array
+    //------------------------------------------------------
 
     export template<typename T> 
     requires std::default_initializable<T>
@@ -168,13 +175,13 @@ namespace mz {
 
         constexpr T& at(std::size_t i) 
         { 
-            if (i >= m_size) throw std::out_of_range("ManagedDynamicArray index out of range");
+            if (i >= m_size) throw std::out_of_range("Array index out of range");
             return m_data[i]; 
         }
 
         constexpr const T& at(std::size_t i) const
         { 
-            if (i >= m_size) throw std::out_of_range("ManagedDynamicArray index out of range");
+            if (i >= m_size) throw std::out_of_range("Array index out of range");
             return m_data[i]; 
         }
 
@@ -195,17 +202,47 @@ namespace mz {
     static_assert(std::ranges::forward_range<ManagedDynamicArray<int>>);
     static_assert(std::ranges::forward_range<const ManagedDynamicArray<int>>);
 
+    //------------------------------------------------------
+    //                   Contiguous Data
+    //------------------------------------------------------
+
+    template<typename T>
+    struct ContigData : IIterable<T>
+    {
+        std::size_t dataSize;
+        T* rawData;
+
+        IIterable<T>::Iterator begin() override { return std::span{rawData, dataSize}.begin(); }
+        IIterable<T>::ConstIterator begin() const override { return std::span{rawData, dataSize}.begin(); }
+
+        IIterable<T>::Iterator end() override { return std::span{rawData, dataSize}.end(); }
+        IIterable<T>::ConstIterator end() const override { return std::span{rawData, dataSize}.end(); }
+
+        bool empty() const override { return dataSize == 0; }
+        std::size_t size() const override { return dataSize; }
+
+        T* data() override { return rawData; }
+        const T* data() const override { return rawData; }
+
+        T& operator[](const std::size_t i) override { return rawData[i]; }
+        const T& operator[](const std::size_t i) const override { return rawData[i]; }
+    };
+
+    //------------------------------------------------------
+    //                Contiguous Container
+    //------------------------------------------------------
+
     export template<std::ranges::contiguous_range T>
-    class FlatContainer;
+    class ContigContainer;
 
     export template<typename T, std::size_t N>
-    using Array = FlatContainer<std::array<T, N>>;
+    using Array = ContigContainer<std::array<T, N>>;
 
     export template<typename T>
-    using DynamicArray = FlatContainer<ManagedDynamicArray<T>>;
+    using DynamicArray = ContigContainer<ManagedDynamicArray<T>>;
 
     export template<typename T>
-    using Vector = FlatContainer<std::vector<T>>;
+    using Vector = ContigContainer<std::vector<T>>;
 
     export template<typename T>
     class IContainer : public ICastable, public IIterable<T>
@@ -216,18 +253,28 @@ namespace mz {
     };
 
     export template<std::ranges::contiguous_range T>
-    class FlatContainer : public T, public IContainer<std::ranges::range_value_t<T>>
+    class ContigContainer : public T, public IContainer<std::ranges::range_value_t<T>>
     {
     public:
         using value_type = std::ranges::range_value_t<T>;
 
         using T::T;
 
-        constexpr FlatContainer(const T& cont) noexcept : T{ cont } { }
-        constexpr FlatContainer(T&& cont) noexcept : T{ std::move(cont) } { }
+        constexpr ContigContainer(const T& cont) noexcept : T{ cont } { }
+        constexpr ContigContainer(T&& cont) noexcept : T{ std::move(cont) } { }
 
         operator T&() { return static_cast<T&>(*this); }
         operator const T&() const { return static_cast<T&>(*this); }
+
+        template<typename R>
+        ContigData<R> reinterpret()
+        {
+            const std::size_t sizeInBytes = size()*sizeof(value_type);
+            return ContigData<R> {
+                .dataSize = sizeInBytes/sizeof(R),
+                .rawData = data()
+            };
+        }
 
         template<std::size_t N>
         Array<value_type, N> toArray() const

@@ -135,7 +135,7 @@ namespace mz {
         virtual void bind() const = 0;
         virtual void release() const = 0;
 
-        virtual void allocate(const IIterable<T>* data) = 0;
+        virtual void allocate(IContainer<T>* data) = 0;
     };
 
     //------------------------------------------------------

@@ -54,57 +54,21 @@ void printRange(const T& range)
 
 int main()
 {
-    // auto window = mz::WindowBase::create("Test Window", glm::vec2{800, 600});
+    auto window = mz::WindowBase::create("Test Window", glm::vec2{800, 600});
     
-    // // std::make_unique<mz::GlfwWindow>("Test Window", glm::vec2{800, 600});
-    // window->setEventCallbackFunc([](mz::IEvent* e) 
-    // {
-    //     if (e->is<mz::WindowCloseEvent>())
-    //         running = false;
-    // });
+    // std::make_unique<mz::GlfwWindow>("Test Window", glm::vec2{800, 600});
+    window->setEventCallbackFunc([](mz::IEvent* e) 
+    {
+        if (e->is<mz::WindowCloseEvent>())
+            running = false;
+    });
 
-    // std::unique_ptr<mz::RenderBase> renderer = std::make_unique<mz::GlRenderer>(window->getContext().get());
+    auto renderer = RenderBase::create(window->getContext().get());
 
-    // while(running) {
-    //     window->update();
-    //     renderer->clear(glm::vec4(1.0f));
-    // }
-
-
-    // const auto pos = Vec3::createRandom(10.0f);
-
-    // const auto view = Mat4::createLookAt(pos, Vec3(0.0f, 0.0f, 0.0f), Vec3::UnitY());
-    // view.print();
-
-    // auto viewTest = Mat4::Identity().translated(pos).inverted();
-    // viewTest.print();
-
-    // Test t;
-    // printIterable<int>(&t);
-
-    // auto arr = t.toArray();
-
-    // ContainerWrapper<std::unique_ptr<float[]>> cont(new float[5]);
-    // cont[2] = 5.0f;
-    // auto v = cont.toVector();
-    // auto 
-
-    DynamicArray<int> arr(10, 3); 
-    // printRange(arr);
-
-    arr.resize(20, 4);
-    // printRange(arr);
-
-    arr.resize(4, 12);
-    // printRange(arr);
-
-    auto arr2 = arr.toArray<4>();
-    // printRange(arr2);
-
-
-
-    printIterable<int>(&arr2);
-    
+    while(running) {
+        window->update();
+        renderer->clear(Vec4(1.0f));
+    }
 
     running = false;
     using namespace std::chrono_literals;

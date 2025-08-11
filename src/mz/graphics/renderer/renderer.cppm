@@ -42,13 +42,14 @@ namespace mz {
 
         virtual ~RenderBase()
         {
-            m_pointData.clear();
-            m_lineData.clear();
-            m_rectData.clear();
-            m_circData.clear();
-            m_planeData.clear();
-            m_boxData.clear();
-            m_sphereData.clear();
+            m_pointData.reset();
+            m_lineData.reset();
+            m_rectData.reset();
+            m_circData.reset();
+            m_planeData.reset();
+            m_boxData.reset();
+            m_sphereData.reset();
+            
             m_meshData.clear();
         
             m_shaderStore->clear();
