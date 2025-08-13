@@ -1,5 +1,5 @@
 #include "mz/core/core.h"
-// #include "mz/util/geometry.h"
+#include <GLFW/glfw3.h>
 
 import std;
 import glm;
@@ -9,6 +9,7 @@ import mz.core.logging;
 
 import mz.events;
 import mz.events.window;
+import mz.events.key;
 
 import mz.graphics.window;
 import mz.graphics.renderer;
@@ -53,6 +54,8 @@ void printRange(const T& range)
     MZ_TRACE("{}", ss.str());
 }
 
+std::shared_ptr<ICamera> cam;
+
 int main()
 {
     auto window = mz::WindowBase::create("Test Window", glm::vec2{800, 600});
@@ -62,17 +65,39 @@ int main()
     {
         if (e->is<mz::WindowCloseEvent>())
             running = false;
+
+        if (e->is<KeyPressedEvent>()) {
+            auto camera = std::static_pointer_cast<PerspectiveCamera>(cam);
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_W)
+                camera->setRotation(camera->getRotation() + Vec3{degToRad(1.0f), 0.0f, 0.0f});
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_S)
+                camera->setRotation(camera->getRotation() + Vec3{degToRad(-1.0f), 0.0f, 0.0f});
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_A)
+                camera->setRotation(camera->getRotation() + Vec3{0.0f, degToRad(1.0f), 0.0f});
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_D)
+                camera->setRotation(camera->getRotation() + Vec3{0.0f, degToRad(-1.0f), 0.0f});
+
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_UP)
+                camera->setPosition(camera->getPosition() + Vec3{0.0f, 1.0f, 0.0f});
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_DOWN)
+                camera->setPosition(camera->getPosition() + Vec3{0.0f, -1.0f, 0.0f});
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_LEFT)
+                camera->setPosition(camera->getPosition() + Vec3{-1.0f, 0.0f, 0.0f});
+            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_RIGHT)
+                camera->setPosition(camera->getPosition() + Vec3{1.0f, 0.0f, 0.0f});
+        }
     });
 
     auto renderer = RenderBase::create(window->getContext().get());
 
-    OrthoCamera cam(-1, 1, -1, 1);
-    cam.setPosition({0.0f, 0.0f, -2.0f});
+    cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
+    std::static_pointer_cast<PerspectiveCamera>(cam)->setPosition({0.0f, 0.0f, 2.0f});
 
     while(running) {
-        window->update();
+        window->update(); 
+        // cam.setRotation(cam.getRotation() + Vec3{degToRad(1.0f), 0.0f, 0.0f});
         renderer->clear(Vec4(1.0f));
-        renderer->drawPoint(&cam, {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f});
+        renderer->drawBox(cam.get(), Mat4(1.0f), {1.0f, 0.0f, 0.0f, 1.0f});
     }
 
     running = false;

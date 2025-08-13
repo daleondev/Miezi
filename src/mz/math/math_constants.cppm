@@ -16,7 +16,7 @@ namespace mz {
     constexpr T PI = std::numbers::pi_v<T>;
 
     export constexpr float PI_F = PI<float>;
-    export constexpr float PI_D = PI<double>;
+    export constexpr double PI_D = PI<double>;
 
     //------------------------------------------------------
     //                      e
@@ -26,7 +26,7 @@ namespace mz {
     constexpr T E = std::numbers::e_v<T>;
 
     export constexpr float E_F = E<float>;
-    export constexpr float E_D = E<double>;
+    export constexpr double E_D = E<double>;
 
     //------------------------------------------------------
     //                      Sqrt
@@ -36,7 +36,7 @@ namespace mz {
     constexpr T SQRT2 = std::numbers::sqrt2_v<T>;
 
     export constexpr float SQRT2_F = SQRT2<float>;
-    export constexpr float SQRT2_D = SQRT2<double>;
+    export constexpr double SQRT2_D = SQRT2<double>;
 
     //------------------------------------------------------
     //                      Phi
@@ -46,6 +46,6 @@ namespace mz {
     constexpr T PHI = std::numbers::sqrt2_v<T>;
 
     export constexpr float PHI_F = PHI<float>;
-    export constexpr float PHI_D = PHI<double>;
+    export constexpr double PHI_D = PHI<double>;
 
 }

@@ -122,6 +122,7 @@ namespace mz {
         {
             glfwPollEvents();
             glfwSwapBuffers(m_window.get());
+            m_input->update();
         }
 
         void setVSync(const bool enabled) override

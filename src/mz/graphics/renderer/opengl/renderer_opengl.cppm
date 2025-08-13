@@ -12,6 +12,7 @@ import mz.graphics.window;
 
 import mz.graphics.renderer;
 import mz.graphics.renderer.data;
+import mz.graphics.renderer.resources;
 import mz.graphics.renderer.opengl.resources;
 import mz.graphics.renderer.opengl.debug;
 
@@ -203,6 +204,34 @@ namespace mz {
 
             m_pointData.vertexArray->bind();
             glDrawArrays(GL_POINTS, 0, 1);
+        }
+
+        void drawBox(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        {
+            const auto viewProjection = camera->getViewProjection();
+            const auto normalMatrix = transform.invertedTransposed();
+
+            m_boxData.shader->bind();
+            m_boxData.shader->uploadMat4("u_viewProjection", viewProjection);
+            m_boxData.shader->uploadMat4("u_model", transform);
+            m_boxData.shader->uploadMat3("u_normalMatrix", normalMatrix);
+
+            m_boxData.shader->uploadInt("u_useTexture", 0);
+            m_boxData.shader->uploadVec4("u_flatColor", color);
+
+            m_sphereData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_boxData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_boxData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_boxData.shader->uploadVec3("u_viewPos", camera->getPosition());
+            drawIndexed(m_boxData.shader, m_boxData.vertexArray);
+        }
+
+    private:
+        void drawIndexed(const std::shared_ptr<ShaderBase>& shader, const std::shared_ptr<VertexArrayBase>& vertexArray) const
+        {
+            shader->bind();
+            vertexArray->bind();
+            glDrawElements(GL_TRIANGLES, vertexArray->getIndexBuffer()->getCount(), GL_UNSIGNED_INT, 0);
         }
     };
 

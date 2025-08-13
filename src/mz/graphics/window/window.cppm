@@ -14,10 +14,14 @@ namespace mz {
     {
     public:
         virtual ~IInput() = default;
+
+        virtual void update() = 0;
         
         virtual bool isKeyPressed(const int key) const = 0;
+
         virtual bool isMousePressed(const int button) const = 0;
         virtual glm::vec2 getMousePosition() const = 0;
+        virtual glm::vec2 getMouseDelta() const = 0;
     };
 
     export class IWindow;
@@ -26,9 +30,22 @@ namespace mz {
     public:
         InputBase(IWindow* window) : m_window{ window } { }
         virtual ~InputBase() = default;
+
+        virtual void update() override
+        {
+            m_mousePosPrev = m_mousePos;
+            m_mousePos = getMousePosition();
+        }
+
+        glm::vec2 getMouseDelta() const override
+        {
+		    return m_mousePos - m_mousePosPrev;
+        }
         
     protected:
         IWindow* m_window;
+        glm::vec2 m_mousePos;
+        glm::vec2 m_mousePosPrev;
     };
 
     export class IWindow : public ICastable
