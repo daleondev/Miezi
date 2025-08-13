@@ -7,18 +7,11 @@ import mz.core.types;
 export import mz.graphics.renderer.camera;
 import mz.graphics.renderer.resources;
 import mz.graphics.renderer.data;
+import mz.graphics.window;
 
 import mz.math.geometry;
 
 namespace mz { 
-
-    export class IRenderContext : public ICastable
-    {
-    public:
-        virtual ~IRenderContext() = default;
-
-        virtual void makeCurrent() = 0;
-    };
 
     export class IRenderer : public ICastable
     {
@@ -41,7 +34,7 @@ namespace mz {
     export class RenderBase : public IRenderer
     {
     public:
-        static std::shared_ptr<RenderBase> create(IRenderContext* context);
+        static std::shared_ptr<RenderBase> create(IGraphicsContext* context);
 
         virtual ~RenderBase()
         {
@@ -59,13 +52,13 @@ namespace mz {
         }
 
     protected:
-        RenderBase(IRenderContext* context, std::unique_ptr<ShaderStoreBase>&& shaderStore)
+        RenderBase(IGraphicsContext* context, std::unique_ptr<ShaderStoreBase>&& shaderStore)
             : m_context{ context }, m_shaderStore{ std::move(shaderStore) } 
         {
             m_context->makeCurrent();
         }
 
-        IRenderContext* m_context;
+        IGraphicsContext* m_context;
         std::unique_ptr<ShaderStoreBase> m_shaderStore;
 
         RenderData m_pointData;

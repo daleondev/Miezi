@@ -7,7 +7,7 @@ import mz.graphics.window.glfw;
 
 namespace mz {
 
-    std::shared_ptr<WindowBase> WindowBase::create(const std::string& title, const glm::vec2& size)
+    std::shared_ptr<WindowBase> WindowBase::create(const std::string& title, const Vec2& size)
     {
 #ifdef MZ_WINDOW_GLFW
         return std::make_shared<GlfwWindow>(title, size);

@@ -9,7 +9,7 @@ import mz.core.logging;
 
 import mz.events;
 import mz.events.window;
-import mz.events.key;
+import mz.events.mouse;
 
 import mz.graphics.window;
 import mz.graphics.renderer;
@@ -17,6 +17,7 @@ import mz.graphics.renderer.opengl;
 import mz.graphics.renderer.camera;
 
 import mz.util;
+import mz.util.time;
 import mz.math.geometry;
 
 using namespace mz;
@@ -54,7 +55,7 @@ void printRange(const T& range)
     MZ_TRACE("{}", ss.str());
 }
 
-std::shared_ptr<ICamera> cam;
+std::shared_ptr<ICameraController> camCtrl;
 
 int main()
 {
@@ -66,35 +67,34 @@ int main()
         if (e->is<mz::WindowCloseEvent>())
             running = false;
 
-        if (e->is<KeyPressedEvent>()) {
-            auto camera = std::static_pointer_cast<PerspectiveCamera>(cam);
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_W)
-                camera->setRotation(camera->getRotation() + Vec3{degToRad(1.0f), 0.0f, 0.0f});
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_S)
-                camera->setRotation(camera->getRotation() + Vec3{degToRad(-1.0f), 0.0f, 0.0f});
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_A)
-                camera->setRotation(camera->getRotation() + Vec3{0.0f, degToRad(1.0f), 0.0f});
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_D)
-                camera->setRotation(camera->getRotation() + Vec3{0.0f, degToRad(-1.0f), 0.0f});
-
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_UP)
-                camera->setPosition(camera->getPosition() + Vec3{0.0f, 1.0f, 0.0f});
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_DOWN)
-                camera->setPosition(camera->getPosition() + Vec3{0.0f, -1.0f, 0.0f});
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_LEFT)
-                camera->setPosition(camera->getPosition() + Vec3{-1.0f, 0.0f, 0.0f});
-            if (e->asPtr<KeyPressedEvent>()->getKeyCode() == GLFW_KEY_RIGHT)
-                camera->setPosition(camera->getPosition() + Vec3{1.0f, 0.0f, 0.0f});
+        auto camera = std::static_pointer_cast<OrbitCameraController>(camCtrl);
+        if (e->is<MouseButtonPressedEvent>()) {
+            if (e->asPtr<MouseButtonPressedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+                camCtrl->startDraggingRot();
+        }
+        else if (e->is<MouseButtonReleasedEvent>()) {
+            if (e->asPtr<MouseButtonReleasedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+                camCtrl->stopDraggingRot();
         }
     });
 
     auto renderer = RenderBase::create(window->getContext().get());
 
-    cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
-    std::static_pointer_cast<PerspectiveCamera>(cam)->setPosition({0.0f, 0.0f, 2.0f});
+    std::shared_ptr<ICamera> cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
+    camCtrl = std::make_shared<OrbitCameraController>(cam);
+
+    auto prevTime = std::chrono::high_resolution_clock::now();
 
     while(running) {
+        const auto currTime = std::chrono::high_resolution_clock::now();
+        const auto timeDiff = currTime - prevTime;
+        prevTime = currTime;
+
+        Timestep dt(std::chrono::duration_cast<std::chrono::milliseconds>(timeDiff).count() / 1000.0f);
+
         window->update(); 
+        camCtrl->update(dt, window->getInput().get());
+
         // cam.setRotation(cam.getRotation() + Vec3{degToRad(1.0f), 0.0f, 0.0f});
         renderer->clear(Vec4(1.0f));
         renderer->drawBox(cam.get(), Mat4(1.0f), {1.0f, 0.0f, 0.0f, 1.0f});

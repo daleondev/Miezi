@@ -1,10 +1,18 @@
+module;
+#include "mz/core/core.h"
+
+#include <GLFW/glfw3.h>
 export module mz.graphics.renderer.camera;
 
 import std;
 import glm;
 
+import mz.core.logging;
 import mz.core.types;
+
+import mz.graphics.window;
 import mz.math.geometry;
+import mz.util.time;
 
 namespace mz {
 
@@ -20,8 +28,11 @@ namespace mz {
         virtual const Vec3& getPosition() const = 0;
         virtual void setPosition(const Vec3& position) = 0;
 
-        virtual const Vec3& getRotation() const = 0;
-        virtual void setRotation(const Vec3& rotation) = 0;
+        virtual const glm::quat& getRotation() const = 0;
+        virtual void setRotation(const glm::quat& eulerXYZ) = 0;
+
+        virtual const Vec3 getRotationEulerXYZ() const = 0;
+        virtual void setRotationEulerXYZ(const Vec3& eulerXYZ) = 0;
 
         virtual const Mat4& getView() const = 0;
         virtual const Mat4& getProjection() const = 0;
@@ -35,14 +46,17 @@ namespace mz {
     public:
         CameraBase(const Mat4& projectionMatrix)
             : m_viewMatrix {1.0f}, m_projectionMatrix{ projectionMatrix }, m_viewProjectionMatrix{ m_projectionMatrix * m_viewMatrix },
-            m_position{ 0.0f }, m_rotation{ 0.0f } {}
+            m_position{ 0.0f }, m_rotation{ Mat3(1.0f) } {}
         virtual ~CameraBase() = default;
 
         const Vec3& getPosition() const override { return m_position; }
 		void setPosition(const Vec3& position) override { m_position = position; recalculateViewMatrix(); }
 
-        const Vec3& getRotation() const override { return m_rotation; }
-		void setRotation(const Vec3& rotation) override { m_rotation = rotation; recalculateViewMatrix(); }
+        const glm::quat& getRotation() const override { return m_rotation; }
+		void setRotation(const glm::quat& rotation) override { m_rotation = rotation; recalculateViewMatrix(); }
+
+        const Vec3 getRotationEulerXYZ() const override { return Mat3::fromQuat(m_rotation).toEulerXYZ(); }
+		void setRotationEulerXYZ(const Vec3& eulerXYZ) override { m_rotation = Mat3::createEulerXYZ(eulerXYZ).toQuat(); recalculateViewMatrix(); }
 
         const Mat4& getView() const override { return m_viewMatrix; }
         const Mat4& getProjection() const override { return m_projectionMatrix; }
@@ -52,8 +66,18 @@ namespace mz {
         void recalculateViewMatrix()
         {
             auto transform = Mat4(1.0f);
+            transform.print();
             transform.translate(m_position);
-            transform = transform * Mat4::createEulerXYZ(m_rotation);
+            MZ_INFO("{}", glm::to_string((glm::mat4)transform));
+            m_position.print();
+            transform.print();
+            transform.rotate(m_rotation);
+            transform.print();
+
+            MZ_INFO("{}", glm::to_string((glm::mat4)transform));
+
+                // .translated(m_position)
+                // .rotated(m_rotation);
 
             m_viewMatrix = transform.inverted();
             m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
@@ -64,7 +88,7 @@ namespace mz {
 		Mat4 m_viewProjectionMatrix;
 
         Vec3 m_position;
-		Vec3 m_rotation;
+		glm::quat m_rotation;
     };
 
     export class OrthoCamera : public CameraBase
@@ -97,17 +121,18 @@ namespace mz {
     //                  Camera Controller
     //------------------------------------------------------
 
-    class IInput
-    {
-
-    };
-
     export class ICameraController : public ICastable
     {
     public:
         virtual ~ICameraController() = default;
 
         virtual void update(float deltaTime, IInput* input) = 0;
+
+        virtual void startDraggingRot() = 0;
+        virtual void stopDraggingRot() = 0;
+
+        virtual void startDraggingTrans() = 0;
+        virtual void stopDraggingTrans() = 0;
 
         virtual std::shared_ptr<ICamera> getCamera() const = 0;
         virtual void setCamera(const std::shared_ptr<ICamera>& camera) = 0;
@@ -119,11 +144,20 @@ namespace mz {
         CameraControllerBase(const std::shared_ptr<ICamera>& camera) : m_camera{ camera } {}
         virtual ~CameraControllerBase() = default;
 
-        virtual std::shared_ptr<ICamera> getCamera() const { return m_camera; }
-        virtual void setCamera(const std::shared_ptr<ICamera>& camera) { m_camera = camera; }
+        void startDraggingRot() override { m_draggingRot = true; }
+        void stopDraggingRot() override { m_draggingRot = false; }
+
+        void startDraggingTrans() override { m_draggingTrans = true; }
+        void stopDraggingTrans() override { m_draggingTrans = false; }
+
+        std::shared_ptr<ICamera> getCamera() const override { return m_camera; }
+        void setCamera(const std::shared_ptr<ICamera>& camera) override { m_camera = camera; }
 
     protected:
         std::shared_ptr<ICamera> m_camera;
+
+        bool m_draggingRot = false;
+        bool m_draggingTrans = false;
     };
 
     export class OrbitCameraController : public CameraControllerBase
@@ -134,25 +168,26 @@ namespace mz {
 
         void update(float deltaTime, IInput* input) override
         {
-            // // Example: Get mouse delta from input system
-            // Vec2 mouseDelta = input->getMouseDelta();
-            // m_yaw   += mouseDelta.x * m_sensitivity;
-            // m_pitch += mouseDelta.y * m_sensitivity;
+            if (m_draggingRot) {
+                Vec2 mouseDelta = input->getMouseDelta();
+                m_yaw   += mouseDelta.x * m_sensitivity;
+                m_pitch += mouseDelta.y * m_sensitivity;
 
-            // // Clamp pitch to avoid flipping
-            // m_pitch = glm::clamp(m_pitch, -PI_F/2.0f + 0.1f, PI_F/2.0f - 0.1f);
+                // Clamp pitch to avoid flipping
+                m_pitch = glm::clamp(m_pitch, -PI_F/2.0f + 0.1f, PI_F/2.0f - 0.1f);
+            }
 
-            // // Create quaternion from yaw & pitch
-            // glm::quat yawRot   = Quat::fromAxisAngle({0, 1, 0}, m_yaw);
-            // glm::quat pitchRot = Quat::fromAxisAngle({1, 0, 0}, m_pitch);
-            // glm::quat orientation = yawRot * pitchRot;
+            // Create quaternion from yaw & pitch
+            glm::quat yawRot   = glm::angleAxis(m_yaw, Vec3::UnitY());
+            glm::quat pitchRot = glm::angleAxis(m_pitch, Vec3::UnitX());
+            glm::quat orientation = yawRot * pitchRot;
 
-            // // Set camera rotation
-            // m_camera->setRotation(orientation);
+            // Set camera rotation
+            m_camera->setRotation(orientation);
 
-            // // Calculate position based on target & orientation
-            // Vec3 offset = orientation * Vec3(0, 0, m_distance);
-            // m_camera->setPosition(m_target - offset);
+            // Calculate position based on target & orientation
+            Vec3 offset = orientation * Vec3(0, 0, m_distance);
+            m_camera->setPosition(m_target + offset);
         }
 
     private:
@@ -171,29 +206,31 @@ namespace mz {
 
         void update(float deltaTime, IInput* input) override
         {
-            // Vec2 mouseDelta = Input::getMouseDelta();
-            // m_yaw   += mouseDelta.x * m_mouseSensitivity;
-            // m_pitch += mouseDelta.y * m_mouseSensitivity;
+            if (m_draggingRot) {
+                Vec2 mouseDelta = input->getMouseDelta();
+                m_yaw   += mouseDelta.x * m_mouseSensitivity;
+                m_pitch += mouseDelta.y * m_mouseSensitivity;
 
-            // // Clamp pitch to avoid looking upside-down
-            // m_pitch = glm::clamp(m_pitch, -glm::half_pi<float>() + 0.1f, glm::half_pi<float>() - 0.1f);
+                // Clamp pitch to avoid looking upside-down
+                m_pitch = glm::clamp(m_pitch, -PI_F/2.0f + 0.1f, PI_F/2.0f - 0.1f);
+            }
 
-            // // Create orientation quaternion
-            // Quat yawRot   = Quat::fromAxisAngle({0, 1, 0}, m_yaw);
-            // Quat pitchRot = Quat::fromAxisAngle({1, 0, 0}, m_pitch);
-            // Quat orientation = yawRot * pitchRot;
-            // m_camera->setRotation(orientation);
+            // Create orientation quaternion
+            glm::quat yawRot   = glm::angleAxis(m_yaw, Vec3::UnitY());
+            glm::quat pitchRot = glm::angleAxis(m_pitch, Vec3::UnitX());
+            glm::quat orientation = yawRot * pitchRot;
+            m_camera->setRotation(orientation);
 
-            // // Movement
-            // Vec3 forward = orientation * Vec3(0, 0, -1);
-            // Vec3 right   = orientation * Vec3(1, 0, 0);
+            // Movement
+            Vec3 forward = orientation * -Vec3::UnitZ();
+            Vec3 right   = orientation * Vec3::UnitX();
 
-            // Vec3 pos = getCamera()->getPosition();
-            // if (Input::isKeyPressed(KEY_W)) pos += forward * m_moveSpeed * deltaTime;
-            // if (Input::isKeyPressed(KEY_S)) pos -= forward * m_moveSpeed * deltaTime;
-            // if (Input::isKeyPressed(KEY_A)) pos -= right * m_moveSpeed * deltaTime;
-            // if (Input::isKeyPressed(KEY_D)) pos += right * m_moveSpeed * deltaTime;
-            // m_camera->setPosition(pos);
+            Vec3 pos = getCamera()->getPosition();
+            if (input->isKeyPressed(GLFW_KEY_W)) pos += forward * m_moveSpeed * deltaTime;
+            if (input->isKeyPressed(GLFW_KEY_S)) pos -= forward * m_moveSpeed * deltaTime;
+            if (input->isKeyPressed(GLFW_KEY_A)) pos -= right * m_moveSpeed * deltaTime;
+            if (input->isKeyPressed(GLFW_KEY_D)) pos += right * m_moveSpeed * deltaTime;
+            m_camera->setPosition(pos);  
         }
 
     private:

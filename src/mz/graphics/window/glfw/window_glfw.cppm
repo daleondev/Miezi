@@ -22,12 +22,14 @@ import mz.events.mouse;
 import mz.graphics.window;
 import mz.graphics.renderer.opengl;
 
+import mz.math.geometry;
+
 namespace mz { 
 
-    export class GlfwGlContext : public GlRenderContext
+    export class GlfwGlContext : public GlGraphicsContext
     {
     public:
-        GlfwGlContext(IWindow* window) : GlRenderContext(window) { }
+        GlfwGlContext(IWindow* window) : GlGraphicsContext(window) { }
         ~GlfwGlContext() = default;
 
         void makeCurrent() override
@@ -38,7 +40,7 @@ namespace mz {
 
         void init()
         {
-            GlRenderContext::init(glfwGetProcAddress);
+            GlGraphicsContext::init(glfwGetProcAddress);
         }
     };
 
@@ -60,7 +62,7 @@ namespace mz {
             return glfwGetMouseButton(NATIVE_GLFW_WINDOW, button) == GLFW_PRESS; 
         }
 
-        glm::vec2 getMousePosition() const override
+        Vec2 getMousePosition() const override
         {
             MZ_ASSERT(m_window, "Window for input not set");
 

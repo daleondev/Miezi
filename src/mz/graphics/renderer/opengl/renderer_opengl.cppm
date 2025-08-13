@@ -20,11 +20,11 @@ import mz.math.geometry;
 
 namespace mz { 
 
-    export class GlRenderContext : public IRenderContext
+    export class GlGraphicsContext : public IGraphicsContext
     {
     public:
-        GlRenderContext(IWindow* window) : m_window{ window }, m_initialized{ false } {}
-        virtual ~GlRenderContext() = default;
+        GlGraphicsContext(IWindow* window) : m_window{ window }, m_initialized{ false } {}
+        virtual ~GlGraphicsContext() = default;
 
         void init(GLADloadfunc loadFunc)
         {
@@ -56,10 +56,10 @@ namespace mz {
     export class GlRenderer : public RenderBase
     {
     public:
-        GlRenderer(IRenderContext* context) 
+        GlRenderer(IGraphicsContext* context) 
             : RenderBase(context, std::make_unique<GlShaderStore>()) 
         { 
-            MZ_ASSERT(context->is<GlRenderContext>(), "Invalid graphics context type");
+            MZ_ASSERT(context->is<GlGraphicsContext>(), "Invalid graphics context type");
 
             glEnable(GL_DEPTH_TEST);
             glClearDepthf(1.0f);
