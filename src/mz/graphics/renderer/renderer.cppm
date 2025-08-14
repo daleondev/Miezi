@@ -20,6 +20,7 @@ namespace mz {
 
         virtual void clear(const Vec4& color) = 0;
         virtual void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size = 1.0f) const = 0;
+        virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = false) const = 0;
         virtual void drawBox(ICamera* camera, const Mat4& transform, const Vec4& color) const = 0;
         // virtual void drawPoint(/*OrbitCamera& camera, */const glm::mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = true);
         // virtual void drawLine(/*OrbitCamera& camera, */const glm::mat4& transform, const Vec4& color, const float borderWidth = 1.0f, const Vec4& borderColor = Vec4{0.0f, 0.0f, 0.0f, 1.0f});

@@ -195,8 +195,9 @@ namespace mz {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
 
-        void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size = 1.0f) const override
+        void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size) const override
         {
+            // TODO NOT WORKING
             m_pointData.shader->bind();
             m_pointData.shader->uploadVec3("u_pos", position);
             m_pointData.shader->uploadFloat("u_pointSize", size);
@@ -204,6 +205,25 @@ namespace mz {
 
             m_pointData.vertexArray->bind();
             glDrawArrays(GL_POINTS, 0, 1);
+        }
+
+
+        virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth, const bool smooth) const override
+        {
+            const auto viewProjection = camera->getViewProjection();
+
+            m_lineData.shader->bind();
+            m_lineData.shader->uploadMat4("u_viewProjection", viewProjection);
+            m_lineData.shader->uploadMat4("u_model", transform);
+            m_lineData.shader->uploadVec4("u_color", color);
+
+            m_lineData.vertexArray->bind();
+            if (smooth)
+                glEnable(GL_LINE_SMOOTH);
+            else
+                glDisable(GL_LINE_SMOOTH);
+            glLineWidth(lineWidth);
+            glDrawArrays(GL_LINES, 0, 2);
         }
 
         void drawBox(ICamera* camera, const Mat4& transform, const Vec4& color) const override

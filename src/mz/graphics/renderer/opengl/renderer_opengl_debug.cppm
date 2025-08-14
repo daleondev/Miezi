@@ -24,10 +24,13 @@ namespace mz {
             switch (type)
             {
                 case GL_DEBUG_TYPE_ERROR: 
-                    MZ_ERROR("GL debug\n\tseverity = {}\n\ttype = {}\n\tid = {}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
+                    MZ_ERROR_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
+                    break;
+                case GL_DEBUG_TYPE_OTHER:
+                    MZ_TRACE_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
                     break;
                 default:
-                    MZ_WARN("GL debug\n\tseverity ={}\n\ttype = {}\n\tid = {}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
+                    MZ_WARN_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
             }
         }, nullptr);
     }
@@ -91,10 +94,10 @@ namespace mz {
         glGetProgramiv(program, GL_LINK_STATUS, &linked);
 
         std::string log = getProgramInfoLog(program);
-        MZ_INFO("Program {}: id={}, linked={}, log='{}'", name, program, (linked == GL_TRUE), log);
+        MZ_TRACE("Program {}: id={}, linked={}, log='{}'", name, program, (linked == GL_TRUE), log);
 
         auto shaders = getAttachedShaders(program);
-        MZ_INFO("Attached shaders ({}):", shaders.size());
+        MZ_TRACE("Attached shaders ({}):", shaders.size());
         for (GLuint s : shaders) {
             GLint type = 0;
             glGetShaderiv(s, GL_SHADER_TYPE, &type);
@@ -103,7 +106,7 @@ namespace mz {
             glGetShaderiv(s, GL_COMPILE_STATUS, &compiled);
 
             log = getShaderInfoLog(s);
-            MZ_INFO("\tShader {}: type = {}, compiled = {}, log = '{}'", s, shaderTypeString(type), (compiled == GL_TRUE), log);
+            MZ_TRACE("\tShader {}: type = {}, compiled = {}, log = '{}'", s, shaderTypeString(type), (compiled == GL_TRUE), log);
         }
 
         GLenum err = glGetError();

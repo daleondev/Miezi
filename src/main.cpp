@@ -1,4 +1,5 @@
 #include "mz/core/core.h"
+#include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
 import std;
@@ -69,18 +70,23 @@ int main()
 
         auto camera = std::static_pointer_cast<OrbitCameraController>(camCtrl);
         if (e->is<MouseButtonPressedEvent>()) {
-            if (e->asPtr<MouseButtonPressedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+            if (e->asPtr<MouseButtonPressedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_RIGHT)
                 camCtrl->startDraggingRot();
+            else if (e->asPtr<MouseButtonPressedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+                camCtrl->startDraggingTrans();
         }
         else if (e->is<MouseButtonReleasedEvent>()) {
-            if (e->asPtr<MouseButtonReleasedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+            if (e->asPtr<MouseButtonReleasedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_RIGHT)
                 camCtrl->stopDraggingRot();
+            else if (e->asPtr<MouseButtonReleasedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
+                camCtrl->stopDraggingTrans();
         }
     });
 
     auto renderer = RenderBase::create(window->getContext().get());
 
     std::shared_ptr<ICamera> cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
+    // std::shared_ptr<ICamera> cam = std::make_shared<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
     camCtrl = std::make_shared<OrbitCameraController>(cam);
 
     auto prevTime = std::chrono::high_resolution_clock::now();
@@ -95,9 +101,35 @@ int main()
         window->update(); 
         camCtrl->update(dt, window->getInput().get());
 
-        // cam.setRotation(cam.getRotation() + Vec3{degToRad(1.0f), 0.0f, 0.0f});
+        glViewport(0, 0, window->getSize().x, window->getSize().y);
+
         renderer->clear(Vec4(1.0f));
-        renderer->drawBox(cam.get(), Mat4(1.0f), {1.0f, 0.0f, 0.0f, 1.0f});
+
+        // renderer->drawBox(cam.get(), Mat4(1.0f), {1.0f, 0.0f, 0.0f, 1.0f});
+
+        // ----- prepare Axes -----
+
+        // X
+        Mat4 xAxis(1.0f);
+        xAxis.rotate(Vec3::UnitY(), PI_F/2.0f);
+
+        // Y
+        Mat4 yAxis(1.0f);
+        yAxis.rotate(-Vec3::UnitX(), PI_F/2.0f);
+        
+        // Z
+        Mat4 zAxis(1.0f);
+
+        // ----- draw Axes -----
+
+        // X
+        renderer->drawLine(cam.get(), xAxis, {1.0f, 0.0f, 0.0f, 1.0f});
+
+        // Y
+        renderer->drawLine(cam.get(), yAxis, {0.0f, 1.0f, 0.0f, 1.0f});
+
+        // Z
+        renderer->drawLine(cam.get(), zAxis, {0.0f, 0.0f, 1.0f, 1.0f});
     }
 
     running = false;

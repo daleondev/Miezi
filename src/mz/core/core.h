@@ -11,19 +11,25 @@
 //                      Logging
 //------------------------------------------------------
 
-#define METHOD_NAME             mz::functionToLocation(std::source_location::current().function_name())
+#define METHOD_NAME                 mz::functionToLocation(std::source_location::current().function_name())
 
-#define MZ_TRACE(fmt, ...)		mz::g_logger.trace(true, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_INFO(fmt, ...)		mz::g_logger.info(true, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_WARN(fmt, ...)		mz::g_logger.warn(true, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_ERROR(fmt, ...)		mz::g_logger.error(true, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_FATAL(fmt, ...)		mz::g_logger.fatal(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_TRACE_LOC(loc, fmt, ...) mz::g_logger.trace(true, loc, fmt, ##__VA_ARGS__)
+#define MZ_INFO_LOC(loc, fmt, ...)  mz::g_logger.info(true, loc, fmt, ##__VA_ARGS__)
+#define MZ_WARN_LOC(loc, fmt, ...)  mz::g_logger.warn(true, loc, fmt, ##__VA_ARGS__)
+#define MZ_ERROR_LOC(loc, fmt, ...) mz::g_logger.error(true, loc, fmt, ##__VA_ARGS__)
+#define MZ_FATAL_LOC(loc, fmt, ...) mz::g_logger.fatal(true, loc, fmt, ##__VA_ARGS__)
 
-#define MZ_TRACE_NOW(fmt, ...)	mz::g_logger.trace(false, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_INFO_NOW(fmt, ...)	mz::g_logger.info(false, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_WARN_NOW(fmt, ...)	mz::g_logger.warn(false, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_ERROR_NOW(fmt, ...)	mz::g_logger.error(false, METHOD_NAME, fmt, ##__VA_ARGS__)
-#define MZ_FATAL_NOW(fmt, ...)	mz::g_logger.fatal(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_TRACE(fmt, ...)		    mz::g_logger.trace(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_INFO(fmt, ...)		    mz::g_logger.info(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_WARN(fmt, ...)		    mz::g_logger.warn(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_ERROR(fmt, ...)		    mz::g_logger.error(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_FATAL(fmt, ...)		    mz::g_logger.fatal(true, METHOD_NAME, fmt, ##__VA_ARGS__)
+
+#define MZ_TRACE_NOW(fmt, ...)	    mz::g_logger.trace(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_INFO_NOW(fmt, ...)	    mz::g_logger.info(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_WARN_NOW(fmt, ...)	    mz::g_logger.warn(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_ERROR_NOW(fmt, ...)	    mz::g_logger.error(false, METHOD_NAME, fmt, ##__VA_ARGS__)
+#define MZ_FATAL_NOW(fmt, ...)	    mz::g_logger.fatal(false, METHOD_NAME, fmt, ##__VA_ARGS__)
 
 #ifdef MZ_ENABLE_ASSERTS
     #ifdef MZ_OS_WINDOWS
