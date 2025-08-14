@@ -7,6 +7,7 @@ export module mz.graphics.renderer.opengl.resources;
 import std;
 
 import mz.core.logging;
+import mz.core.types;
 
 import mz.graphics.renderer.resources;
 import mz.graphics.renderer.buffers;
@@ -368,6 +369,104 @@ namespace mz {
             add(shader);
             return shader;
         }
+    };
+
+    //------------------------------------------------------
+    //                      Texture
+    //------------------------------------------------------
+
+    export class GlTexture : public TextureBase
+    {
+    public:
+        GlTexture(const std::string& filePath)
+            : TextureBase(0, 0)
+        {
+            MZ_ASSERT(false, "not implemented");
+        }
+        GlTexture(const ContigData<std::uint8_t>& data, const std::uint32_t width, const std::uint32_t height, const ImageFormat format)
+            : TextureBase(width, height)
+        {
+            glGenTextures(1, &m_texture);
+            glBindTexture(GL_TEXTURE_2D, m_texture);
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+            const auto isPowerOfTwo = [](const std::uint32_t x) -> bool { return (x & (x - 1)) == 0; };
+            if (isPowerOfTwo(width) && isPowerOfTwo(height)) {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glGenerateMipmap(GL_TEXTURE_2D);
+            }
+            else {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            }
+
+            setData(data, format);
+        }
+        ~GlTexture()
+        {
+            glDeleteTextures(1, &m_texture);
+        }
+
+        void bind() const override
+        {
+            glBindTexture(GL_TEXTURE_2D, m_texture);
+        }
+
+        void release() const override
+        {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+
+        void setData(const ContigData<std::uint8_t>& data, const ImageFormat format) override
+        {
+            bind();
+
+            switch (format)
+            {
+                case ImageFormat::Rgb8:
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+                    break;
+                case ImageFormat::Rgba8:
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
+                    break;
+                case ImageFormat::Y8:
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_width, m_height, 0, GL_RED, GL_UNSIGNED_BYTE, data.data());
+                    break;
+                case ImageFormat::Y10BPack:
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_width, m_height, 0, GL_RED, GL_UNSIGNED_SHORT, data.data());
+                    break;
+            }
+
+            release();
+        }
+
+        void setMinificationFilter(const GLuint type)
+        {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, type);
+        }
+
+        void setMagnificationFilter(const GLuint type)
+        {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, type);
+        }
+
+        void setWrapMode(const GLuint mode)
+        {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+        }
+
+        GLuint getId() const { return m_texture; }
+        GLuint getSlot() const { return m_slot; }
+
+    private:   
+        GLuint m_texture;
+        GLuint m_slot = -1;
+
     };
 
 }

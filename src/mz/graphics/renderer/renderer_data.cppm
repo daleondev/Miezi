@@ -112,7 +112,7 @@ namespace mz {
             vertices[0].uv  = Vec2(0.5f, 0.5f);
 
             for (std::uint16_t i = 0; i < CIRCLE_SEGMENTS; ++i) {
-                float theta = 2.0f * std::numbers::pi_v<float> * i / CIRCLE_SEGMENTS;
+                float theta = 2.0f * PI_F * i / CIRCLE_SEGMENTS;
                 float x = std::cos(theta);
                 float y = std::sin(theta);
 
@@ -280,9 +280,9 @@ namespace mz {
             std::size_t vertexIndex = 0;
             for (std::uint16_t r = 0; r < SPHERE_RINGS; ++r) {
                 for (std::uint16_t s = 0; s < SPHERE_SECTORS; ++s) {
-                    const float y = std::sin(-std::numbers::pi_v<float> / 2.0f + std::numbers::pi_v<float> * r * R);
-                    const float x = std::cos(2.0f * std::numbers::pi_v<float> * s * S) * std::sin(std::numbers::pi_v<float> * r * R);
-                    const float z = std::sin(2.0f * std::numbers::pi_v<float> * s * S) * std::sin(std::numbers::pi_v<float> * r * R);
+                    const float y = std::sin(-PI_F / 2.0f + PI_F * r * R);
+                    const float x = std::cos(2.0f * PI_F * s * S) * std::sin(PI_F * r * R);
+                    const float z = std::sin(2.0f * PI_F * s * S) * std::sin(PI_F * r * R);
 
                     const float u = s * S; // [0,1]
                     const float v = r * R; // [0,1]

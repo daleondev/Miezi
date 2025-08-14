@@ -131,12 +131,39 @@ namespace mz {
     //                      Texture
     //------------------------------------------------------
 
-    // export class TextureBase : public IGraphicsResource
-    // {
-    // public:
-    //     virtual ~TextureBase() = default;
-    //     // todo
-    // };
+    export enum class ImageFormat
+    {
+        Rgb8 = 0,
+        Rgba8,
+        Y8,
+        Y10BPack
+    };
+
+    export class ITexture : public IRenderResource
+    {
+    public:
+        virtual ~ITexture() = default;
+
+        virtual std::uint32_t getWidth() const = 0;
+        virtual std::uint32_t getHeight() const = 0;
+
+        virtual void setData(const ContigData<std::uint8_t>& data, const ImageFormat format) = 0;
+    };
+
+    export class TextureBase : public ITexture
+    {
+    public:
+        TextureBase(const std::uint32_t width, const std::uint32_t height) : m_width{ width }, m_height{ height } {}
+        virtual ~TextureBase() = default;
+
+        std::uint32_t getWidth() const override { return m_width; }
+        std::uint32_t getHeight() const override { return m_height; }
+
+    protected:   
+        std::uint32_t m_width;
+        std::uint32_t m_height;
+
+    };
 
     // export class TextureStoreBase
     // {

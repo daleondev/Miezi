@@ -21,16 +21,20 @@ namespace mz {
             MZ_UNUSED(source);
             MZ_UNUSED(userParam);
 
-            switch (type)
+            switch (severity)
             {
-                case GL_DEBUG_TYPE_ERROR: 
+                case GL_DEBUG_SEVERITY_HIGH: 
                     MZ_ERROR_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
                     break;
-                case GL_DEBUG_TYPE_OTHER:
+                case GL_DEBUG_SEVERITY_MEDIUM:
+                    MZ_WARN_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
+                    break;
+                case GL_DEBUG_SEVERITY_LOW:
+                    MZ_INFO_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
+                    break;
+                case GL_DEBUG_SEVERITY_NOTIFICATION:
                     MZ_TRACE_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
                     break;
-                default:
-                    MZ_WARN_LOC("GL Debug", "severity = 0x{:X}, type = 0x{:X}, id = 0x{:X}\n\tmsg = '{}'", severity, type, id, std::string(message, length));
             }
         }, nullptr);
     }
