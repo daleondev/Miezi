@@ -101,9 +101,6 @@ namespace mz {
         Scalar operator^(const Vec& other) const { return dot(other); }
         Vec operator%(const Vec& other) const requires (Size <= 3) { return cross(other); }
 
-        bool operator==(const Vec& other) const { return *this == other; }
-        bool operator!=(const Vec& other) const { return *this != other; }
-
         Vec2 asVec2() const { return *this; }
         Vec3 asVec3(const float z = 0.0f) const requires (Size == 2) { return Vec3(*this, z); }
         Vec3 asVec3() const requires (Size >= 3) { return *this; }

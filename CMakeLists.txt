@@ -11,6 +11,15 @@ endif()
 # external libraries
 # ----------------------------------
 
+# create project
+project(Miezi 
+    VERSION 0.1.0
+    DESCRIPTION "Miezi Graphics Library"
+    LANGUAGES C CXX)
+
+# entt
+add_subdirectory(external/entt)
+
 # glfw
 add_subdirectory(external/glfw)
 
@@ -59,18 +68,9 @@ target_compile_definitions(glm
         GLM_GTX_INLINE_NAMESPACE
         GLM_ENABLE_EXPERIMENTAL)
 
-# # entt
-# add_subdirectory(external/entt)
-
 # ----------------------------------
 # Miezi project
 # ----------------------------------
-
-# create project
-project(Miezi 
-    VERSION 0.1.0
-    DESCRIPTION "Miezi Graphics Library"
-    LANGUAGES C CXX)
 
 if(NOT WIN32) 
     # enable std module
@@ -149,8 +149,8 @@ target_link_libraries(Miezi
         glad_gl_core_46
         OpenGL::GL 
         OpenGL::GLU
-        Threads::Threads)
-        # EnTT::EnTT)
+        Threads::Threads
+        EnTT::EnTT)
 
 # set OS define
 if(WIN32) 
