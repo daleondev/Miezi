@@ -227,6 +227,37 @@ namespace mz {
             glDrawArrays(GL_LINES, 0, 2);
         }
 
+
+        void drawRect(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        {
+
+        }
+
+        void drawRect(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        {
+
+        }
+
+        void drawCircle(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        {
+
+        }
+
+        void drawCircle(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        {
+
+        }
+
+        void drawPlane(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        {
+
+        }
+
+        void drawPlane(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        {
+            
+        }
+
         void drawBox(ICamera* camera, const Mat4& transform, const Vec4& color) const override
         {
             const auto viewProjection = camera->getViewProjection();
@@ -245,6 +276,21 @@ namespace mz {
             m_boxData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
             m_boxData.shader->uploadVec3("u_viewPos", camera->getPosition());
             drawIndexed(m_boxData.shader, m_boxData.vertexArray);
+        }
+
+        void drawBox(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        {
+            
+        }
+
+        void drawSphere(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        {
+
+        }
+
+        void drawSphere(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        {
+
         }
 
     private:

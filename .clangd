@@ -15,4 +15,10 @@ CompileFlags:
     - -DMZ_RENDERER_OPENGL
     - -I/home/david/Dokumente/Miezi/src
     - -I/home/david/Dokumente/Miezi/build/gladsources/glad_gl_core_46/include
-    - -Wno-module-import-in-extern-c
+    # - -I/home/david/Dokumente/Miezi/external/entt/src
+
+# Diagnostics:
+#   Suppress: 
+#     - -Wmodule-import-in-extern-c
+    # - module_unimported_use
+    # - static_assert_expression_is_not_constant

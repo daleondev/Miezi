@@ -160,6 +160,8 @@ namespace mz {
 
         void update(const Timestep dt, IInput* input) override
         {
+            MZ_UNUSED(dt);
+
             if (m_draggingRot) {
                 const auto mouseDelta = -input->getMouseDelta();
                 m_yaw   += mouseDelta.x * m_rotSens;

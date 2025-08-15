@@ -59,6 +59,9 @@ target_compile_definitions(glm
         GLM_GTX_INLINE_NAMESPACE
         GLM_ENABLE_EXPERIMENTAL)
 
+# # entt
+# add_subdirectory(external/entt)
+
 # ----------------------------------
 # Miezi project
 # ----------------------------------
@@ -147,6 +150,7 @@ target_link_libraries(Miezi
         OpenGL::GL 
         OpenGL::GLU
         Threads::Threads)
+        # EnTT::EnTT)
 
 # set OS define
 if(WIN32) 

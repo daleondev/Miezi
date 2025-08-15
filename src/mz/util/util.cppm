@@ -11,6 +11,15 @@ import mz.math.geometry;
 
 namespace mz {
 
+    export using UUID = std::uint64_t;
+    export constexpr UUID UUID_NULL = std::numeric_limits<UUID>::min();
+
+    export UUID uuid()
+    {
+        static UUID id = UUID_NULL;
+        return ++id;
+    }
+
     export Vector<std::string> splitString(std::string str, const char* delims)
     {
         Vector<std::string> parts;
@@ -82,7 +91,7 @@ namespace mz {
                 m_falling = !m_val && m_prev;
                 m_edge = m_rising || m_falling;
             }
-            else if (std::is_arithmetic<T>()) {
+            else if constexpr (std::is_arithmetic<T>()) {
                 m_rising = m_val > m_prev;
                 m_falling = m_val < m_prev;
                 m_edge = m_rising || m_falling;
