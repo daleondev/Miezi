@@ -165,33 +165,60 @@ namespace mz {
 
     };
 
-    // export class TextureStoreBase
-    // {
-    // public:
-    //     virtual ~TextureStoreBase() = default;
+    //------------------------------------------------------
+    //                      Material
+    //------------------------------------------------------
 
-    //     // virtual std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromSource(const std::string& name, const std::string& vertSource, const std::string& fragSource) = 0;
-    //     // virtual std::expected<std::shared_ptr<ShaderBase>, ShaderError> loadFromFiles(const std::string& filePath) = 0;
-        
-    //     void add(const std::shared_ptr<TextureBase>& texture)
-    //     {
-    //         const auto name = texture->getName();
-    //         MZ_ASSERT(m_textures.find(name) == m_textures.end(), "texture already exists");
-    //         m_textures[name] = texture;
-    //     }
-        
-    //     std::shared_ptr<ShaderBase> get(const std::string& name)
-    //     {
-    //         MZ_ASSERT(m_textures.find(name) != m_textures.end(), "texture not found");
-    //         return m_textures[name];
-    //     }
+    export enum class MaterialFlag
+    {
+        None                    = MZ_BIT(0),
+        DepthTest               = MZ_BIT(1),
+        Blend                   = MZ_BIT(2),
+        TwoSided                = MZ_BIT(3),
+        DisableShadowCasting    = MZ_BIT(3)
+    };
 
-    //     bool exists(const std::string& name) { return m_textures.find(name) != m_textures.end(); }
-    //     void clear() { m_textures.clear(); }
+    export class IMaterial : public IRenderResource
+    {
+    public:
+        virtual ~IMaterial() = default;
 
-    // protected:
-    //     std::map<std::string, std::shared_ptr<TextureBase>> m_textures;
+        virtual const std::string& getName() const = 0;
+        virtual std::shared_ptr<IShader> getShader() const = 0;
 
-    // };
+        virtual std::uint32_t getFlags() const = 0;
+        virtual void setFlags(const std::uint32_t flags) = 0;
+        virtual bool getFlag(const MaterialFlag flag) const = 0;
+        virtual void setFlag(const MaterialFlag flag, const bool value = true) = 0;
+    };
+
+    export class Material : public IMaterial
+    {
+    public:
+        Material(const std::shared_ptr<IShader> shader) 
+            : m_shader{ shader }
+        {
+            
+        }
+
+        virtual ~Material() = default;
+
+        const std::string& getName() const override { return m_name; }
+        std::shared_ptr<IShader> getShader() const override { return m_shader; }
+
+        std::uint32_t getFlags() const override { return m_flags; }
+        void setFlags(const std::uint32_t flags) override { m_flags = flags; }
+        bool getFlag(const MaterialFlag flag) const override { return static_cast<std::uint32_t>(flag) & m_flags; }
+        void setFlag(const MaterialFlag flag, const bool value = true) override
+        { 
+            if (value)  m_flags |=  static_cast<std::uint32_t>(flag);
+            else        m_flags &= ~static_cast<std::uint32_t>(flag);
+        }
+
+    private:
+        std::string m_name;
+        std::shared_ptr<IShader> m_shader;
+        std::uint32_t m_flags;
+    };
 
 }

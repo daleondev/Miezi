@@ -381,6 +381,7 @@ namespace mz {
         GlTexture(const std::string& filePath)
             : TextureBase(0, 0)
         {
+            MZ_UNUSED(filePath);
             MZ_ASSERT(false, "not implemented");
         }
         GlTexture(const ContigData<std::uint8_t>& data, const std::uint32_t width, const std::uint32_t height, const ImageFormat format)

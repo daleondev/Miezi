@@ -198,6 +198,7 @@ namespace mz {
         void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size) const override
         {
             // TODO NOT WORKING
+            MZ_UNUSED(camera);
             m_pointData.shader->bind();
             m_pointData.shader->uploadVec3("u_pos", position);
             m_pointData.shader->uploadFloat("u_pointSize", size);
