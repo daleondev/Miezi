@@ -8,3 +8,9 @@ namespace mz {
     export const mz::Entity EntityNull{entt::null, nullptr};
 
 }
+
+namespace entt {
+
+    export using entt::registry;
+
+}

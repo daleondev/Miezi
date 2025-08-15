@@ -15,7 +15,7 @@ CompileFlags:
     - -DMZ_RENDERER_OPENGL
     - -I/home/david/Dokumente/Miezi/src
     - -I/home/david/Dokumente/Miezi/build/gladsources/glad_gl_core_46/include
-    - -I/home/david/Dokumente/Miezi/external/entt/single_include
+    - -I/home/david/Dokumente/Miezi/external/entt/src
 
 Diagnostics:
   Suppress: 
@@ -24,19 +24,9 @@ Diagnostics:
 ---
 
 If:
-  PathMatch: .*[Ee]ntity.*
+  PathMatch: .*[Sc]ene*.*
 Diagnostics:
   Suppress: 
     - template_instantiate_undefined
     - module_unimported_use
     - ambiguous_reference
-
-# ---
-
-# If:
-#   PathMatch: .*Entity.*
-# Diagnostics:
-#   Suppress: 
-#     - template_instantiate_undefined
-#     - module_unimported_use
-#     - ambiguous_reference
