@@ -187,6 +187,11 @@ namespace mz {
         }
         ~GlRenderer() = default;
 
+        void setViewport(const Vec2& viewport) override
+        {
+            glViewport(0, 0, viewport.x, viewport.y);
+        }
+
         void clear(const Vec4& color) override
         {
             m_context->makeCurrent();
@@ -211,10 +216,6 @@ namespace mz {
 
         virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth, const bool smooth) const override
         {
-            camera->getViewProjection().print();
-            transform.print();
-            color.print();
-
             const auto viewProjection = camera->getViewProjection();
 
             m_lineData.shader->bind();

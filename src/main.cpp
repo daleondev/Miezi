@@ -58,43 +58,30 @@ void printRange(const T& range)
     MZ_TRACE("{}", ss.str());
 }
 
-std::shared_ptr<ICameraController> camCtrl;
+// std::shared_ptr<ICameraController> camCtrl;
 
 int main()
 {
     auto window = mz::WindowBase::create("Test Window", glm::vec2{800, 600});
+    auto renderer = RenderBase::create(window->getContext().get());
+    Scene scene(window->getSize(), renderer);
     
     // std::make_unique<mz::GlfwWindow>("Test Window", glm::vec2{800, 600});
-    window->setEventCallbackFunc([](mz::IEvent* e) 
+    window->setEventCallbackFunc([&](mz::IEvent* e) 
     {
-        if (e->is<mz::WindowCloseEvent>())
+        if (e->isHandled())
+            return;
+
+        if (e->is<mz::WindowCloseEvent>()) {
             running = false;
+            return;
+        }
 
-        auto camera = std::static_pointer_cast<OrbitCameraController>(camCtrl);
-        if (e->is<MouseButtonPressedEvent>()) {
-            if (e->asPtr<MouseButtonPressedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_RIGHT)
-                camCtrl->startDraggingRot();
-            else if (e->asPtr<MouseButtonPressedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
-                camCtrl->startDraggingTrans();
-        }
-        else if (e->is<MouseButtonReleasedEvent>()) {
-            if (e->asPtr<MouseButtonReleasedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_RIGHT)
-                camCtrl->stopDraggingRot();
-            else if (e->asPtr<MouseButtonReleasedEvent>()->getMouseButton() == GLFW_MOUSE_BUTTON_LEFT)
-                camCtrl->stopDraggingTrans();
-        }
+        scene.onEvent(e);
     });
-
-    auto renderer = RenderBase::create(window->getContext().get());
-
-    Scene scene(renderer);
+    
     auto line1 = scene.createEntity("test1");
     line1.addComponent<LineRendererComponent>();
-    // line1.addComponent<TransformComponent>();
-
-    std::shared_ptr<ICamera> cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
-    // std::shared_ptr<ICamera> cam = std::make_shared<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
-    camCtrl = std::make_shared<OrbitCameraController>(cam);
 
     auto prevTime = std::chrono::high_resolution_clock::now();
 
@@ -106,11 +93,7 @@ int main()
         Timestep dt(std::chrono::duration_cast<std::chrono::milliseconds>(timeDiff).count() / 1000.0f);
 
         window->update(); 
-        camCtrl->update(dt, window->getInput().get());
-
-        glViewport(0, 0, window->getSize().x, window->getSize().y);
-
-        renderer->clear(Vec4(0.0f));
+        scene.update(dt, window->getInput().get());
 
         // scene.update(dt, cam.get());
 

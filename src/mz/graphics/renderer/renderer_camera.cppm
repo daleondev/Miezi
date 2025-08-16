@@ -20,7 +20,13 @@ namespace mz {
     //                      Camera
     //------------------------------------------------------
 
-    export class ICamera : ICastable
+    export enum class CameraType
+    {
+        Orthographic,
+        Perspective
+    };
+
+    export class ICamera : public ICastable
     {
     public:
 		virtual ~ICamera() = default;
@@ -39,6 +45,8 @@ namespace mz {
         virtual const Mat4& getView() const = 0;
         virtual const Mat4& getProjection() const = 0;
         virtual const Mat4& getViewProjection() const = 0;
+
+        virtual CameraType getType() const = 0;
     };
 
     export class CameraBase : public ICamera
@@ -94,6 +102,8 @@ namespace mz {
             m_projectionMatrix = Mat4::createOrtho(left, right, bottom, top, zNear, zFar); 
             m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
         }
+
+        CameraType getType() const override { return CameraType::Orthographic; }
     };
 
     export class PerspectiveCamera : public CameraBase
@@ -107,11 +117,19 @@ namespace mz {
             m_projectionMatrix = Mat4::createPerspective(fovY, aspect, zNear, zFar);
             m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
         }
+
+        CameraType getType() const override { return CameraType::Perspective; }
     };
 
     //------------------------------------------------------
     //                  Camera Controller
     //------------------------------------------------------
+
+    export enum class CameraControllerType
+    {
+        Orbit,
+        Free
+    };
 
     export class ICameraController : public ICastable
     {
@@ -126,14 +144,16 @@ namespace mz {
         virtual void startDraggingTrans() = 0;
         virtual void stopDraggingTrans() = 0;
 
-        virtual std::shared_ptr<ICamera> getCamera() const = 0;
-        virtual void setCamera(const std::shared_ptr<ICamera>& camera) = 0;
+        virtual ICamera* getCamera() const = 0;
+        virtual void setCamera(ICamera* camera) = 0;
+
+        virtual CameraControllerType getType() const = 0;
     };
 
     export class CameraControllerBase : public ICameraController
     {
     public:
-        CameraControllerBase(const std::shared_ptr<ICamera>& camera) : m_camera{ camera } {}
+        CameraControllerBase(ICamera* camera) : m_camera{ camera } {}
         virtual ~CameraControllerBase() = default;
 
         void startDraggingRot() override { m_draggingRot = true; }
@@ -142,11 +162,11 @@ namespace mz {
         void startDraggingTrans() override { m_draggingTrans = true; }
         void stopDraggingTrans() override { m_draggingTrans = false; }
 
-        std::shared_ptr<ICamera> getCamera() const override { return m_camera; }
-        void setCamera(const std::shared_ptr<ICamera>& camera) override { m_camera = camera; }
+        ICamera* getCamera() const override { return m_camera; }
+        void setCamera(ICamera* camera) override { m_camera = camera; }
 
     protected:
-        std::shared_ptr<ICamera> m_camera;
+        ICamera* m_camera;
 
         bool m_draggingRot = false;
         bool m_draggingTrans = false;
@@ -155,7 +175,7 @@ namespace mz {
     export class OrbitCameraController : public CameraControllerBase
     {
     public:
-        OrbitCameraController(const std::shared_ptr<ICamera>& camera, const Vec3& target = {0,0,0}, const float distance = 4.0f) 
+        OrbitCameraController(ICamera* camera, const Vec3& target = {0,0,0}, const float distance = 4.0f) 
         : CameraControllerBase(camera), m_target{ target }, m_distance{ distance }, m_yaw{ 0.0f }, m_pitch{ 0.0f } {}
 
         void update(const Timestep dt, IInput* input) override
@@ -185,6 +205,8 @@ namespace mz {
             m_camera->setPosition(m_target + offset);
         }
 
+        CameraControllerType getType() const override { return CameraControllerType::Orbit; }
+
     private:
         Vec3 m_target;
         float m_distance;
@@ -197,7 +219,7 @@ namespace mz {
     export class FreeCameraController : public CameraControllerBase
     {
     public:
-        FreeCameraController(const std::shared_ptr<ICamera>& camera) 
+        FreeCameraController(ICamera* camera) 
             : CameraControllerBase(camera), m_yaw{ 0.0f }, m_pitch{ 0.0f } {}
 
         void update(const Timestep dt, IInput* input) override
@@ -228,6 +250,8 @@ namespace mz {
             if (input->isKeyPressed(GLFW_KEY_D)) pos += right * m_moveSpeed * (float)dt;
             m_camera->setPosition(pos);  
         }
+
+        CameraControllerType getType() const override { return CameraControllerType::Free; }
 
     private:
         float m_yaw;

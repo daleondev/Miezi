@@ -68,7 +68,7 @@ namespace mz {
         bool dispatch(const F& func)
         {
             if (m_event->getEventType() == T::getStaticType()) {
-                m_event->setHandled(m_event->isHandled() | func(m_event->asPtrUnchecked<T>()));
+                m_event->setHandled(m_event->isHandled() || func(m_event->asPtrUnchecked<T>()));
                 return true;
             }
             return false;

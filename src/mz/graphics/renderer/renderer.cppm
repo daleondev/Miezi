@@ -18,6 +18,8 @@ namespace mz {
     public:
         virtual ~IRenderer() = default;
 
+        virtual void setViewport(const Vec2& viewport) = 0;
+
         virtual void clear(const Vec4& color) = 0;
         virtual void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size = 1.0f) const = 0;
         virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = false) const = 0;

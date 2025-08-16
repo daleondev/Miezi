@@ -3,7 +3,7 @@ export module mz.graphics.scene.components;
 import std;
 
 import mz.graphics.renderer.resources;
-import mz.graphics.scene.camera;
+import mz.graphics.renderer.camera;
 
 import mz.math.geometry;
 import mz.util;
@@ -163,10 +163,11 @@ namespace mz {
 
     export struct CameraComponent
 	{
-		SceneCamera Camera;
+        CameraType cameraType;
+        std::optional<CameraControllerType> controllerType;
+        bool primary = true;
 
-		CameraComponent() = default;
-		CameraComponent(const CameraComponent&) = default;
+		CameraComponent() : cameraType{ CameraType::Perspective }, controllerType{ CameraControllerType::Orbit } {}
 	};
 
     //------------------------------------------------------
