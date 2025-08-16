@@ -211,6 +211,10 @@ namespace mz {
 
         virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth, const bool smooth) const override
         {
+            camera->getViewProjection().print();
+            transform.print();
+            color.print();
+
             const auto viewProjection = camera->getViewProjection();
 
             m_lineData.shader->bind();

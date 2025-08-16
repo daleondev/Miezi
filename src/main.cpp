@@ -16,6 +16,8 @@ import mz.graphics.window;
 import mz.graphics.renderer;
 import mz.graphics.renderer.opengl;
 import mz.graphics.renderer.camera;
+import mz.graphics.scene;
+import mz.graphics.scene.components;
 
 import mz.util;
 import mz.util.time;
@@ -85,6 +87,11 @@ int main()
 
     auto renderer = RenderBase::create(window->getContext().get());
 
+    Scene scene(renderer);
+    auto line1 = scene.createEntity("test1");
+    line1.addComponent<LineRendererComponent>();
+    line1.addComponent<TransformComponent>();
+
     std::shared_ptr<ICamera> cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
     // std::shared_ptr<ICamera> cam = std::make_shared<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
     camCtrl = std::make_shared<OrbitCameraController>(cam);
@@ -103,34 +110,40 @@ int main()
 
         glViewport(0, 0, window->getSize().x, window->getSize().y);
 
-        renderer->clear(Vec4(1.0f));
+        renderer->clear(Vec4(0.0f));
+
+        scene.update(dt, cam.get());
+
+        // renderer->drawLine(cam.get(), Mat4(1.0f), Vec4(1.0f));
 
         // renderer->drawBox(cam.get(), Mat4(1.0f), {1.0f, 0.0f, 0.0f, 1.0f});
 
-        // ----- prepare Axes -----
+        // // ----- prepare Axes -----
 
-        // X
-        Mat4 xAxis(1.0f);
-        xAxis.rotate(Vec3::UnitY(), PI_F/2.0f);
+        // // X
+        // Mat4 xAxis(1.0f);
+        // xAxis.rotate(Vec3::UnitY(), PI_F/2.0f);
 
-        // Y
-        Mat4 yAxis(1.0f);
-        yAxis.rotate(-Vec3::UnitX(), PI_F/2.0f);
+        // // Y
+        // Mat4 yAxis(1.0f);
+        // yAxis.rotate(-Vec3::UnitX(), PI_F/2.0f);
         
-        // Z
-        Mat4 zAxis(1.0f);
+        // // Z
+        // Mat4 zAxis(1.0f);
 
-        // ----- draw Axes -----
+        // // ----- draw Axes -----
 
-        // X
-        renderer->drawLine(cam.get(), xAxis, {1.0f, 0.0f, 0.0f, 1.0f});
+        // // X
+        // renderer->drawLine(cam.get(), xAxis, {1.0f, 0.0f, 0.0f, 1.0f});
 
-        // Y
-        renderer->drawLine(cam.get(), yAxis, {0.0f, 1.0f, 0.0f, 1.0f});
+        // // Y
+        // renderer->drawLine(cam.get(), yAxis, {0.0f, 1.0f, 0.0f, 1.0f});
 
-        // Z
-        renderer->drawLine(cam.get(), zAxis, {0.0f, 0.0f, 1.0f, 1.0f});
+        // // Z
+        // renderer->drawLine(cam.get(), zAxis, {0.0f, 0.0f, 1.0f, 1.0f});
     }
+
+   
 
     running = false;
     using namespace std::chrono_literals;

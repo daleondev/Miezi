@@ -7,15 +7,14 @@ else()
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 endif()
 
-# ----------------------------------
-# external libraries
-# ----------------------------------
-
-# create project
 project(Miezi 
     VERSION 0.1.0
     DESCRIPTION "Miezi Graphics Library"
     LANGUAGES C CXX)
+
+# ----------------------------------
+# external libraries
+# ----------------------------------
 
 # entt
 add_subdirectory(external/entt)

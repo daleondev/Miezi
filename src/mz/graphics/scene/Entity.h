@@ -15,7 +15,7 @@ namespace mz{
     {
     public:
         Entity() = delete;
-        Entity(entt::entity handle, entt::registry* registry) : m_handle{handle}, m_registry{ registry }  {}
+        Entity(entt::registry* registry) : m_registry{ registry }, m_handle{ registry ? registry->create() : entt::null }  { MZ_INFO("Entity: {}", (int)m_handle); }
         Entity(const Entity&) = default;
         ~Entity() = default;
 
@@ -55,7 +55,7 @@ namespace mz{
             m_registry->remove<T>(m_handle);
         }
 
-        UUID getId() const
+        std::uint32_t getId() const
         { 
             return getComponent<IdComponent>(); 
         }
@@ -77,8 +77,8 @@ namespace mz{
         bool operator>=(const Entity other) const { return m_handle >= other.m_handle; }
 
     private:
-        entt::entity m_handle;
         entt::basic_registry<entt::entity>* m_registry;
+        entt::entity m_handle;
 
     };
 

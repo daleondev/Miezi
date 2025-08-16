@@ -16,12 +16,13 @@ namespace mz {
 
     export struct IdComponent
     {
-        const UUID id;
+        const std::uint32_t id;
 
-        IdComponent() : id{uuid()} {}
+        IdComponent() : id{ 0 } {}
         IdComponent(const IdComponent&) = default;
+        IdComponent(const std::uint32_t id) : id{ id } {}
 
-        operator UUID() const { return id; }
+        operator std::uint32_t() const { return id; }
     };
 
     export struct TagComponent
@@ -54,7 +55,6 @@ namespace mz {
         } detectChangeData;
 
         TransformComponent() : translation{ 0.0f }, rotation{ Mat3(1.0f) }, scale{ 1.0f } {};
-        TransformComponent(const TransformComponent&) = default;
 
         operator Mat4() const { return Mat4(1.0f)
             .translated(translation)
@@ -83,7 +83,7 @@ namespace mz {
         bool smooth;
 
 		LineRendererComponent() : color{ 1.0f }, thickness{ 1.0f }, smooth{ false } {}
-		LineRendererComponent(const LineRendererComponent&) = default;
+		// LineRendererComponent(const LineRendererComponent&) = default;
 		LineRendererComponent(const Vec4& color, const float thickness = 1.0f, const bool smooth = false) : color{ color }, thickness{ thickness }, smooth{ smooth } {}
 	};
 

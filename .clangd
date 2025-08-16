@@ -30,3 +30,7 @@ Diagnostics:
     - template_instantiate_undefined
     - module_unimported_use
     - ambiguous_reference
+    - ovl_ambiguous_call
+    - ovl_no_viable_function_in_init
+# CompileFlags:
+#   Add: -stdlib=libstdc++
