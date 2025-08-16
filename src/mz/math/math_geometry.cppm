@@ -3,7 +3,7 @@ module;
 export module mz.math.geometry;
 
 import std;
-import glm;
+export import glm;
 
 export import mz.math.constants;
 

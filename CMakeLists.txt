@@ -7,9 +7,17 @@ else()
     set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "d0edc3af-4c50-42ea-a356-e2862fe7a444")
 endif()
 
+project(Miezi 
+    VERSION 0.1.0
+    DESCRIPTION "Miezi Graphics Library"
+    LANGUAGES C CXX)
+
 # ----------------------------------
 # external libraries
 # ----------------------------------
+
+# entt
+add_subdirectory(external/entt)
 
 # glfw
 add_subdirectory(external/glfw)
@@ -62,12 +70,6 @@ target_compile_definitions(glm
 # ----------------------------------
 # Miezi project
 # ----------------------------------
-
-# create project
-project(Miezi 
-    VERSION 0.1.0
-    DESCRIPTION "Miezi Graphics Library"
-    LANGUAGES C CXX)
 
 if(NOT WIN32) 
     # enable std module
@@ -146,7 +148,8 @@ target_link_libraries(Miezi
         glad_gl_core_46
         OpenGL::GL 
         OpenGL::GLU
-        Threads::Threads)
+        Threads::Threads
+        EnTT::EnTT)
 
 # set OS define
 if(WIN32) 

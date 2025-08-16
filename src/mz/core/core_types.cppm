@@ -72,8 +72,8 @@ namespace mz {
     class IIterable 
     {
     public:
-        using Iterator = std::ranges::iterator_t<std::span<T>>;
-        using ConstIterator = std::ranges::iterator_t<std::span<const T>>;
+        using Iterator = std::span<T>::iterator;
+        using ConstIterator = std::span<const T>::iterator;
 
         ~IIterable() = default;
 
@@ -209,25 +209,25 @@ namespace mz {
     export template<typename T>
     struct ContigData : IIterable<T>
     {
-        ContigData(const std::size_t size, T* data) : dataSize{ size }, rawData{ data } {}
+        ContigData() = delete;
+        ContigData(const std::size_t size, T* data) : span{data, size} {}
 
-        std::size_t dataSize;
-        T* rawData;
+        std::span<T> span;
 
-        IIterable<T>::Iterator begin() override { return std::span{rawData, dataSize}.begin(); }
-        IIterable<T>::ConstIterator begin() const override { return std::span{rawData, dataSize}.begin(); }
+        IIterable<T>::Iterator begin() override { return span.begin(); }
+        IIterable<T>::ConstIterator begin() const override { return span.begin(); }
 
-        IIterable<T>::Iterator end() override { return std::span{rawData, dataSize}.end(); }
-        IIterable<T>::ConstIterator end() const override { return std::span{rawData, dataSize}.end(); }
+        IIterable<T>::Iterator end() override { return span.end(); }
+        IIterable<T>::ConstIterator end() const override { return span.end(); }
 
-        bool empty() const override { return dataSize == 0; }
-        std::size_t size() const override { return dataSize; }
+        bool empty() const override { return span.empty(); }
+        std::size_t size() const override { return span.size(); }
 
-        T* data() override { return rawData; }
-        const T* data() const override { return rawData; }
+        T* data() override { return span.data(); }
+        const T* data() const override { return span.data(); }
 
-        T& operator[](const std::size_t i) override { return rawData[i]; }
-        const T& operator[](const std::size_t i) const override { return rawData[i]; }
+        T& operator[](const std::size_t i) override { return span[i]; }
+        const T& operator[](const std::size_t i) const override { return span[i]; }
     };
 
     //------------------------------------------------------

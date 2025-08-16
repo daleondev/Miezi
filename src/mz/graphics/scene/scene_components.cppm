@@ -1,0 +1,180 @@
+export module mz.graphics.scene.components;
+
+import std;
+
+import mz.graphics.renderer.resources;
+import mz.graphics.renderer.camera;
+
+import mz.math.geometry;
+import mz.util;
+
+namespace mz {
+
+    export template<typename... Component>
+	struct ComponentGroup
+	{
+	};
+
+    //------------------------------------------------------
+    //                  Identification
+    //------------------------------------------------------
+
+    export struct IdComponent
+    {
+        const std::uint32_t id;
+
+        IdComponent() : id{ 0 } {}
+        IdComponent(const IdComponent&) = default;
+        IdComponent(const std::uint32_t id) : id{ id } {}
+
+        operator std::uint32_t() const { return id; }
+    };
+
+    export struct TagComponent
+    {
+        std::string tag;
+
+        TagComponent() = default;
+        TagComponent(const TagComponent&) = default;
+        TagComponent(const std::string& tag) : tag{ tag } {}
+
+        operator std::string() const { return tag; }
+    };
+
+    //------------------------------------------------------
+    //                    Transform
+    //------------------------------------------------------
+
+    export struct TransformComponent
+    {
+        Vec3 translation;
+        glm::quat rotation;
+        Vec3 scale;
+
+        struct DetectChangeData
+        {
+            EdgeDetector<Vec3> translationListener;
+            EdgeDetector<glm::quat> rotationListener;
+            EdgeDetector<Vec3> scaleListener;
+            std::optional<std::function<void(const Mat4&)>> changedCallback;
+        } detectChangeData;
+
+        TransformComponent() : translation{ 0.0f }, rotation{ Mat3(1.0f) }, scale{ 1.0f } {};
+
+        operator Mat4() const { return Mat4(1.0f)
+            .translated(translation)
+            .rotated(rotation)
+            .scaled(scale); }
+    };
+
+    //------------------------------------------------------
+    //                       Renderer
+    //------------------------------------------------------
+
+    export struct PointRendererComponent
+	{
+		Vec4 color;
+        float size;
+
+		PointRendererComponent() : color{ 1.0f }, size{ 1.0f } {}
+		PointRendererComponent(const Vec4& color, const float size = 1.0f) : color{ color }, size{ size } {}
+	};
+
+    export struct LineRendererComponent
+	{
+		Vec4 color;
+        float thickness;
+        bool smooth;
+
+		LineRendererComponent() : color{ 1.0f }, thickness{ 1.0f }, smooth{ false } {}
+		LineRendererComponent(const Vec4& color, const float thickness = 1.0f, const bool smooth = false) : color{ color }, thickness{ thickness }, smooth{ smooth } {}
+	};
+
+    export struct RectRendererComponent
+	{
+        std::variant<Vec4, std::shared_ptr<ITexture>> material;
+
+		RectRendererComponent() : material{ Vec4(1.0f) } {}
+		RectRendererComponent(const Vec4& color) : material{ color } {}
+		RectRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+	};
+
+    export struct CircleRendererComponent
+	{
+        std::variant<Vec4, std::shared_ptr<ITexture>> material;
+
+		CircleRendererComponent() : material{ Vec4(1.0f) } {}
+		CircleRendererComponent(const Vec4& color) : material{ color } {}
+		CircleRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+	};
+
+    export struct PlaneRendererComponent
+	{
+        std::variant<Vec4, std::shared_ptr<ITexture>> material;
+
+		PlaneRendererComponent() : material{ Vec4(1.0f) } {}
+		PlaneRendererComponent(const Vec4& color) : material{ color } {}
+		PlaneRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+	};
+
+    export struct BoxRendererComponent
+	{
+        std::variant<Vec4, std::shared_ptr<ITexture>> material;
+
+		BoxRendererComponent() : material{ Vec4(1.0f) } {}
+		BoxRendererComponent(const Vec4& color) : material{ color } {}
+		BoxRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+	};
+
+    export struct SphereRendererComponent
+	{
+        std::variant<Vec4, std::shared_ptr<ITexture>> material;
+
+		SphereRendererComponent() : material{ Vec4(1.0f) } {}
+		SphereRendererComponent(const Vec4& color) : material{ color } {}
+		SphereRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+	};
+
+    export struct MeshRendererComponent
+	{
+        std::string meshName;
+        std::variant<Vec4, std::shared_ptr<ITexture>> material;
+
+		MeshRendererComponent(const std::string& name) : meshName{ name }, material{ Vec4(1.0f) } {}
+		MeshRendererComponent(const std::string& name, const Vec4& color) : meshName{ name }, material{ color } {}
+		MeshRendererComponent(const std::string& name, const std::shared_ptr<ITexture>& texture) : meshName{ name }, material{ texture } {}
+	};
+
+    export struct PointcloudRendererComponent
+	{
+        std::size_t pcId;
+        std::shared_ptr<ITexture> texture;
+
+		PointcloudRendererComponent(const std::size_t id, const std::shared_ptr<ITexture>& texture) : pcId{ id }, texture{ texture } {}
+	};
+
+    export using RendererComponents = 
+		ComponentGroup<PointRendererComponent, LineRendererComponent, RectRendererComponent, CircleRendererComponent,
+            PlaneRendererComponent, BoxRendererComponent, SphereRendererComponent, MeshRendererComponent, PointcloudRendererComponent>;
+
+    //------------------------------------------------------
+    //                      Properties
+    //------------------------------------------------------
+
+    export struct CameraComponent
+	{
+        CameraType cameraType;
+        std::optional<CameraControllerType> controllerType;
+        bool primary = true;
+
+		CameraComponent() : cameraType{ CameraType::Perspective }, controllerType{ CameraControllerType::Orbit } {}
+	};
+
+    //------------------------------------------------------
+    //                   All Components
+    //------------------------------------------------------
+
+    export using AllComponents = 
+		ComponentGroup<TransformComponent, CameraComponent>;
+
+}
