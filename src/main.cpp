@@ -90,7 +90,7 @@ int main()
     Scene scene(renderer);
     auto line1 = scene.createEntity("test1");
     line1.addComponent<LineRendererComponent>();
-    line1.addComponent<TransformComponent>();
+    // line1.addComponent<TransformComponent>();
 
     std::shared_ptr<ICamera> cam = std::make_shared<PerspectiveCamera>(degToRad(60.0f), window->getSize().x / window->getSize().y, 0.001f, 100.0f);
     // std::shared_ptr<ICamera> cam = std::make_shared<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
@@ -112,7 +112,7 @@ int main()
 
         renderer->clear(Vec4(0.0f));
 
-        scene.update(dt, cam.get());
+        // scene.update(dt, cam.get());
 
         // renderer->drawLine(cam.get(), Mat4(1.0f), Vec4(1.0f));
 

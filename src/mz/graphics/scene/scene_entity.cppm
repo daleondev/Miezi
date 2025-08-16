@@ -9,12 +9,12 @@ namespace mz {
 
 }
 
-// namespace entt {
+namespace entt {
 
-//     export using entt::registry;
-//     export using entt::handle;
-    
-//     export using entt::sink;
-//     export using entt::sigh;
+    export using entt::registry;
+    export using entt::entity;
+    export using entt::sink;
+    export using entt::sigh;
+    export using entt::delegate;
 
-// }
+}

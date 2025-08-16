@@ -1,4 +1,5 @@
 #pragma once
+#include "entt/entity/fwd.hpp"
 #include "mz/core/core.h"
 
 #include <entt/entt.hpp>
@@ -15,7 +16,8 @@ namespace mz{
     {
     public:
         Entity() = delete;
-        Entity(entt::registry* registry) : m_registry{ registry }, m_handle{ registry ? registry->create() : entt::null }  { MZ_INFO("Entity: {}", (int)m_handle); }
+        Entity(entt::registry* registry) : m_registry{ registry }, m_handle{ registry ? registry->create() : entt::null } {}
+        Entity(entt::registry* registry, const entt::entity handle) : m_registry{ registry }, m_handle{ handle } {}
         Entity(const Entity&) = default;
         ~Entity() = default;
 

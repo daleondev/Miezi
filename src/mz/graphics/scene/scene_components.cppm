@@ -10,6 +10,11 @@ import mz.util;
 
 namespace mz {
 
+    export template<typename... Component>
+	struct ComponentGroup
+	{
+	};
+
     //------------------------------------------------------
     //                  Identification
     //------------------------------------------------------
@@ -72,7 +77,6 @@ namespace mz {
         float size;
 
 		PointRendererComponent() : color{ 1.0f }, size{ 1.0f } {}
-		PointRendererComponent(const PointRendererComponent&) = default;
 		PointRendererComponent(const Vec4& color, const float size = 1.0f) : color{ color }, size{ size } {}
 	};
 
@@ -83,7 +87,6 @@ namespace mz {
         bool smooth;
 
 		LineRendererComponent() : color{ 1.0f }, thickness{ 1.0f }, smooth{ false } {}
-		// LineRendererComponent(const LineRendererComponent&) = default;
 		LineRendererComponent(const Vec4& color, const float thickness = 1.0f, const bool smooth = false) : color{ color }, thickness{ thickness }, smooth{ smooth } {}
 	};
 
@@ -92,7 +95,6 @@ namespace mz {
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
 
 		RectRendererComponent() : material{ Vec4(1.0f) } {}
-		RectRendererComponent(const RectRendererComponent&) = default;
 		RectRendererComponent(const Vec4& color) : material{ color } {}
 		RectRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
 	};
@@ -102,7 +104,6 @@ namespace mz {
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
 
 		CircleRendererComponent() : material{ Vec4(1.0f) } {}
-		CircleRendererComponent(const CircleRendererComponent&) = default;
 		CircleRendererComponent(const Vec4& color) : material{ color } {}
 		CircleRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
 	};
@@ -112,7 +113,6 @@ namespace mz {
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
 
 		PlaneRendererComponent() : material{ Vec4(1.0f) } {}
-		PlaneRendererComponent(const PlaneRendererComponent&) = default;
 		PlaneRendererComponent(const Vec4& color) : material{ color } {}
 		PlaneRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
 	};
@@ -122,7 +122,6 @@ namespace mz {
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
 
 		BoxRendererComponent() : material{ Vec4(1.0f) } {}
-		BoxRendererComponent(const BoxRendererComponent&) = default;
 		BoxRendererComponent(const Vec4& color) : material{ color } {}
 		BoxRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
 	};
@@ -132,7 +131,6 @@ namespace mz {
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
 
 		SphereRendererComponent() : material{ Vec4(1.0f) } {}
-		SphereRendererComponent(const SphereRendererComponent&) = default;
 		SphereRendererComponent(const Vec4& color) : material{ color } {}
 		SphereRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
 	};
@@ -143,7 +141,6 @@ namespace mz {
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
 
 		MeshRendererComponent(const std::string& name) : meshName{ name }, material{ Vec4(1.0f) } {}
-		MeshRendererComponent(const MeshRendererComponent&) = default;
 		MeshRendererComponent(const std::string& name, const Vec4& color) : meshName{ name }, material{ color } {}
 		MeshRendererComponent(const std::string& name, const std::shared_ptr<ITexture>& texture) : meshName{ name }, material{ texture } {}
 	};
@@ -154,8 +151,11 @@ namespace mz {
         std::shared_ptr<ITexture> texture;
 
 		PointcloudRendererComponent(const std::size_t id, const std::shared_ptr<ITexture>& texture) : pcId{ id }, texture{ texture } {}
-		PointcloudRendererComponent(const PointcloudRendererComponent&) = default;
 	};
+
+    export using RendererComponents = 
+		ComponentGroup<PointRendererComponent, LineRendererComponent, RectRendererComponent, CircleRendererComponent,
+            PlaneRendererComponent, BoxRendererComponent, SphereRendererComponent, MeshRendererComponent, PointcloudRendererComponent>;
 
     //------------------------------------------------------
     //                      Properties
@@ -170,13 +170,8 @@ namespace mz {
 	};
 
     //------------------------------------------------------
-    //                   Component Group
+    //                   All Components
     //------------------------------------------------------
-
-    export template<typename... Component>
-	struct ComponentGroup
-	{
-	};
 
     export using AllComponents = 
 		ComponentGroup<TransformComponent, CameraComponent>;
