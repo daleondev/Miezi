@@ -2,9 +2,7 @@ export module mz.graphics.scene.component_utils;
 
 import std;
 
-import mz.graphics.scene.camera;
 import mz.graphics.scene.components;
-
 import mz.math.geometry;
 
 namespace mz {
