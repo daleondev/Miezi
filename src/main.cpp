@@ -81,7 +81,8 @@ int main()
     });
     
     auto line1 = scene.createEntity("test1");
-    line1.addComponent<LineRendererComponent>();
+    auto& lineRenderer = line1.addComponent<LineRendererComponent>();
+    lineRenderer.color = Vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
     auto prevTime = std::chrono::high_resolution_clock::now();
 

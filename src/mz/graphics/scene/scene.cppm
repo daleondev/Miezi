@@ -79,69 +79,10 @@ namespace mz {
         }
         ~Scene() = default;
 
-        void update(const Timestep dt, IInput *input)
+        void update(const Timestep dt, IInput* input)
         {
-            m_renderer->clear(Vec4(0.0f));
-
-            {
-                auto view = m_registry.view<TransformComponent, CameraComponent>();
-                for (auto [entity, transformComponent, cameraComponent] : view.each()) {
-                    if (cameraComponent.primary) {
-                        // create camera if not exists
-                        if (!m_camera) {
-                            switch (cameraComponent.cameraType) {
-                                case CameraType::Orthographic:  m_camera = std::make_unique<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f); break;
-                                case CameraType::Perspective:   m_camera = std::make_unique<PerspectiveCamera>(degToRad(60.0f), m_size.x / m_size.y, 0.001f, 100.0f); break;
-                            }
-                        }
-                        // set correct camera type
-                        else {
-                            if (cameraComponent.cameraType == CameraType::Orthographic && !m_camera->is<OrthoCamera>())
-                                m_camera = std::make_unique<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
-                            else if (cameraComponent.cameraType == CameraType::Perspective && !m_camera->is<PerspectiveCamera>())
-                                m_camera = std::make_unique<PerspectiveCamera>(degToRad(60.0f), m_size.x / m_size.y, 0.001f, 100.0f);
-                        }
-
-                        // create cameracontroller if not exists
-                        if (!m_cameraController && cameraComponent.controllerType) {
-                            switch (*cameraComponent.controllerType) {
-                                case CameraControllerType::Orbit:   m_cameraController = std::make_unique<OrbitCameraController>(m_camera.get()); break;
-                                case CameraControllerType::Free:    m_cameraController = std::make_unique<FreeCameraController>(m_camera.get()); break;
-                            }
-                        }
-                        // set correct cameracontroller type
-                        else if (cameraComponent.controllerType) {
-                            if (*cameraComponent.controllerType == CameraControllerType::Orbit && !m_cameraController->is<OrbitCameraController>())
-                                m_cameraController = std::make_unique<OrbitCameraController>(m_camera.get());
-                            else if (*cameraComponent.controllerType == CameraControllerType::Free && !m_cameraController->is<FreeCameraController>())
-                                m_cameraController = std::make_unique<FreeCameraController>(m_camera.get());
-                        }
-
-                        // update camera transform
-                        if (m_cameraController) {
-                            m_cameraController->update(dt, input);
-                            setTransform(transformComponent, m_camera->getTransform());
-                        }
-                        else {
-                            m_camera->setPosition(transformComponent.translation);
-                            m_camera->setRotation(transformComponent.rotation);
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            if (m_camera) {
-
-                {
-                    auto view = m_registry.view<TransformComponent, LineRendererComponent>();
-                    for (auto [entity, transformComponent, lineRendererComponent] : view.each()) {
-                        m_renderer->drawLine(m_camera.get(), transformComponent, lineRendererComponent.color);
-                    }
-                }
-
-            }
+            updateCamera(dt, input);
+            render();
         }
 
         Entity createEntity(const std::string& tag, const bool addToMap = true)
@@ -188,11 +129,77 @@ namespace mz {
             }
         }
 
+    private:
+        void updateCamera(const Timestep dt, IInput *input)
+        {
+            auto view = m_registry.view<TransformComponent, CameraComponent>();
+            for (auto [entity, transformComponent, cameraComponent] : view.each()) {
+                if (cameraComponent.primary) {
+                    // create camera if not exists
+                    if (!m_camera) {
+                        switch (cameraComponent.cameraType) {
+                            case CameraType::Orthographic:  m_camera = std::make_unique<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f); break;
+                            case CameraType::Perspective:   m_camera = std::make_unique<PerspectiveCamera>(degToRad(60.0f), m_size.x / m_size.y, 0.001f, 100.0f); break;
+                        }
+                    }
+                    // set correct camera type
+                    else {
+                        if (cameraComponent.cameraType == CameraType::Orthographic && !m_camera->is<OrthoCamera>())
+                            m_camera = std::make_unique<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
+                        else if (cameraComponent.cameraType == CameraType::Perspective && !m_camera->is<PerspectiveCamera>())
+                            m_camera = std::make_unique<PerspectiveCamera>(degToRad(60.0f), m_size.x / m_size.y, 0.001f, 100.0f);
+                    }
+
+                    // create cameracontroller if not exists
+                    if (!m_cameraController && cameraComponent.controllerType) {
+                        switch (*cameraComponent.controllerType) {
+                            case CameraControllerType::Orbit:   m_cameraController = std::make_unique<OrbitCameraController>(m_camera.get()); break;
+                            case CameraControllerType::Free:    m_cameraController = std::make_unique<FreeCameraController>(m_camera.get()); break;
+                        }
+                    }
+                    // set correct cameracontroller type
+                    else if (cameraComponent.controllerType) {
+                        if (*cameraComponent.controllerType == CameraControllerType::Orbit && !m_cameraController->is<OrbitCameraController>())
+                            m_cameraController = std::make_unique<OrbitCameraController>(m_camera.get());
+                        else if (*cameraComponent.controllerType == CameraControllerType::Free && !m_cameraController->is<FreeCameraController>())
+                            m_cameraController = std::make_unique<FreeCameraController>(m_camera.get());
+                    }
+
+                    // update camera transform
+                    if (m_cameraController) {
+                        m_cameraController->update(dt, input);
+                        setTransform(transformComponent, m_camera->getTransform());
+                    }
+                    else {
+                        m_camera->setPosition(transformComponent.translation);
+                        m_camera->setRotation(transformComponent.rotation);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        void render()
+        {
+            m_renderer->clear(Vec4(1.0f));
+
+            if (!m_camera)
+                return;
+
+            {
+                auto view = m_registry.view<TransformComponent, LineRendererComponent>();
+                for (auto [entity, transformComponent, lineRendererComponent] : view.each()) {
+                    m_renderer->drawLine(m_camera.get(), transformComponent, lineRendererComponent.color);
+                }
+            }
+        }
+
         bool onMouseLeave(MouseLeaveEvent* e)
         {
             if (m_cameraController) {
-                m_cameraController->startDraggingTrans();
-                m_cameraController->startDraggingRot();
+                m_cameraController->stopDraggingTrans();
+                m_cameraController->stopDraggingRot();
             }
 
             return true;
@@ -269,8 +276,6 @@ namespace mz {
             return true;
         }
 
-
-    private:
         entt::registry m_registry;
         std::map<UUID, Entity> m_entities;
 
