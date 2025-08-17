@@ -144,6 +144,8 @@ namespace mz {
         virtual void startDraggingTrans() = 0;
         virtual void stopDraggingTrans() = 0;
 
+        virtual void zoom(const float delta) = 0;
+
         virtual ICamera* getCamera() const = 0;
         virtual void setCamera(ICamera* camera) = 0;
 
@@ -170,6 +172,7 @@ namespace mz {
 
         bool m_draggingRot = false;
         bool m_draggingTrans = false;
+        float m_zoomSens = 0.5f;
     };
 
     export class OrbitCameraController : public CameraControllerBase
@@ -203,6 +206,12 @@ namespace mz {
 
             const Vec3 offset = orientation * Vec3(0.0f, 0.0f, m_distance);
             m_camera->setPosition(m_target + offset);
+        }
+
+        void zoom(const float delta) override
+        {
+            m_distance -= delta * m_zoomSens;
+            m_distance = glm::clamp(m_distance, 1.0f, 10.f);
         }
 
         CameraControllerType getType() const override { return CameraControllerType::Orbit; }
@@ -249,6 +258,10 @@ namespace mz {
             if (input->isKeyPressed(GLFW_KEY_A)) pos -= right * m_moveSpeed * (float)dt;
             if (input->isKeyPressed(GLFW_KEY_D)) pos += right * m_moveSpeed * (float)dt;
             m_camera->setPosition(pos);  
+        }
+
+        void zoom(const float delta) override
+        {
         }
 
         CameraControllerType getType() const override { return CameraControllerType::Free; }

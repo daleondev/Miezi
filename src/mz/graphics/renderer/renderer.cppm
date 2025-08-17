@@ -20,27 +20,22 @@ namespace mz {
 
         virtual void setViewport(const Vec2& viewport) = 0;
 
+        virtual void beginScene(ICamera* camera) = 0;
+        virtual void endScene() = 0;
+
         virtual void clear(const Vec4& color) = 0;
-        virtual void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size = 1.0f) const = 0;
-        virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = false) const = 0;
-        virtual void drawRect(ICamera* camera, const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawRect(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const = 0;
-        virtual void drawCircle(ICamera* camera, const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawCircle(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const = 0;
-        virtual void drawPlane(ICamera* camera, const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawPlane(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const = 0;
-        virtual void drawBox(ICamera* camera, const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawBox(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const = 0;
-        virtual void drawSphere(ICamera* camera, const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawSphere(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const = 0;
-        // virtual void drawPoint(/*OrbitCamera& camera, */const glm::mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = true);
-        // virtual void drawLine(/*OrbitCamera& camera, */const glm::mat4& transform, const Vec4& color, const float borderWidth = 1.0f, const Vec4& borderColor = Vec4{0.0f, 0.0f, 0.0f, 1.0f});
-        // virtual void drawRect(/*OrbitCamera& camera, */const glm::mat4& transform, const std::shared_ptr<Texture2D>& texture, const float borderWidth = 1.0f, const Vec4& borderColor = Vec4{0.0f, 0.0f, 0.0f, 1.0f});
-        // virtual void drawRect(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
-        // virtual void drawCircle(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
-        // virtual void drawCircle(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
-        // virtual void drawBox(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
-        // virtual void drawBox(/*OrbitCamera& camera, */const Vec3& position, const Vec4& color, const float size);
+        virtual void drawPoint(const Vec3& position, const Vec4& color, const float size = 1.0f) const = 0;
+        virtual void drawLine(const Mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = false) const = 0;
+        virtual void drawRect(const Mat4& transform, const Vec4& color) const = 0;
+        virtual void drawRect(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
+        virtual void drawCircle(const Mat4& transform, const Vec4& color) const = 0;
+        virtual void drawCircle(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
+        virtual void drawPlane(const Mat4& transform, const Vec4& color) const = 0;
+        virtual void drawPlane(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
+        virtual void drawBox(const Mat4& transform, const Vec4& color) const = 0;
+        virtual void drawBox(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
+        virtual void drawSphere(const Mat4& transform, const Vec4& color) const = 0;
+        virtual void drawSphere(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
     };
 
     export class RenderBase : public IRenderer
@@ -63,6 +58,19 @@ namespace mz {
             m_shaderStore->clear();
         }
 
+        void beginScene(ICamera* camera) override
+        {
+            m_cameraData.transform = camera->getTransform();
+            m_cameraData.view = camera->getView();
+            m_cameraData.projection = camera->getProjection();
+            m_cameraData.viewProjection = camera->getViewProjection();
+        }
+
+        void endScene() override
+        {
+
+        }
+
     protected:
         RenderBase(IGraphicsContext* context, std::unique_ptr<ShaderStoreBase>&& shaderStore)
             : m_context{ context }, m_shaderStore{ std::move(shaderStore) } 
@@ -72,6 +80,14 @@ namespace mz {
 
         IGraphicsContext* m_context;
         std::unique_ptr<ShaderStoreBase> m_shaderStore;
+
+        struct CameraData
+        {
+            Mat4 transform;
+            Mat4 view;
+            Mat4 projection;
+            Mat4 viewProjection;
+        } m_cameraData; 
 
         RenderData m_pointData;
         RenderData m_lineData;

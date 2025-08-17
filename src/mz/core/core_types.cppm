@@ -19,15 +19,21 @@ namespace mz {
         bool is() const {  return dynamic_cast<const T*>(this) != nullptr; }
 
         template<class T>
-        T* asPtr() {  return dynamic_cast<T*>(this); }
+        T* as() {  return dynamic_cast<T*>(this); }
 
         template<class T>
-        const T* asPtr() const {  return dynamic_cast<const T*>(this); }
+        const T* as() const {  return dynamic_cast<const T*>(this); }
+
+        template<class T>
+        T* asPtr() {  return as<T>(); }
+
+        template<class T>
+        const T* asPtr() const {  return as<T>(); }
 
         template<class T>
         std::expected<std::reference_wrapper<T>, CastError> asRef()
         {
-            auto casted = asPtr<T>();
+            auto casted = as<T>();
             if (!casted) return std::unexpected(CastError::BadCast);
             return *casted;
         }
@@ -35,7 +41,7 @@ namespace mz {
         template<class T>
         std::expected<std::reference_wrapper<const T>, CastError> asRef() const
         {
-            auto casted = asPtr<T>();
+            auto casted = as<T>();
             if (!casted) return std::unexpected(CastError::BadCast);
             return *casted;
         }
@@ -43,25 +49,31 @@ namespace mz {
         template<class T>
         std::expected<T, CastError> asCopy() const
         {
-            auto casted = asPtr<T>();
+            auto casted = as<T>();
             if (!casted) return std::unexpected(CastError::BadCast);
             return *casted;
         }
 
         template<class T>
-        T* asPtrUnchecked() noexcept { return static_cast<T*>(this); }
+        T* asUnchecked() noexcept { return static_cast<T*>(this); }
 
         template<class T>
-        const T* asPtrUnchecked() const noexcept { return static_cast<const T*>(this); }
+        const T* asUnchecked() const noexcept { return static_cast<const T*>(this); }
 
         template<class T>
-        T& asRefUnchecked() noexcept { return *asPtrUnchecked<T>(); }
+        T* asPtrUnchecked() noexcept { return asUnchecked<T>(); }
 
         template<class T>
-        const T& asRefUnchecked() const noexcept { return *asPtrUnchecked<T>(); }
+        const T* asPtrUnchecked() const noexcept { return asUnchecked<T>(); }
 
         template<class T>
-        T asCopyUnchecked() const { return *asPtrUnchecked<T>(); }
+        T& asRefUnchecked() noexcept { return *asUnchecked<T>(); }
+
+        template<class T>
+        const T& asRefUnchecked() const noexcept { return *asUnchecked<T>(); }
+
+        template<class T>
+        T asCopyUnchecked() const { return *asUnchecked<T>(); }
     };
 
     //------------------------------------------------------

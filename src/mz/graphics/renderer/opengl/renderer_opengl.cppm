@@ -200,10 +200,9 @@ namespace mz {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         }
 
-        void drawPoint(ICamera* camera, const Vec3& position, const Vec4& color, const float size) const override
+        void drawPoint(const Vec3& position, const Vec4& color, const float size) const override
         {
             // TODO NOT WORKING
-            MZ_UNUSED(camera);
             m_pointData.shader->bind();
             m_pointData.shader->uploadVec3("u_pos", position);
             m_pointData.shader->uploadFloat("u_pointSize", size);
@@ -214,12 +213,10 @@ namespace mz {
         }
 
 
-        virtual void drawLine(ICamera* camera, const Mat4& transform, const Vec4& color, const float lineWidth, const bool smooth) const override
+        virtual void drawLine(const Mat4& transform, const Vec4& color, const float lineWidth, const bool smooth) const override
         {
-            const auto viewProjection = camera->getViewProjection();
-
             m_lineData.shader->bind();
-            m_lineData.shader->uploadMat4("u_viewProjection", viewProjection);
+            m_lineData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
             m_lineData.shader->uploadMat4("u_model", transform);
             m_lineData.shader->uploadVec4("u_color", color);
 
@@ -233,69 +230,179 @@ namespace mz {
         }
 
 
-        void drawRect(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        void drawRect(const Mat4& transform, const Vec4& color) const override
         {
+            m_rectData.shader->bind();
+            m_rectData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_rectData.shader->uploadMat4("u_model", transform);
+            m_rectData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_rectData.shader->uploadInt("u_useTexture", 0);
+            m_rectData.shader->uploadVec4("u_flatColor", color);
+
+            m_rectData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_rectData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_rectData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_rectData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_rectData.shader, m_rectData.vertexArray);
         }
 
-        void drawRect(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        void drawRect(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
         {
+            m_rectData.shader->bind();
+            m_rectData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_rectData.shader->uploadMat4("u_model", transform);
+            m_rectData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_rectData.shader->uploadInt("u_useTexture", 1);
+            m_rectData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
+            texture->bind();
+
+            m_rectData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_rectData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_rectData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_rectData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_rectData.shader, m_rectData.vertexArray);
         }
 
-        void drawCircle(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        void drawCircle(const Mat4& transform, const Vec4& color) const override
         {
+            m_circData.shader->bind();
+            m_circData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_circData.shader->uploadMat4("u_model", transform);
+            m_circData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_circData.shader->uploadInt("u_useTexture", 0);
+            m_circData.shader->uploadVec4("u_flatColor", color);
+
+            m_circData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_circData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_circData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_circData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_circData.shader, m_circData.vertexArray);
         }
 
-        void drawCircle(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        void drawCircle(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
         {
+            m_circData.shader->bind();
+            m_circData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_circData.shader->uploadMat4("u_model", transform);
+            m_circData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_circData.shader->uploadInt("u_useTexture", 1);
+            m_circData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
+            texture->bind();
+
+            m_circData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_circData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_circData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_circData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_circData.shader, m_circData.vertexArray);
         }
 
-        void drawPlane(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        void drawPlane(const Mat4& transform, const Vec4& color) const override
         {
+            m_planeData.shader->bind();
+            m_planeData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_planeData.shader->uploadMat4("u_model", transform);
+            m_planeData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_planeData.shader->uploadInt("u_useTexture", 0);
+            m_planeData.shader->uploadVec4("u_flatColor", color);
+
+            m_planeData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_planeData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_planeData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_planeData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_planeData.shader, m_planeData.vertexArray);
         }
 
-        void drawPlane(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        void drawPlane(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
         {
-            
+            m_planeData.shader->bind();
+            m_planeData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_planeData.shader->uploadMat4("u_model", transform);
+            m_planeData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
+
+            m_planeData.shader->uploadInt("u_useTexture", 1);
+            m_planeData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
+            texture->bind();
+
+            m_planeData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_planeData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_planeData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_planeData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_planeData.shader, m_planeData.vertexArray);
         }
 
-        void drawBox(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        void drawBox(const Mat4& transform, const Vec4& color) const override
         {
-            const auto viewProjection = camera->getViewProjection();
-            const auto normalMatrix = transform.invertedTransposed();
-
             m_boxData.shader->bind();
-            m_boxData.shader->uploadMat4("u_viewProjection", viewProjection);
+            m_boxData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
             m_boxData.shader->uploadMat4("u_model", transform);
-            m_boxData.shader->uploadMat3("u_normalMatrix", normalMatrix);
+            m_boxData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_boxData.shader->uploadInt("u_useTexture", 0);
             m_boxData.shader->uploadVec4("u_flatColor", color);
 
-            m_sphereData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_boxData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
             m_boxData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
             m_boxData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
-            m_boxData.shader->uploadVec3("u_viewPos", camera->getPosition());
+            m_boxData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
             drawIndexed(m_boxData.shader, m_boxData.vertexArray);
         }
 
-        void drawBox(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        void drawBox(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
         {
-            
+            m_boxData.shader->bind();
+            m_boxData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_boxData.shader->uploadMat4("u_model", transform);
+            m_boxData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
+
+            m_boxData.shader->uploadInt("u_useTexture", 1);
+            m_boxData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
+            texture->bind();
+
+            m_boxData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_boxData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_boxData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_boxData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_boxData.shader, m_boxData.vertexArray);
         }
 
-        void drawSphere(ICamera* camera, const Mat4& transform, const Vec4& color) const override
+        void drawSphere(const Mat4& transform, const Vec4& color) const override
         {
+            m_sphereData.shader->bind();
+            m_sphereData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_sphereData.shader->uploadMat4("u_model", transform);
+            m_sphereData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_sphereData.shader->uploadInt("u_useTexture", 0);
+            m_sphereData.shader->uploadVec4("u_flatColor", color);
+
+            m_sphereData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_sphereData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_sphereData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_sphereData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_sphereData.shader, m_sphereData.vertexArray);
         }
 
-        void drawSphere(ICamera* camera, const Mat4& transform, const std::shared_ptr<IShader>& color) const override
+        void drawSphere(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
         {
+            m_sphereData.shader->bind();
+            m_sphereData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
+            m_sphereData.shader->uploadMat4("u_model", transform);
+            m_sphereData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
+            m_sphereData.shader->uploadInt("u_useTexture", 1);
+            m_sphereData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
+            texture->bind();
+
+            m_sphereData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
+            m_sphereData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
+            m_sphereData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
+            m_sphereData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            drawIndexed(m_sphereData.shader, m_sphereData.vertexArray);
         }
 
     private:

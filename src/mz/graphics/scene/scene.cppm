@@ -18,6 +18,7 @@ import mz.graphics.window;
 
 import mz.graphics.renderer;
 import mz.graphics.renderer.camera;
+import mz.graphics.renderer.resources;
 
 import mz.graphics.scene.entity;
 import mz.graphics.scene.components;
@@ -85,6 +86,20 @@ namespace mz {
             render();
         }
 
+        void swapCameraType()
+        {
+            auto view = m_registry.view<CameraComponent>();
+            for (auto [entity, cameraComponent] : view.each()) {
+                if (cameraComponent.primary) {
+                    switch (cameraComponent.cameraType) {
+                        case CameraType::Orthographic:  cameraComponent.cameraType = CameraType::Perspective;   break;
+                        case CameraType::Perspective:   cameraComponent.cameraType = CameraType::Orthographic;  break;
+                    }
+                    break;
+                }
+            }
+        }
+
         Entity createEntity(const std::string& tag, const bool addToMap = true)
         {
             Entity entity(&m_registry);
@@ -132,9 +147,10 @@ namespace mz {
     private:
         void updateCamera(const Timestep dt, IInput *input)
         {
-            auto view = m_registry.view<TransformComponent, CameraComponent>();
-            for (auto [entity, transformComponent, cameraComponent] : view.each()) {
+            auto view = m_registry.view<CameraComponent, TransformComponent>();
+            for (auto [entity, cameraComponent, transformComponent] : view.each()) {
                 if (cameraComponent.primary) {
+                    bool cameraUpdated = false;
                     // create camera if not exists
                     if (!m_camera) {
                         switch (cameraComponent.cameraType) {
@@ -144,10 +160,14 @@ namespace mz {
                     }
                     // set correct camera type
                     else {
-                        if (cameraComponent.cameraType == CameraType::Orthographic && !m_camera->is<OrthoCamera>())
+                        if (cameraComponent.cameraType == CameraType::Orthographic && !m_camera->is<OrthoCamera>()) {
                             m_camera = std::make_unique<OrthoCamera>(-1.0f, 1.0f, -1.0f, 1.0f, 0.001f, 100.0f);
-                        else if (cameraComponent.cameraType == CameraType::Perspective && !m_camera->is<PerspectiveCamera>())
+                            cameraUpdated = true;
+                        }
+                        else if (cameraComponent.cameraType == CameraType::Perspective && !m_camera->is<PerspectiveCamera>()) {
                             m_camera = std::make_unique<PerspectiveCamera>(degToRad(60.0f), m_size.x / m_size.y, 0.001f, 100.0f);
+                            cameraUpdated = true;
+                        }
                     }
 
                     // create cameracontroller if not exists
@@ -163,6 +183,8 @@ namespace mz {
                             m_cameraController = std::make_unique<OrbitCameraController>(m_camera.get());
                         else if (*cameraComponent.controllerType == CameraControllerType::Free && !m_cameraController->is<FreeCameraController>())
                             m_cameraController = std::make_unique<FreeCameraController>(m_camera.get());
+                        else if (cameraUpdated)
+                            m_cameraController->setCamera(m_camera.get());
                     }
 
                     // update camera transform
@@ -187,12 +209,80 @@ namespace mz {
             if (!m_camera)
                 return;
 
+            m_renderer->beginScene(m_camera.get());
+
+            // Point
             {
-                auto view = m_registry.view<TransformComponent, LineRendererComponent>();
-                for (auto [entity, transformComponent, lineRendererComponent] : view.each()) {
-                    m_renderer->drawLine(m_camera.get(), transformComponent, lineRendererComponent.color);
+                auto view = m_registry.view<PointRendererComponent, TransformComponent>();
+                for (auto [entity, pointRendererComponent, transformComponent] : view.each()) {
+                    m_renderer->drawPoint(transformComponent.translation, pointRendererComponent.color, pointRendererComponent.size);
                 }
             }
+
+            // Line
+            {
+                auto view = m_registry.view<LineRendererComponent, TransformComponent>();
+                for (auto [entity, lineRendererComponent, transformComponent] : view.each()) {
+                    m_renderer->drawLine(transformComponent, lineRendererComponent.color);
+                }
+            }
+
+            // Rect
+            {
+                auto view = m_registry.view<RectRendererComponent, TransformComponent>();
+                for (auto [entity, rectRendererComponent, transformComponent] : view.each()) {
+                    if (std::holds_alternative<Vec4>(rectRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<Vec4>(rectRendererComponent.material));
+                    else if (std::holds_alternative<std::shared_ptr<ITexture>>(rectRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<std::shared_ptr<ITexture>>(rectRendererComponent.material));
+                }
+            }
+
+            // Circle
+            {
+                auto view = m_registry.view<CircleRendererComponent, TransformComponent>();
+                for (auto [entity, circleRendererComponent, transformComponent] : view.each()) {
+                    if (std::holds_alternative<Vec4>(circleRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<Vec4>(circleRendererComponent.material));
+                    else if (std::holds_alternative<std::shared_ptr<ITexture>>(circleRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<std::shared_ptr<ITexture>>(circleRendererComponent.material));
+                }
+            }
+
+            // Plane
+            {
+                auto view = m_registry.view<PlaneRendererComponent, TransformComponent>();
+                for (auto [entity, planeRendererComponent, transformComponent] : view.each()) {
+                    if (std::holds_alternative<Vec4>(planeRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<Vec4>(planeRendererComponent.material));
+                    else if (std::holds_alternative<std::shared_ptr<ITexture>>(planeRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<std::shared_ptr<ITexture>>(planeRendererComponent.material));
+                }
+            }
+
+            // Box
+            {
+                auto view = m_registry.view<BoxRendererComponent, TransformComponent>();
+                for (auto [entity, boxRendererComponent, transformComponent] : view.each()) {
+                    if (std::holds_alternative<Vec4>(boxRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<Vec4>(boxRendererComponent.material));
+                    else if (std::holds_alternative<std::shared_ptr<ITexture>>(boxRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<std::shared_ptr<ITexture>>(boxRendererComponent.material));
+                }
+            }
+
+            // Sphere
+            {
+                auto view = m_registry.view<SphereRendererComponent, TransformComponent>();
+                for (auto [entity, sphereRendererComponent, transformComponent] : view.each()) {
+                    if (std::holds_alternative<Vec4>(sphereRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<Vec4>(sphereRendererComponent.material));
+                    else if (std::holds_alternative<std::shared_ptr<ITexture>>(sphereRendererComponent.material))
+                        m_renderer->drawRect(transformComponent, std::get<std::shared_ptr<ITexture>>(sphereRendererComponent.material));
+                }
+            }
+
+            m_renderer->endScene();
         }
 
         bool onMouseLeave(MouseLeaveEvent* e)
@@ -252,7 +342,9 @@ namespace mz {
 
         bool onMouseScrolled(MouseScrolledEvent* e)
         {
-            // todo: cameractrl zoom
+            if (m_cameraController) {
+                m_cameraController->zoom(e->getYOffset());
+            }
             return true;
         }
 
