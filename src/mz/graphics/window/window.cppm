@@ -71,10 +71,10 @@ namespace mz {
         virtual void setVSync(const bool enabled) = 0;
         virtual void setEventCallbackFunc(const EventCallbackFunc& callback) = 0;
 
-        virtual std::unique_ptr<IGraphicsContext>& getContext() = 0;
-        virtual const std::unique_ptr<IGraphicsContext>& getContext() const = 0;
-        virtual std::unique_ptr<IInput>& getInput() = 0;
-        virtual const std::unique_ptr<IInput>& getInput() const = 0;
+        virtual IGraphicsContext* getContext() = 0;
+        virtual const IGraphicsContext* getContext() const = 0;
+        virtual IInput* getInput() = 0;
+        virtual const IInput* getInput() const = 0;
 
         virtual void* getNativeWindow() const = 0;
     };
@@ -91,10 +91,10 @@ namespace mz {
         bool getVSync() const override { return m_data.vSync; }
         void setEventCallbackFunc(const EventCallbackFunc& callback) override { m_data.eventCallback = callback; }
 
-        std::unique_ptr<IGraphicsContext>& getContext() override { return m_context; }
-        const std::unique_ptr<IGraphicsContext>& getContext() const override { return m_context; }
-        std::unique_ptr<IInput>& getInput() override { return m_input; }
-        const std::unique_ptr<IInput>& getInput() const override { return m_input; }
+        IGraphicsContext* getContext() override { return m_context.get(); }
+        const IGraphicsContext* getContext() const override { return m_context.get(); }
+        IInput* getInput() override { return m_input.get(); }
+        const IInput* getInput() const override { return m_input.get(); }
       
     protected:
         WindowBase(const std::string& title, const Vec2& size, std::unique_ptr<IGraphicsContext>&& context, std::unique_ptr<IInput>&& input) 

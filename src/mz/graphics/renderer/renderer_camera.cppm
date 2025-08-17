@@ -136,7 +136,7 @@ namespace mz {
     public:
         virtual ~ICameraController() = default;
 
-        virtual void update(const Timestep dt, IInput* input) = 0;
+        virtual void update(const Timestep dt) = 0;
 
         virtual void startDraggingRot() = 0;
         virtual void stopDraggingRot() = 0;
@@ -155,7 +155,7 @@ namespace mz {
     export class CameraControllerBase : public ICameraController
     {
     public:
-        CameraControllerBase(ICamera* camera) : m_camera{ camera } {}
+        CameraControllerBase(ICamera* camera, IInput* input) : m_camera{ camera }, m_input{ input } {}
         virtual ~CameraControllerBase() = default;
 
         void startDraggingRot() override { m_draggingRot = true; }
@@ -169,6 +169,7 @@ namespace mz {
 
     protected:
         ICamera* m_camera;
+        IInput* m_input;
 
         bool m_draggingRot = false;
         bool m_draggingTrans = false;
@@ -178,22 +179,22 @@ namespace mz {
     export class OrbitCameraController : public CameraControllerBase
     {
     public:
-        OrbitCameraController(ICamera* camera, const Vec3& target = {0,0,0}, const float distance = 4.0f) 
-        : CameraControllerBase(camera), m_target{ target }, m_distance{ distance }, m_yaw{ 0.0f }, m_pitch{ 0.0f } {}
+        OrbitCameraController(ICamera* camera, IInput* input, const Vec3& target = {0,0,0}, const float distance = 4.0f) 
+        : CameraControllerBase(camera, input), m_target{ target }, m_distance{ distance }, m_yaw{ 0.0f }, m_pitch{ 0.0f } {}
 
-        void update(const Timestep dt, IInput* input) override
+        void update(const Timestep dt) override
         {
             MZ_UNUSED(dt);
 
             if (m_draggingRot) {
-                const auto mouseDelta = -input->getMouseDelta();
+                const auto mouseDelta = -m_input->getMouseDelta();
                 m_yaw   += mouseDelta.x * m_rotSens;
                 m_pitch += mouseDelta.y * m_rotSens;
                 m_pitch = glm::clamp(m_pitch, -PI_F/2.0f + 0.1f, PI_F/2.0f - 0.1f);
             }
 
             if (m_draggingTrans) {
-                const auto mouseDelta = input->getMouseDelta();
+                const auto mouseDelta = m_input->getMouseDelta();
                 const auto& transform = m_camera->getTransform();
                 m_target += m_transSens * transform.xAxis() * -mouseDelta.x;
                 m_target += m_transSens * transform.yAxis() * mouseDelta.y;
@@ -228,13 +229,13 @@ namespace mz {
     export class FreeCameraController : public CameraControllerBase
     {
     public:
-        FreeCameraController(ICamera* camera) 
-            : CameraControllerBase(camera), m_yaw{ 0.0f }, m_pitch{ 0.0f } {}
+        FreeCameraController(ICamera* camera, IInput* input) 
+            : CameraControllerBase(camera, input), m_yaw{ 0.0f }, m_pitch{ 0.0f } {}
 
-        void update(const Timestep dt, IInput* input) override
+        void update(const Timestep dt) override
         {
             if (m_draggingRot) {
-                Vec2 mouseDelta = input->getMouseDelta();
+                Vec2 mouseDelta = m_input->getMouseDelta();
                 m_yaw   += mouseDelta.x * m_mouseSensitivity;
                 m_pitch += mouseDelta.y * m_mouseSensitivity;
 
@@ -253,10 +254,10 @@ namespace mz {
             Vec3 right   = orientation * Vec3::UnitX();
 
             Vec3 pos = getCamera()->getPosition();
-            if (input->isKeyPressed(GLFW_KEY_W)) pos += forward * m_moveSpeed * (float)dt;
-            if (input->isKeyPressed(GLFW_KEY_S)) pos -= forward * m_moveSpeed * (float)dt;
-            if (input->isKeyPressed(GLFW_KEY_A)) pos -= right * m_moveSpeed * (float)dt;
-            if (input->isKeyPressed(GLFW_KEY_D)) pos += right * m_moveSpeed * (float)dt;
+            if (m_input->isKeyPressed(GLFW_KEY_W)) pos += forward * m_moveSpeed * (float)dt;
+            if (m_input->isKeyPressed(GLFW_KEY_S)) pos -= forward * m_moveSpeed * (float)dt;
+            if (m_input->isKeyPressed(GLFW_KEY_A)) pos -= right * m_moveSpeed * (float)dt;
+            if (m_input->isKeyPressed(GLFW_KEY_D)) pos += right * m_moveSpeed * (float)dt;
             m_camera->setPosition(pos);  
         }
 

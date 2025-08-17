@@ -34,8 +34,8 @@ static bool running = true;
 int main()
 {
     auto window = mz::WindowBase::create("Test Window", glm::vec2{800, 600});
-    auto renderer = RenderBase::create(window->getContext().get());
-    Scene scene(window->getSize(), renderer);
+    auto renderer = RenderBase::create(window->getContext());
+    Scene scene(window->getSize(), window->getInput(), renderer);
     
     window->setEventCallbackFunc([&](mz::IEvent* e) 
     {
@@ -84,7 +84,7 @@ int main()
         Timestep dt(std::chrono::duration_cast<std::chrono::milliseconds>(timeDiff).count() / 1000.0f);
 
         window->update(); 
-        scene.update(dt, window->getInput().get());
+        scene.update(dt);
     }
 
     return 0; 
