@@ -62,7 +62,7 @@ namespace mz {
             glDeleteVertexArrays(1, &m_array);
         }
 
-        void addVertexBuffer(const std::shared_ptr<VertexBufferBase>& vertexBuffer) override
+        void addVertexBuffer(const std::shared_ptr<IVertexBuffer>& vertexBuffer) override
         {
             MZ_ASSERT(vertexBuffer->is<GlVertexBuffer>(), "Invalid Vertex Buffer type");
 
@@ -82,7 +82,7 @@ namespace mz {
             m_vertexBuffers.push_back(vertexBuffer);
         }
 
-        void setIndexBuffer(const std::shared_ptr<IndexBufferBase>& indexBuffer) override
+        void setIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer) override
         {
             MZ_ASSERT(indexBuffer->is<GlIndexBuffer>(), "Invalid Index Buffer type");
 
@@ -104,6 +104,67 @@ namespace mz {
 
     private:
         GLuint m_array;
+
+    };
+
+    //------------------------------------------------------
+    //                      FrameBuffer
+    //------------------------------------------------------
+
+    export class GlFrameBuffer : public FrameBufferBase
+    {
+    public:
+        GlFrameBuffer(const Vec2& size) 
+            : FrameBufferBase(size) 
+        {
+            resize(size);
+        }
+        ~GlFrameBuffer() = default;
+
+        void resize(const Vec2& size) override
+        {
+            m_size = size;
+
+            if (m_buffer) {
+                glDeleteFramebuffers(1, &m_buffer);
+                glDeleteTextures(1, &m_colorAttachment);
+                glDeleteRenderbuffers(1, &m_depthAttachment);
+            }
+
+            glGenFramebuffers(1, &m_buffer);
+            glBindFramebuffer(GL_FRAMEBUFFER, m_buffer);
+
+            glGenTextures(1, &m_colorAttachment);
+            glBindTexture(GL_TEXTURE_2D, m_colorAttachment);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);	
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorAttachment, 0);
+
+            glGenRenderbuffers(1, &m_depthAttachment);
+            glBindRenderbuffer(GL_RENDERBUFFER, m_depthAttachment);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depthAttachment);
+
+            MZ_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer incomplete");
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+        void bind() const override
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, m_buffer);
+        }
+
+        void release() const override
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+    private:
+        GLuint m_colorAttachment;
+        GLuint m_depthAttachment;
+        GLuint m_buffer;
 
     };
 

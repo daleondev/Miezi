@@ -16,10 +16,10 @@ namespace mz {
 
     export struct RenderData
     {
-        std::shared_ptr<VertexArrayBase> vertexArray;
-        std::shared_ptr<VertexBufferBase> vertexBuffer;
-        std::shared_ptr<IndexBufferBase> indexBuffer;
-        std::shared_ptr<ShaderBase> shader;
+        std::shared_ptr<IVertexArray> vertexArray;
+        std::shared_ptr<IVertexBuffer> vertexBuffer;
+        std::shared_ptr<IIndexBuffer> indexBuffer;
+        std::shared_ptr<IShader> shader;
 
         void reset()
         {

@@ -1,0 +1,97 @@
+// module;
+// #include "mz/core/core.h"
+// export module mz.graphics.plotting.axes;
+
+// import std;
+
+// import mz.core.logging;
+// import mz.math.geometry;
+
+// namespace mz {
+
+//     export enum class Unit
+//     {
+//         Pixel,
+//         Percent
+//     };
+
+//     export struct Axis
+//     {
+//         std::string label;
+//         glm::vec2 lims;
+//         std::size_t tickCount;
+//         std::vector<float> tickPositions;
+//         std::vector<std::string> tickNames;
+//     };
+
+//     export struct AxesData
+//     {
+//         std::string title;
+
+//         glm::vec2 position;
+//         glm::vec2 size;
+//         Unit unit;
+
+//         bool visible = true;
+//         glm::vec4 backgroundColor = {1.0f, 1.0f, 1.0f, 1.0f};
+
+//         bool axesVisible = true;
+//         float axesWidth = 1.0f;
+//         glm::vec4 axesColor = {0.0f, 0.0f, 0.0f, 1.0f};
+//         std::array<Axis, 3> axes;
+
+//         bool gridVisible = false;
+//         glm::vec4 gridColor = {0.4f, 0.4f, 0.4f, 1.0f};
+//     };
+
+//     class Axes
+//     {
+//     public:
+//         ~Axes();
+
+//         AxesData getData() const { std::lock_guard<std::mutex> lock(m_mutex); return m_data; }
+//         void setData(const AxesData& data) { std::lock_guard<std::mutex> lock(m_mutex); m_data = data; }
+
+//         FrameBuffer* getFrameBuffer() const { return m_frameBuffer.get(); }
+//         const glm::vec2& getPosition() const { return m_position; }
+//         const glm::vec2& getSize() const { return m_size; }
+
+//         void setPosition(const glm::vec2& position) { m_position = position; }
+
+//         bool mouseInAxes(const glm::vec2& mousePos) const;
+
+//         Plot* createPlot(const std::vector<glm::vec3>& positions, const float markerSize = 1.0f, const float lineWidth = 1.0f, const glm::vec4& color = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f});
+//         void destroyPlot(const size_t index);
+//         Plot* getPlot(const size_t index);
+//         size_t numPlot() const { return m_plots.size(); }
+
+//     private:
+//         Axes(Renderer* renderer, const std::string& title, const glm::vec2& pos, const glm::vec2& sz, const Unit unit);
+
+//         void setRenderer(Renderer* renderer);
+//         void render(const Timestep dt);
+
+//         bool onResize(const glm::vec2& viewport);
+
+//         OrbitCamera m_camera;
+//         bool m_perspective;
+
+//         Renderer* m_renderer;
+//         std::unique_ptr<FrameBuffer> m_frameBuffer;
+//         glm::vec2 m_position;
+//         glm::vec2 m_size;
+
+//         AxesData m_data;
+//         std::vector<std::unique_ptr<Plot>> m_plots;
+
+//         glm::vec2 m_viewport;
+//         EdgeDetector<glm::vec2> m_sizeDetector;
+//         EdgeDetector<Unit> m_unitDetector;
+        
+//         mutable std::mutex m_mutex;
+
+//         friend class Figure;
+//         friend class PlottingEngine;
+//     };
+
+// }

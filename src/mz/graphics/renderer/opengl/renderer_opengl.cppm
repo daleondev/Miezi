@@ -53,11 +53,11 @@ namespace mz {
 
     };
 
-    export class GlRenderer : public RenderBase
+    export class GlRenderer : public RendererBase
     {
     public:
         GlRenderer(IGraphicsContext* context) 
-            : RenderBase(context, std::make_unique<GlShaderStore>()) 
+            : RendererBase(context, std::make_unique<GlShaderStore>()) 
         { 
             MZ_ASSERT(context->is<GlGraphicsContext>(), "Invalid graphics context type");
 
@@ -406,7 +406,7 @@ namespace mz {
         }
 
     private:
-        void drawIndexed(const std::shared_ptr<ShaderBase>& shader, const std::shared_ptr<VertexArrayBase>& vertexArray) const
+        void drawIndexed(const std::shared_ptr<IShader>& shader, const std::shared_ptr<IVertexArray>& vertexArray) const
         {
             shader->bind();
             vertexArray->bind();

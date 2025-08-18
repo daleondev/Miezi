@@ -142,13 +142,22 @@ namespace mz {
     //                      VertexBuffer
     //------------------------------------------------------
 
-    export class VertexBufferBase : public IRenderBuffer<float>
+    export class IVertexBuffer : public IRenderBuffer<float>
+    {
+    public:
+        virtual ~IVertexBuffer() = default;
+
+        virtual void setLayout(const BufferLayout& layout) = 0;
+        virtual const BufferLayout& getLayout() const = 0;
+    };
+
+    export class VertexBufferBase : public IVertexBuffer
     {
     public:
         virtual ~VertexBufferBase() = default;
 
-        virtual void setLayout(const BufferLayout& layout) { m_layout = layout; }
-        virtual const BufferLayout& getLayout() const { return m_layout; }
+        void setLayout(const BufferLayout& layout) override { m_layout = layout; }
+        const BufferLayout& getLayout() const override { return m_layout; }
 
     protected:
         BufferLayout m_layout;
@@ -159,12 +168,20 @@ namespace mz {
     //                      IndexBuffer
     //------------------------------------------------------
 
-    export class IndexBufferBase : public IRenderBuffer<std::uint32_t>
+    export class IIndexBuffer : public IRenderBuffer<std::uint32_t>
+    {
+    public:
+        virtual ~IIndexBuffer() = default;
+
+        virtual std::size_t getCount() const = 0;
+    };
+
+    export class IndexBufferBase : public IIndexBuffer
     {
     public:
         virtual ~IndexBufferBase() = default;
 
-        virtual std::size_t getCount() { return m_count; }
+        std::size_t getCount() const override { return m_count; }
 
     protected:
         std::size_t m_count;

@@ -34,8 +34,8 @@ static bool running = true;
 int main()
 {
     auto window = mz::WindowBase::create("Test Window", glm::vec2{800, 600});
-    auto renderer = RenderBase::create(window->getContext());
-    Scene scene(window->getSize(), window->getInput(), renderer);
+    auto renderer = RendererBase::create(window->getContext());
+    Scene scene(window->getSize(), window->getInput(), renderer, false);
     
     window->setEventCallbackFunc([&](mz::IEvent* e) 
     {

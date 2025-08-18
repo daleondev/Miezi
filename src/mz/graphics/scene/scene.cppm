@@ -62,8 +62,8 @@ namespace mz {
     public:
         using SceneEntityIterator = std::map<UUID, Entity>::iterator;
 
-        Scene(const Vec2& size, IInput* input, const std::shared_ptr<IRenderer>& renderer) 
-            : m_size{ size }, m_input{ input }, m_renderer{ renderer }
+        Scene(const Vec2& size, IInput* input, const std::shared_ptr<IRenderer>& renderer, const bool useFrameBuffer = false) 
+            : m_size{ size }, m_input{ input }, m_renderer{ renderer }, m_frameBuffer{ createFrameBuffer(size) }, m_useFrameBuffer{ useFrameBuffer }
         {
             setComponentsConstructCallback(RendererComponents{}, m_registry, [](Entity entity, auto component) 
             {
@@ -204,10 +204,15 @@ namespace mz {
 
         void render()
         {
+            if (m_useFrameBuffer)
+                m_frameBuffer->bind();
+
             m_renderer->clear(Vec4(1.0f));
 
-            if (!m_camera)
+            if (!m_camera) {
+                m_frameBuffer->release();
                 return;
+            }
 
             m_renderer->beginScene(m_camera.get());
 
@@ -283,6 +288,7 @@ namespace mz {
             }
 
             m_renderer->endScene();
+            m_frameBuffer->release();
         }
 
         bool onMouseLeave(MouseLeaveEvent* e)
@@ -358,6 +364,7 @@ namespace mz {
         {
             m_size = e->getSize();
             m_renderer->setViewport(m_size);
+            m_frameBuffer->resize(m_size);
 
             const float aspect = e->getWidth() / e->getHeight();
             if (m_camera) {
@@ -373,8 +380,10 @@ namespace mz {
 
         Vec2 m_size;
         IInput* m_input;
-        std::shared_ptr<IRenderer> m_renderer;
 
+        bool m_useFrameBuffer;
+        std::shared_ptr<IRenderer> m_renderer;
+        std::unique_ptr<IFrameBuffer> m_frameBuffer;
         std::unique_ptr<ICamera> m_camera;
         std::unique_ptr<ICameraController> m_cameraController;
     };

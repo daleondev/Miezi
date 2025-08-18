@@ -1,0 +1,76 @@
+// module;
+// #include "mz/core/core.h"
+// export module mz.graphics.plotting;
+
+// import std;
+
+// import mz.core.logging;
+// import mz.util.thread;
+// import mz.math.geometry;
+
+// class Figure
+// {
+//     Figure() = default;
+// }; // todo
+
+// namespace mz {
+
+//     class PlottingEngine : public CyclicThread
+//     {
+//     public:
+//         PlottingEngine()
+//         {
+
+//         }
+//         ~PlottingEngine()
+//         {
+
+//         }
+
+//         Figure* createFigure(const std::string& name = "", const Vec2& pos = {0.0f, 0.0f}, const Vec2& sz = {560.0f, 492.0f}, const Unit unit = Unit::Pixel, const Vec4& color = {1.0f, 1.0f, 1.0f, 1.0f})
+//         {
+
+//         }
+
+//         void destroyFigure(const std::string& name)
+//         {
+
+//         }
+
+//         Figure* getCurrentFigure(const std::string& name)
+//         {
+
+//         }
+
+//         Figure* getFigure(const std::string& name)
+//         {
+
+//         }
+
+//     private:
+//         bool figureExists(const std::string& name)
+//         {
+
+//         }
+
+//         bool initFigure(const std::string& name)
+//         {
+
+//         }
+
+//         bool shutdownFigure(const std::string& name)
+//         {
+
+//         }
+
+//         std::map<std::string, std::unique_ptr<Figure>> m_figures;
+//         Figure* m_currentFigure;
+//         ConcurrentQueue<std::string> m_figuresToInit;
+//         ConcurrentQueue<std::string> m_figuresToShutdown;
+
+//         std::mutex m_mutex;
+//     };
+
+//     export PlottingEngine g_plottingEngine;
+
+// }

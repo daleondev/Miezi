@@ -38,12 +38,12 @@ namespace mz {
         virtual void drawSphere(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
     };
 
-    export class RenderBase : public IRenderer
+    export class RendererBase : public IRenderer
     {
     public:
-        static std::shared_ptr<RenderBase> create(IGraphicsContext* context);
+        static std::shared_ptr<IRenderer> create(IGraphicsContext* context); 
 
-        virtual ~RenderBase()
+        virtual ~RendererBase()
         {
             m_pointData.reset();
             m_lineData.reset();
@@ -64,6 +64,8 @@ namespace mz {
             m_cameraData.view = camera->getView();
             m_cameraData.projection = camera->getProjection();
             m_cameraData.viewProjection = camera->getViewProjection();
+
+            m_context->makeCurrent();
         }
 
         void endScene() override
@@ -72,7 +74,7 @@ namespace mz {
         }
 
     protected:
-        RenderBase(IGraphicsContext* context, std::unique_ptr<ShaderStoreBase>&& shaderStore)
+        RendererBase(IGraphicsContext* context, std::unique_ptr<ShaderStoreBase>&& shaderStore)
             : m_context{ context }, m_shaderStore{ std::move(shaderStore) } 
         {
             m_context->makeCurrent();
@@ -101,5 +103,7 @@ namespace mz {
         // std::map<std::uint32_t, std::tuple<GraphicsData, TextureBase>> m_pcData;
 
     };
+
+    export std::unique_ptr<IFrameBuffer> createFrameBuffer(const Vec2& size);
 
 }

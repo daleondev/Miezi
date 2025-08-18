@@ -26,22 +26,63 @@ namespace mz {
     //                      VertexArray
     //------------------------------------------------------
 
-    export class VertexArrayBase : public IRenderResource
+    export class IVertexArray : public IRenderResource
     {
     public:
-        using VertexBufferPtr = std::shared_ptr<VertexBufferBase>;
+        using VertexBufferPtr = std::shared_ptr<IVertexBuffer>;
+
+        virtual ~IVertexArray() = default;
+
+        virtual void addVertexBuffer(const std::shared_ptr<IVertexBuffer>& vertexBuffer) = 0;
+        virtual void setIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer) = 0;
+
+        virtual const Vector<VertexBufferPtr>& getVertexBuffers() const = 0;
+        virtual const std::shared_ptr<IIndexBuffer>& getIndexBuffer() const = 0;
+    };
+
+    export class VertexArrayBase : public IVertexArray
+    {
+    public:
 
         virtual ~VertexArrayBase() = default;
 
-        virtual void addVertexBuffer(const std::shared_ptr<VertexBufferBase>& vertexBuffer) = 0;
-        virtual void setIndexBuffer(const std::shared_ptr<IndexBufferBase>& indexBuffer) = 0;
-
-        inline const Vector<VertexBufferPtr>& getVertexBuffers() const { return m_vertexBuffers; }
-        inline const std::shared_ptr<IndexBufferBase>& getIndexBuffer() const { return m_indexBuffer; }
+        const Vector<VertexBufferPtr>& getVertexBuffers() const override { return m_vertexBuffers; }
+        const std::shared_ptr<IIndexBuffer>& getIndexBuffer() const override { return m_indexBuffer; }
 
     protected:
         Vector<VertexBufferPtr> m_vertexBuffers;
-        std::shared_ptr<IndexBufferBase> m_indexBuffer;
+        std::shared_ptr<IIndexBuffer> m_indexBuffer;
+
+    };
+
+    //------------------------------------------------------
+    //                      FrameBuffer
+    //------------------------------------------------------
+
+    export class IFrameBuffer : public IRenderResource
+    {
+    public:
+        virtual ~IFrameBuffer() = default;
+
+        virtual void resize(const Vec2& size) = 0;
+
+        virtual const Vec2& getSize() const = 0;
+        virtual float getWidth() const = 0;
+        virtual float getHeight() const = 0;
+    };
+
+    export class FrameBufferBase : public IFrameBuffer
+    {
+    public:
+        FrameBufferBase(const Vec2& size) : m_size{ size } {}
+        virtual ~FrameBufferBase() = default;
+
+        const Vec2& getSize() const override { return m_size; }
+        float getWidth() const override { return m_size.x; }
+        float getHeight() const override { return m_size.y; }
+
+    protected:
+        Vec2 m_size;
 
     };
 

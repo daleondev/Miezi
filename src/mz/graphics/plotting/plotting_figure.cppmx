@@ -1,0 +1,28 @@
+// module;
+// #include "mz/core/core.h"
+// export module mz.graphics.plotting.figure;
+
+// import std;
+
+// import mz.core.logging;
+
+// import mz.events;
+// import mz.events.window;
+// import mz.events.mouse;
+
+// import mz.math.geometry;
+
+// namespace mz {
+
+//     struct FigureData
+//     {
+//         std::string name;
+//         glm::vec2 position;
+//         glm::vec2 size;
+//         Unit unit;
+//         glm::vec4 backgroundColor;
+//     };
+
+
+
+// }
