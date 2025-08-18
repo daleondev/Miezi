@@ -26,10 +26,10 @@ namespace mz {
         virtual void clear(const Vec4& color) = 0;
         virtual void drawPoint(const Vec3& position, const Vec4& color, const float size = 1.0f) const = 0;
         virtual void drawLine(const Mat4& transform, const Vec4& color, const float lineWidth = 1.0f, const bool smooth = false) const = 0;
-        virtual void drawRect(const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawRect(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
-        virtual void drawCircle(const Mat4& transform, const Vec4& color) const = 0;
-        virtual void drawCircle(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
+        virtual void drawRect(const Mat4& transform, const Vec4& color, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) const = 0;
+        virtual void drawRect(const Mat4& transform, const std::shared_ptr<ITexture>& texture, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) const = 0;
+        virtual void drawCircle(const Mat4& transform, const Vec4& color, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) const = 0;
+        virtual void drawCircle(const Mat4& transform, const std::shared_ptr<ITexture>& texture, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) const = 0;
         virtual void drawPlane(const Mat4& transform, const Vec4& color) const = 0;
         virtual void drawPlane(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const = 0;
         virtual void drawBox(const Mat4& transform, const Vec4& color) const = 0;

@@ -104,7 +104,7 @@ namespace mz {
             const auto primitve2dShader = m_shaderStore->loadFromFiles("assets/shaders/Primitive2D");
             MZ_ASSERT(primitve2dShader, "Failed to load Primitive2D shader");
 
-            m_lineData.shader = *primitve2dShader;
+            m_rectData.shader = *primitve2dShader;
 
             m_rectData.vertexArray = std::make_shared<GlVertexArray>();
             m_rectData.vertexBuffer = std::make_shared<GlVertexBuffer>();
@@ -230,74 +230,87 @@ namespace mz {
         }
 
 
-        void drawRect(const Mat4& transform, const Vec4& color) const override
+        void drawRect(const Mat4& transform, const Vec4& color, const float borderWidth, const Vec4& borderColor) const override
         {
             m_rectData.shader->bind();
             m_rectData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
             m_rectData.shader->uploadMat4("u_model", transform);
-            m_rectData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_rectData.shader->uploadInt("u_useTexture", 0);
-            m_rectData.shader->uploadVec4("u_flatColor", color);
-
-            m_rectData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
-            m_rectData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
-            m_rectData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
-            m_rectData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
+            m_rectData.shader->uploadVec4("u_color", color);
             drawIndexed(m_rectData.shader, m_rectData.vertexArray);
+
+            if (borderWidth > 0.0f) {
+                m_rectData.shader->uploadVec4("u_color", borderColor);
+
+                glDisable(GL_LINE_SMOOTH);
+                glLineWidth(borderWidth);
+                glDrawArrays(GL_LINE_LOOP, 0, 4);
+            }
         }
 
-        void drawRect(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
+        void drawRect(const Mat4& transform, const std::shared_ptr<ITexture>& texture, const float borderWidth, const Vec4& borderColor) const override
         {
             m_rectData.shader->bind();
             m_rectData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
             m_rectData.shader->uploadMat4("u_model", transform);
-            m_rectData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_rectData.shader->uploadInt("u_useTexture", 1);
             m_rectData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
             texture->bind();
 
-            m_rectData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
-            m_rectData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
-            m_rectData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
-            m_rectData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
             drawIndexed(m_rectData.shader, m_rectData.vertexArray);
+
+            if (borderWidth > 0.0f) {
+                m_rectData.shader->uploadInt("u_useTexture", 0);
+                m_rectData.shader->uploadVec4("u_color", borderColor);
+
+                glDisable(GL_LINE_SMOOTH);
+                glLineWidth(borderWidth);
+                glDrawArrays(GL_LINE_LOOP, 0, 4);
+            }
         }
 
-        void drawCircle(const Mat4& transform, const Vec4& color) const override
+        void drawCircle(const Mat4& transform, const Vec4& color, const float borderWidth, const Vec4& borderColor) const override
         {
             m_circData.shader->bind();
             m_circData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
             m_circData.shader->uploadMat4("u_model", transform);
-            m_circData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_circData.shader->uploadInt("u_useTexture", 0);
-            m_circData.shader->uploadVec4("u_flatColor", color);
+            m_circData.shader->uploadVec4("u_color", color);
 
-            m_circData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
-            m_circData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
-            m_circData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
-            m_circData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
             drawIndexed(m_circData.shader, m_circData.vertexArray);
+
+            if (borderWidth > 0.0f) {
+                m_rectData.shader->uploadVec4("u_color", borderColor);
+
+                glDisable(GL_LINE_SMOOTH);
+                glLineWidth(borderWidth);
+                glDrawArrays(GL_LINE_LOOP, 1, CIRCLE_SEGMENTS);
+            }
         }
 
-        void drawCircle(const Mat4& transform, const std::shared_ptr<ITexture>& texture) const override
+        void drawCircle(const Mat4& transform, const std::shared_ptr<ITexture>& texture, const float borderWidth, const Vec4& borderColor) const override
         {
             m_circData.shader->bind();
             m_circData.shader->uploadMat4("u_viewProjection", m_cameraData.viewProjection);
             m_circData.shader->uploadMat4("u_model", transform);
-            m_circData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_circData.shader->uploadInt("u_useTexture", 1);
             m_circData.shader->uploadInt("u_texture", texture->asUnchecked<GlTexture>()->getSlot());
             texture->bind();
 
-            m_circData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
-            m_circData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
-            m_circData.shader->uploadVec4("u_ambientColor", {0.6f, 0.6f, 0.6f, 1.0f});
-            m_circData.shader->uploadVec3("u_viewPos", m_cameraData.transform.translation());
             drawIndexed(m_circData.shader, m_circData.vertexArray);
+
+            if (borderWidth > 0.0f) {
+                m_rectData.shader->uploadInt("u_useTexture", 0);
+                m_rectData.shader->uploadVec4("u_color", borderColor);
+
+                glDisable(GL_LINE_SMOOTH);
+                glLineWidth(borderWidth);
+                glDrawArrays(GL_LINE_LOOP, 1, CIRCLE_SEGMENTS);
+            }
         }
 
         void drawPlane(const Mat4& transform, const Vec4& color) const override
@@ -308,7 +321,7 @@ namespace mz {
             m_planeData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_planeData.shader->uploadInt("u_useTexture", 0);
-            m_planeData.shader->uploadVec4("u_flatColor", color);
+            m_planeData.shader->uploadVec4("u_color", color);
 
             m_planeData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
             m_planeData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
@@ -343,7 +356,7 @@ namespace mz {
             m_boxData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_boxData.shader->uploadInt("u_useTexture", 0);
-            m_boxData.shader->uploadVec4("u_flatColor", color);
+            m_boxData.shader->uploadVec4("u_color", color);
 
             m_boxData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
             m_boxData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});
@@ -378,7 +391,7 @@ namespace mz {
             m_sphereData.shader->uploadMat3("u_normalMatrix", transform.invertedTransposed());
 
             m_sphereData.shader->uploadInt("u_useTexture", 0);
-            m_sphereData.shader->uploadVec4("u_flatColor", color);
+            m_sphereData.shader->uploadVec4("u_color", color);
 
             m_sphereData.shader->uploadVec3("u_lightPos", Vec3{10.0f, 10.0f, 20.0f});
             m_sphereData.shader->uploadVec4("u_lightColor", {1.0f, 1.0f, 1.0f, 1.0f});

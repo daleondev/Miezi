@@ -6,7 +6,7 @@ in vec3 v_worldPos;
 
 uniform sampler2D u_texture;
 uniform int u_useTexture;         
-uniform vec4 u_flatColor;          
+uniform vec4 u_color;          
 
 uniform vec3 u_lightPos;           
 uniform vec4 u_lightColor;         
@@ -19,7 +19,7 @@ void main() {
     // Choose between texture or flat color
     vec4 baseColor = u_useTexture == 1
         ? texture(u_texture, v_uv)
-        : u_flatColor;
+        : u_color;
 
     // Lighting
     vec3 lightDir = normalize(u_lightPos - v_worldPos);

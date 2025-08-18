@@ -48,22 +48,22 @@ namespace mz {
     export struct TransformComponent
     {
         Vec3 translation;
-        glm::quat rotation;
+        Vec3 rotation;
         Vec3 scale;
 
         struct DetectChangeData
         {
             EdgeDetector<Vec3> translationListener;
-            EdgeDetector<glm::quat> rotationListener;
+            EdgeDetector<Vec3> rotationListener;
             EdgeDetector<Vec3> scaleListener;
             std::optional<std::function<void(const Mat4&)>> changedCallback;
         } detectChangeData;
 
-        TransformComponent() : translation{ 0.0f }, rotation{ Mat3(1.0f) }, scale{ 1.0f } {};
+        TransformComponent() : translation{ 0.0f }, rotation{ 0.0f }, scale{ 1.0f } {};
 
         operator Mat4() const { return Mat4(1.0f)
             .translated(translation)
-            .rotated(rotation)
+            .rotated(Mat3::createEulerXYZ(rotation))
             .scaled(scale); }
     };
 
@@ -87,25 +87,34 @@ namespace mz {
         bool smooth;
 
 		LineRendererComponent() : color{ 1.0f }, thickness{ 1.0f }, smooth{ false } {}
-		LineRendererComponent(const Vec4& color, const float thickness = 1.0f, const bool smooth = false) : color{ color }, thickness{ thickness }, smooth{ smooth } {}
+		LineRendererComponent(const Vec4& color, const float thickness = 1.0f, const bool smooth = false) 
+            : color{ color }, thickness{ thickness }, smooth{ smooth } {}
 	};
 
     export struct RectRendererComponent
 	{
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
+        float borderWidth;
+        Vec4 borderColor;
 
 		RectRendererComponent() : material{ Vec4(1.0f) } {}
-		RectRendererComponent(const Vec4& color) : material{ color } {}
-		RectRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+		RectRendererComponent(const Vec4& color, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) 
+            : material{ color }, borderWidth{ borderWidth }, borderColor{ borderColor } {}
+		RectRendererComponent(const std::shared_ptr<ITexture>& texture, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) 
+            : material{ texture }, borderWidth{ borderWidth }, borderColor{ borderColor } {}
 	};
 
     export struct CircleRendererComponent
 	{
         std::variant<Vec4, std::shared_ptr<ITexture>> material;
+        float borderWidth;
+        Vec4 borderColor;
 
 		CircleRendererComponent() : material{ Vec4(1.0f) } {}
-		CircleRendererComponent(const Vec4& color) : material{ color } {}
-		CircleRendererComponent(const std::shared_ptr<ITexture>& texture) : material{ texture } {}
+		CircleRendererComponent(const Vec4& color, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) 
+            : material{ color }, borderWidth{ borderWidth }, borderColor{ borderColor } {}
+		CircleRendererComponent(const std::shared_ptr<ITexture>& texture, const float borderWidth = 0.0f, const Vec4& borderColor = Vec4(0.0f)) 
+            : material{ texture }, borderWidth{ borderWidth }, borderColor{ borderColor } {}
 	};
 
     export struct PlaneRendererComponent

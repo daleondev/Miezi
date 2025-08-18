@@ -72,12 +72,12 @@ namespace mz {
         Vec& normalizeHomogeneous() requires (Size == 4) { return (*this = normalizedHomogeneous()); }
         bool isNormalizedHomogeneous() const requires (Size == 4) { return glm::epsilonEqual<float>(this->w, 1.0f, glm::epsilon<float>()); }
 
-        Vec reflected(const Vec& normal) const { return glm::reflect((T&)*this, *normal); }
+        Vec reflected(const Vec& normal) const { return glm::reflect((T&)*this, normal); }
         Vec& reflect(const Vec& normal) { return (*this = reflected(normal)); }
 
         Vec2 rotated(const Scalar angle) const requires (Size == 2) { return glm::rotate((T&)*this, angle); }
         Vec2& rotate(const Scalar angle) requires (Size == 2) { return (*this = rotated(angle)); }
-        Vec rotatedAround(const Vec& axis, const Scalar angle) const requires (Size >= 3) { return glm::rotate((T&)*this, angle, *axis); }
+        Vec rotatedAround(const Vec& axis, const Scalar angle) const requires (Size >= 3) { return glm::rotate((T&)*this, angle, axis); }
         Vec& rotateAround(const Vec& axis, const Scalar angle) requires (Size >= 3) { return (*this = rotatedAround(axis, angle)); }
 
         Vec rotatedX(const Scalar angle) const requires (Size >= 3) { return glm::rotateX((T&)*this, angle); }
@@ -87,8 +87,8 @@ namespace mz {
         Vec rotatedZ(const Scalar angle) const requires (Size >= 3) { return glm::rotateZ((T&)*this, angle); }
         Vec& rotateZ(const Scalar angle) requires (Size >= 3) { return (*this = rotatedZ(angle)); }
 
-        Scalar dot(const Vec& other) const { return glm::dot((T&)*this, *other); }
-        Vec cross(const Vec& other) const requires (Size <= 3) { return glm::cross((T&)*this, *other); }
+        Scalar dot(const Vec& other) const { return glm::dot((T&)*this, other); }
+        Vec cross(const Vec& other) const requires (Size <= 3) { return glm::cross((T&)*this, other); }
         Vec4 cross(const Vec4& B, const Vec4& C) const requires (Size == 4);
 
         Scalar angleTo(const Vec& other) const { return glm::angle(*this->normalized(), (T&)other.normalized()); }
@@ -310,8 +310,8 @@ namespace mz {
             return eulerZYX;
         }
 
-        Mat componentMult(const Mat& other) const { return glm::matrixCompMult((T&)*this, *other); }
-        Mat outerProduct(const Mat& other) const { return glm::outerProduct((T&)*this, *other); }
+        Mat componentMult(const Mat& other) const { return glm::matrixCompMult((T&)*this, other); }
+        Mat outerProduct(const Mat& other) const { return glm::outerProduct((T&)*this, other); }
 
         operator T&() { return (T&)*this; }
         operator const T&() const { return (T&)*this; }
@@ -415,5 +415,65 @@ namespace mz {
             -glm::determinant(glm::mat3( {A[0], B[0], C[0]}, {A[1], B[1], C[1]}, {A[2], B[2], C[2]} ))
         };
     }
+
+    //------------------------------------------------------
+    //                 Geometry functions
+    //------------------------------------------------------
+
+    export Mat4 calcLineTransform(const glm::vec3& a, const glm::vec3& b)
+    {
+        const auto v = b - a;
+        const auto len = glm::length(v);
+
+        // z-Axis
+        const auto zAxis = glm::normalize(v);
+        
+        // Choose an up vector that's not parallel to zAxis
+        glm::vec3 up = glm::vec3(0, 1, 0);
+        if (glm::abs(glm::dot(up, zAxis)) > 0.99f) // too parallel, switch to x axis
+            up = glm::vec3(1, 0, 0);
+
+        // x-Axis
+        const auto xAxis = glm::normalize(glm::cross(up, zAxis));
+        // y-Axis
+        const auto yAxis = glm::normalize(glm::cross(zAxis, xAxis));
+
+        // set up transformation
+        Mat4 t(1.0f);
+        t.xAxis() = glm::vec4(xAxis, 0.0f); // scale by length if needed
+        t.yAxis() = glm::vec4(yAxis, 0.0f);
+        t.zAxis() = glm::vec4(v, 0.0f);
+        t.translation() = glm::vec4(a, 1.0f);
+        return t;
+    }
+
+    // export Mat4 calcLineTransform(const Vec3& a, const Vec3& b)
+    // {
+    //     const Vec3 v = b - a;
+    //     const float len = v.length();
+
+    //     // z-Axis
+    //     const auto zAxis = v.normalized();
+        
+    //     // random vector not parallel to z-Axis
+    //     Vec3 vRand;
+    //     do {
+    //         vRand.fillRandom(1.0f);
+    //     } while (glm::abs(vRand ^ zAxis) > 0.99f);
+        
+    //     // x-Axis
+    //     const auto xAxis = (vRand % zAxis).normalized();
+
+    //     // y-Axis
+    //     const auto yAxis = (zAxis % xAxis).normalized();
+
+    //     // set up transformation
+    //     Mat4 t(1.0f);
+    //     t.xAxis() = xAxis.asVec4(0.0f);
+    //     t.yAxis() = yAxis.asVec4(0.0f);
+    //     t.zAxis() = v.asVec4(0.0f);
+    //     t.translation() = a.asVec4(1.0f);
+    //     return t;
+    // }
 
 }

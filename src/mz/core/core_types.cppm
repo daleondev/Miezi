@@ -114,7 +114,7 @@ namespace mz {
     class ManagedDynamicArray
     {
     public:
-        ManagedDynamicArray() noexcept = default;
+        ManagedDynamicArray() noexcept : m_data{ nullptr }, m_size{ 0 } {}
         ManagedDynamicArray(const std::size_t size) : m_data{ std::make_unique<T[]>(size) }, m_size{ size } {}
         ManagedDynamicArray(const std::size_t size, const T& val) : m_data{ std::make_unique<T[]>(size) }, m_size{ size } 
         {
@@ -163,13 +163,18 @@ namespace mz {
         {
             auto newData = std::make_unique<T[]>(size);
 
-            const std::size_t copySize = std::min(size, m_size);
-            std::move(begin(), begin()+copySize, newData.get());
+            if (m_data) {
+                const std::size_t copySize = std::min(size, m_size);
+                std::move(begin(), begin()+copySize, newData.get());
 
-            if (size > copySize)
-                std::fill(newData.get()+copySize, newData.get()+size, val);
+                if (size > copySize)
+                    std::fill(newData.get()+copySize, newData.get()+size, val);
+            }
+            else {
+                std::fill(newData.get(), newData.get()+size, val);
+            }
 
-            m_data.swap(newData);
+            m_data.reset(newData.release());
             m_size = size;
         }
 

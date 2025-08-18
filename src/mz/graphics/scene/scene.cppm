@@ -8,6 +8,7 @@ export module mz.graphics.scene;
 import std;
 
 import mz.core.logging;
+import mz.core.types;
 
 import mz.events;
 import mz.events.window;
@@ -104,7 +105,7 @@ namespace mz {
         {
             Entity entity(&m_registry);
 
-            auto& idComponent = entity.addComponent<IdComponent>(entity);
+            auto& idComponent = entity.addComponent<IdComponent>(uuid());
             entity.addComponent<TagComponent>(tag.empty() ? "Entity" : tag);
             
             if (addToMap)
@@ -119,11 +120,36 @@ namespace mz {
             m_registry.destroy(entity);
         }
 
+        void destroyEntity(const UUID id)
+        {
+            if (id != UUID_NULL) {
+                m_registry.destroy(m_entities.at(id));
+                m_entities.erase(id);
+            }
+        }
+
         SceneEntityIterator destroyEntity(const SceneEntityIterator it)
         {
             m_registry.destroy(it->second);
             return m_entities.erase(it);
         }
+
+        template<typename Component>
+        std::vector<std::pair<Entity, Component>> getEntitiesWithComponent() const 
+        { 
+            std::vector<std::pair<Entity, Component>> entities;
+            auto view = m_registry.view<Component>(); 
+            for (auto [handle, component] : view.each()) {
+                Entity entity(const_cast<entt::registry*>(&m_registry), handle);
+                entities.emplace_back(entity, component);
+            }
+
+            return entities;
+        } 
+
+        const Vec2& getSize() const { return m_size; }
+
+        Entity getEntity(const UUID id) const { return m_entities.at(id); }
 
         void onEvent(IEvent* e)
         {
@@ -369,7 +395,7 @@ namespace mz {
             const float aspect = e->getWidth() / e->getHeight();
             if (m_camera) {
                 if (m_camera->is<PerspectiveCamera>())
-                    m_camera->asPtrUnchecked<PerspectiveCamera>()->setProjection(60.0f, aspect, 0.001f, 1000.0f);
+                    m_camera->asUnchecked<PerspectiveCamera>()->setProjection(degToRad(60.0f), aspect, 0.001f, 1000.0f);
             }
             
             return true;

@@ -16,5 +16,6 @@ namespace entt {
     export using entt::sink;
     export using entt::sigh;
     export using entt::delegate;
+    export using entt::view;
 
 }

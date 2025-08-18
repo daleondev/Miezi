@@ -13,13 +13,13 @@ namespace mz {
 
     export void setTransform(TransformComponent& component, const Mat4& transform)
     {
-        component.translation = transform.translation();
-
-        component.rotation = transform.asMat3().toEulerXYZ();
-
         component.scale.x = transform.xAxis().length();
         component.scale.y = transform.yAxis().length();
         component.scale.z = transform.zAxis().length();
+
+        component.rotation = transform.rescaled().toEulerXYZ();
+
+        component.translation = transform.translation();
     }
 
     export Mat4 getTransform(const TransformComponent& component)

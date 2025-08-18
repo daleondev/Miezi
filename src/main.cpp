@@ -15,6 +15,8 @@ import mz.events.key;
 
 import mz.graphics.window;
 
+import mz.graphics.plotting.plot;
+
 import mz.graphics.renderer;
 import mz.graphics.renderer.opengl;
 import mz.graphics.renderer.camera;
@@ -57,6 +59,18 @@ int main()
         scene.onEvent(e);
     });
 
+    PlotData data {
+        .positions = { Vec3(0.5f, 0.5f, 0.0f), Vec3(0.24f, 0.778f, 0.0f), Vec3(0.56f, 0.12f, 0.0f) },
+        .markerSize = 1.0f,
+        .lineWidth = 1.0f,
+        .color = Vec4(1.0f, 0.0f, 0.0f, 1.0f),
+        .fillColor = Vec4(1.0f, 0.0f, 1.0f, 1.0f),
+        .markerStyle = MarkerStyle::Rect,
+        .lineStyle = LineStyle::Solid
+    };
+
+    Plot plot(&scene, data);
+
     // ----- prepare Axes -----
     
     // X
@@ -84,6 +98,7 @@ int main()
         Timestep dt(std::chrono::duration_cast<std::chrono::milliseconds>(timeDiff).count() / 1000.0f);
 
         window->update(); 
+        plot.update();
         scene.update(dt);
     }
 

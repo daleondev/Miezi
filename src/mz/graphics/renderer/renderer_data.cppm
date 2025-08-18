@@ -85,8 +85,8 @@ namespace mz {
     //                      Circle
     //------------------------------------------------------
 
-    static constexpr float CIRCLE_RADIUS = 0.5f;
-    static constexpr std::uint16_t CIRCLE_SEGMENTS = 64;
+    export constexpr float CIRCLE_RADIUS = 0.5f;
+    export constexpr std::uint16_t CIRCLE_SEGMENTS = 64;
 
     export struct CircleData
     {
